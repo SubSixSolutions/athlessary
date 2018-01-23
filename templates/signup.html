@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign-up</title>
+
+</head>
+<body>
+
+    <form class="form-signup" action="{{ url_for('signup') }}" method="POST">
+        First <input type="text" name="first" autofocus="true"><br>
+        Last <input type="text" name="last"><br>
+        Password <input type="password" name="pw"><br>
+        Password again <input type="password" name="pw_again"><br>
+        <input type="submit" value="signup">
+    </form>
+
+
+</body>
+</html>

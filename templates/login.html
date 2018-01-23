@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AL</title>
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet" type="'text/css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h3 id="title" class="text-muted">Althessary</h3>
+        </div>
+
+
+        <div class="jumbotron">
+            <h1>Log In</h1>
+            {% if error %}
+                <p><strong>Error:</strong> {{ error }}
+            {% endif %}
+            <form class="form-signin" action="{{ url_for('login') }}" method = "POST">
+                User Name
+                <input type="text" name="username" autofocus="true"><br>
+                Password
+                <input type="password" name="password"><br>
+                <input type="submit" value="Login">
+{#                <button onclick="location.href='{{ url_for('create_user') }}'" type="button">Create New User</button>#}
+            </form>
+        </div>
+
+
+        <footer class="footer">
+            <p>&copy; Athlessary 2018</p>
+        </footer>
+    </div>
+</body>
+</html>
