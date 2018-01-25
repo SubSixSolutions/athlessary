@@ -1,4 +1,5 @@
 from flask import Flask
+from passlib.hash import pbkdf2_sha256
 import sqlite3
 import hashlib, uuid
 from flask import Flask, render_template, request, redirect, url_for, send_file, flash, jsonify
@@ -7,6 +8,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from User.user import User
 
 app = Flask(__name__)
+# TODO Update secret key and move to external file
 app.secret_key = 'super secret string'  # Change this!
 app.debug = True
 login_manager = LoginManager()
@@ -51,17 +53,18 @@ def login():
               SELECT *
               FROM users
               WHERE username = ?
-              AND password = ?
               '''
 
-        params = (username, password)
+        params = (username,)
 
         cur = conn.cursor()
         cur.execute(sql, params)
 
         result = cur.fetchone()
         print(result)
-        if result is not None:
+        hash = result['password']
+        password_match = pbkdf2_sha256.verify(password, hash)
+        if password_match:
             curr_user = User(result['id'], cur)
             login_user(curr_user)
             flash("LOGIN SUCCESSFUL")
@@ -74,14 +77,17 @@ def signup():
     if request.method == 'GET':
         return render_template('signup.html')
     else:
+        # TODO Check if username is unique
+        username = request.form['username']
         first = request.form['first']
         last = request.form['last']
         pw = request.form['pw']
         pw_again = request.form['pw_again']
         if pw == pw_again:
             cur = conn.cursor()
-            cur.execute('INSERT INTO users (first, last, password)\n'
-                        'VALUES (?, ?, ?)', (first, last, pw))
+            hash = pbkdf2_sha256.encrypt(pw, rounds=200000, salt_size=16)
+            cur.execute('INSERT INTO users (username, first, last, password)\n'
+                        'VALUES (?, ?, ?)', (username, first, last, hash))
             conn.commit()
             return 'success11'
         else:
