@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body>
-
-</body>
+    <body>
+        {% if current_user.is_authenticated %}
+            Hello {{ current_user.first }}
+            <br>
+            {{ current_user.last }}
+            <br>
+            {{ current_user.username }}
+            <br>
+            {{ current_user }}
+        {% endif %}
+    </body>
 </html>

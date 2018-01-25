@@ -2,7 +2,7 @@ from flask import Flask
 import sqlite3
 import hashlib, uuid
 from flask import Flask, render_template, request, redirect, url_for, send_file, flash, jsonify
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from User.user import User
 
@@ -116,11 +116,15 @@ def hello_world():
     return "hi"
 
 
-
 @app.route('/<username>')
 @login_required
 def profile_page(username):
-    render_template('profile.html')
+
+    # TODO more elegant solution to not found page
+
+    if username == current_user.username:
+        return render_template('profile.html')
+    return render_template('404.html')
 
 
 @app.route('/logout')
