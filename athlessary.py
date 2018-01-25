@@ -49,16 +49,12 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        sql = '''
-              SELECT *
-              FROM users
-              WHERE username = ?
-              '''
+        query = " SELECT * FROM users WHERE username = ?"
 
         params = (username,)
 
         cur = conn.cursor()
-        cur.execute(sql, params)
+        cur.execute(query, params)
 
         result = cur.fetchone()
         print(result)
@@ -84,10 +80,13 @@ def signup():
         pw = request.form['pw']
         pw_again = request.form['pw_again']
         if pw == pw_again:
+            pw_hash = pbkdf2_sha256.encrypt(pw, rounds=200000, salt_size=16)
+
+            query = "INSERT INTO users (username, first, last, password) VALUES (?, ?, ?, ?)"
+            params = (username, first, last, pw_hash)
+
             cur = conn.cursor()
-            hash = pbkdf2_sha256.encrypt(pw, rounds=200000, salt_size=16)
-            cur.execute('INSERT INTO users (username, first, last, password)\n'
-                        'VALUES (?, ?, ?)', (username, first, last, hash))
+            cur.execute(query, params)
             conn.commit()
             return 'success11'
         else:
@@ -98,12 +97,9 @@ def signup():
 @login_required
 def userlist():
     cur = conn.cursor()
-    cur.execute("SELECT password,\n"
-                "       id,\n"
-                "       first,\n"
-                "       last\n"
-                "      FROM users;\n"
-                "      ")
+    query = "SELECT password, id, first, last FROM users;"
+
+    cur.execute(query)
     users = cur.fetchall()
 
     return render_template('userlist.html', user_list=users)
@@ -111,14 +107,6 @@ def userlist():
 
 @app.route('/')
 def hello_world():
-
-    cur = conn.cursor()
-    cur.execute('''SELECT password,
-         id,
-         first,
-         last
-    FROM users;''')
-    row = cur.fetchone()
     return "hi"
 
 
