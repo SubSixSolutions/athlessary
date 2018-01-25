@@ -2,14 +2,28 @@ from flask import Flask
 import sqlite3
 import hashlib, uuid
 from flask import Flask, render_template, request, redirect, url_for, send_file, flash, jsonify
+from flask_login import LoginManager, login_user, login_required, logout_user
+
+from User.user import User
 
 app = Flask(__name__)
+app.secret_key = 'super secret string'  # Change this!
 app.debug = True
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
 
 
 def create_connection(db_file):
     try:
         conn = sqlite3.connect(db_file, check_same_thread=False)
+        conn.row_factory = dict_factory
         return conn
     except sqlite3.Error as e:
         print(e)
@@ -19,20 +33,40 @@ def create_connection(db_file):
 conn = create_connection('athlessary-database.db')
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    cur = conn.cursor()
+    return User(user_id, cur)
+
+
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
     else:
-        cur = conn.cursor()
         username = request.form['username']
         password = request.form['password']
-        #salt = uuid.uuid4().hex
-        #hashed_password = hashlib.sha512(password + salt).hexdigest()
 
-        # big change
+        sql = '''
+              SELECT *
+              FROM users
+              WHERE username = ?
+              AND password = ?
+              '''
 
-    return "welcome!"
+        params = (username, password)
+
+        cur = conn.cursor()
+        cur.execute(sql, params)
+
+        result = cur.fetchone()
+        print(result)
+        if result is not None:
+            curr_user = User(result['id'], cur)
+            login_user(curr_user)
+            flash("LOGIN SUCCESSFUL")
+            return "GOOD JOB"
+        return "go back and try again"
 
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -53,7 +87,9 @@ def signup():
         else:
             return render_template('signup.html')
 
+
 @app.route('/userlist')
+@login_required
 def userlist():
     cur = conn.cursor()
     cur.execute("SELECT password,\n"
@@ -67,7 +103,6 @@ def userlist():
     return render_template('userlist.html', user_list=users)
 
 
-
 @app.route('/')
 def hello_world():
 
@@ -78,10 +113,22 @@ def hello_world():
          last
     FROM users;''')
     row = cur.fetchone()
-    return row[2]
+    return "hi"
+
+
+
+@app.route('/<username>')
+@login_required
+def profile_page(username):
+    render_template('profile.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return "BYE"
 
 
 if __name__ == '__main__':
-
-
     app.run()
