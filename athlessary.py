@@ -4,7 +4,6 @@ import sqlite3
 import hashlib, uuid
 from flask import Flask, render_template, request, redirect, url_for, send_file, flash, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-#from flask_wtf import FlaskForm, Form, validators
 from wtforms import StringField, TextField, RadioField, IntegerField, SelectField, SubmitField, PasswordField, \
     BooleanField
 from wtforms.validators import DataRequired, InputRequired, Length
@@ -42,41 +41,81 @@ def create_connection(db_file):
 conn = create_connection('athlessary-database.db')
 
 
-class RegistrationForm(Form):
-    username = StringField('Username', [validators.Length(min=4, max=25)])
-    email = StringField('Email Address', [validators.Length(min=6, max=35)])
-    password = PasswordField('New Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords must match')
-    ])
-    confirm = PasswordField('Repeat Password')
-    accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
-
-
 @login_manager.user_loader
 def load_user(user_id):
     cur = conn.cursor()
     return User(user_id, cur)
 
 
-class MyForm(Form):
+class SignUpForm(Form):
     username = StringField('username', validators=[Length(min=1, max=5, message="must be less than 5 chars"), InputRequired("must not be empty")])
-    password = PasswordField('password')
-    address = StringField('address')
-    first = StringField('first name')
-    last = StringField('last name')
-    has_car = BooleanField('do you have a car?')
-    num_seats = IntegerField('num seats')
+    password = PasswordField('New Password', [
+        validators.InputRequired(),
+        validators.EqualTo('retype_pass', message='Passwords must match')
+    ])
+    retype_pass = PasswordField('retype password')
+    address = StringField('address', validators=[validators.InputRequired()])
+    first = StringField('first name', validators=[validators.InputRequired()])
+    last = StringField('last name', validators=[validators.InputRequired()])
+    has_car = BooleanField('do you have a car?', validators=[validators.InputRequired()])
+    num_seats = IntegerField('num seats', validators=[validators.InputRequired()])
 
 
-@app.route('/login2', methods=['GET', 'POST'])
-def login2():
-    form = MyForm(request.form)
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    """
+    handles signup of the user
+    :return: profile page of the user
+    """
+
+    # form to handle sign up
+    form = SignUpForm(request.form)
+
+    # if form is validated and method is post
     if request.method == 'POST' and form.validate():
-        print(form.username.data)
-        print(form['username'])
-        return 'hi'
-    return render_template('login2.html', form=form)
+
+        # collect form data
+        username = form['username'].data
+        password = form['password'].data
+        address = form['address'].data
+        first = form['first'].data
+        last = form['last'].data
+        has_car = form['has_car'].data
+        num_seats = form['num_seats'].data
+
+        # hash password
+        hashed_pass = pbkdf2_sha256.encrypt(password, rounds=200000, salt_size=16)
+
+        # insert into db
+        cur = conn.cursor()
+        cur.execute('INSERT INTO users (username, first, last, password, address, has_car, num_seats)\n'
+                    'VALUES (?, ?, ?, ?, ?, ?, ?)', (username, first, last, hashed_pass, address, has_car, num_seats))
+        conn.commit()
+
+        # find the id of the user
+        sql = '''
+                      SELECT *
+                      FROM users
+                      WHERE username = ?
+                      '''
+
+        params = (username,)
+
+        cur = conn.cursor()
+        cur.execute(sql, params)
+
+        result = cur.fetchone()
+
+        # log new user in
+        curr_user = User(result['id'], cur)
+        login_user(curr_user)
+
+        # redirect user to their new profile page
+        flash('signed in!')
+        return redirect(url_for('profile_page', username=username))
+
+    # display sign up form
+    return render_template('signup.html', form=form)
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -108,28 +147,6 @@ def login():
             flash("LOGIN SUCCESSFUL")
             return "GOOD JOB"
         return "go back and try again"
-
-
-@app.route('/signup', methods=['POST', 'GET'])
-def signup():
-    if request.method == 'GET':
-        return render_template('signup.html')
-    else:
-        # TODO Check if username is unique
-        username = request.form['username']
-        first = request.form['first']
-        last = request.form['last']
-        pw = request.form['pw']
-        pw_again = request.form['pw_again']
-        if pw == pw_again:
-            cur = conn.cursor()
-            hash = pbkdf2_sha256.encrypt(pw, rounds=200000, salt_size=16)
-            cur.execute('INSERT INTO users (username, first, last, password)\n'
-                        'VALUES (?, ?, ?)', (username, first, last, hash))
-            conn.commit()
-            return 'success11'
-        else:
-            return render_template('signup.html')
 
 
 @app.route('/userlist')
