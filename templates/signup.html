@@ -16,7 +16,8 @@
                 {% endfor %}
                 <br>
             {% endfor %}
-            <input type=submit value=GO>
+            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
         </form>
     </body>
 </html>
