@@ -6,13 +6,40 @@
 </head>
     <body>
         {% if current_user.is_authenticated %}
-            Hello {{ current_user.first }}
+            Hello, {{ current_user.first }} {{ current_user.last }}
             <br>
-            {{ current_user.last }}
+            <h1>Your Profile:</h1>
+            Address: {{ current_user.address }}
             <br>
-            {{ current_user.username }}
+            Has Car: {{ current_user.has_car }}
             <br>
-            {{ current_user }}
+            Number of Seats: {{ current_user.num_seats }}
+            <br>
+            User Name: {{ current_user.username }}
+            <br>
+            <img src="{{ url_for('static', filename=current_user.picture) }}" height="300" width="300">
+            {% if photo_form != None %}
+                <br>
+                <form method="POST" enctype="multipart/form-data">
+                    {{ photo_form.hidden_tag() }}
+                    {{ photo_form.csrf_token }}
+                    {{ photo_form.photo.label }}
+                    <br>
+                    {{ photo_form.photo }}
+                    {% if photo_form.photo.errors != [] %}
+                        {% for error in photo_form.photo.errors %}
+                             <span style="color: red;">{{ error }}</span>
+                         {% endfor %}
+                    {% endif %}
+                    <br>
+                    {{ photo_form.submit }}
+                </form>
+            {% endif %}
+
+            <br>
+            <br>
+            <input type="button" onclick="location.href='{{ url_for('logout') }}';" value="Log Out" />
+
         {% endif %}
     </body>
 </html>

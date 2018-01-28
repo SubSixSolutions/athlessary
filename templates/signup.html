@@ -6,6 +6,8 @@
 </head>
     <body>
         <form method="POST" action="{{ url_for('signup') }}">
+            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
             {% for field in form %}
                 <br>{{ field.label }} {% if field.flags.required %}*{% endif %}
                 {{ field }}
