@@ -11,9 +11,10 @@ from werkzeug.utils import secure_filename
 from wtforms import BooleanField, StringField, PasswordField, validators
 from wtforms import IntegerField, SubmitField, FileField
 from wtforms.validators import InputRequired, Length
-# import flask_resize
 
 from User.user import User
+
+# import flask_resize
 
 
 app = Flask(__name__)
@@ -57,7 +58,7 @@ conn = create_connection('athlessary-database.db')
 @login_manager.user_loader
 def load_user(user_id):
     cur = conn.cursor()
-    return User(user_id, cur)
+    return User(user_id)
 
 
 class SignUpForm(FlaskForm):
@@ -93,45 +94,13 @@ def signup():
     # if form is validated and method is post
     if request.method == 'POST' and form.validate():
 
-        # collect form data
-        username = form['username'].data
-        password = form['password'].data
-        address = form['address'].data
-        first = form['first'].data
-        last = form['last'].data
-        has_car = form['has_car'].data
-        num_seats = form['num_seats'].data
-
-        # hash password
-        hashed_pass = pbkdf2_sha256.encrypt(password, rounds=200000, salt_size=16)
-
-        # insert into db
-        cur = conn.cursor()
-        cur.execute('INSERT INTO users (username, first, last, password, address, has_car, num_seats)\n'
-                    'VALUES (?, ?, ?, ?, ?, ?, ?)', (username, first, last, hashed_pass, address, has_car, num_seats))
-        conn.commit()
-
-        # find the id of the user
-        sql = '''
-                      SELECT *
-                      FROM users
-                      WHERE username = ?
-                      '''
-
-        params = (username,)
-
-        cur = conn.cursor()
-        cur.execute(sql, params)
-
-        result = cur.fetchone()
-
         # log new user in
-        curr_user = User(result['id'], cur)
+        curr_user = User.user_from_form(form.data)
         login_user(curr_user)
 
         # redirect user to their new profile page
         flash('signed in!')
-        return redirect(url_for('profile_page', username=username))
+        return redirect(url_for('profile_page', username=current_user.username))
 
     # display sign up form
     return render_template('signup.html', form=form)
@@ -161,7 +130,7 @@ def login():
         hash = result['password']
         password_match = pbkdf2_sha256.verify(password, hash)
         if password_match:
-            curr_user = User(result['id'], cur)
+            curr_user = User(result['id'])
             login_user(curr_user)
             flash("LOGIN SUCCESSFUL")
             return redirect(url_for('profile_page', username=username))

@@ -1,15 +1,11 @@
+from Utils import hashes, db
+
+
 class User:
 
-    def __init__(self, user_id, cur, active=True):
-        sql = '''
-              SELECT *
-              FROM users
-              WHERE id = ?
-              '''
+    def __init__(self, user_id, active=True):
 
-        params = (user_id,)
-        cur.execute(sql, params)
-        result = cur.fetchone()
+        result = db.temp_select(user_id)
 
         # TODO what if the user id does not exist??
 
@@ -23,6 +19,27 @@ class User:
         self.num_seats = result['num_seats']
         self.user_id = user_id
         self.active = active
+
+    @classmethod
+    def user_from_form(cls, form_data, active=True):
+
+        first = form_data['first']
+        last = form_data['last']
+        username = form_data['username']
+        password = hashes.hash_password(form_data['password'])
+        address = form_data['address']
+        has_car = form_data['has_car']
+        num_seats = form_data['num_seats']
+
+        wanted_attrs = ['first', 'last', 'username', 'password', 'address', 'has_car', 'num_seats']
+        attr_dict = {x: form_data[x] for x in wanted_attrs}
+
+        col_names = attr_dict.keys()
+        col_vals = attr_dict.values()
+
+        user_id = db.insert('users', col_names, col_vals)
+
+        return cls(user_id, None)
 
     def __repr__(self):
         return '<User %s>' % self.username
