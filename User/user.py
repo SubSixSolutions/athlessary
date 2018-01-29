@@ -17,6 +17,10 @@ class User:
         self.last = result['last']
         self.username = result['username']
         self.password = result['password']
+        self.picture = result['picture']
+        self.address = result['address']
+        self.has_car = result['has_car']
+        self.num_seats = result['num_seats']
         self.user_id = user_id
         self.active = active
 

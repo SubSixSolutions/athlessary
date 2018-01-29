@@ -2,20 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sign-up</title>
-
+    <title>Title</title>
 </head>
-<body>
-
-    <form class="form-signup" action="{{ url_for('signup') }}" method="POST">
-        Username <input type="text" name="username" autofocus="true"><br>
-        First <input type="text" name="first"><br>
-        Last <input type="text" name="last"><br>
-        Password <input type="password" name="pw"><br>
-        Password again <input type="password" name="pw_again"><br>
-        <input type="submit" value="signup">
-    </form>
-
-
-</body>
+    <body>
+        <form method="POST" action="{{ url_for('signup') }}">
+            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
+            {% for field in form %}
+                <br>{{ field.label }} {% if field.flags.required %}*{% endif %}
+                {{ field }}
+                {% for error in field.errors %}
+                    {{ error }}
+                {% endfor %}
+                <br>
+            {% endfor %}
+            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
+        </form>
+    </body>
 </html>
