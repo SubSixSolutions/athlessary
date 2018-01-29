@@ -6,7 +6,12 @@
 </head>
 <body>
     {% for u in user_list %}
-    {{u}}<br>
+        {{u['username']}}
+        <br>
+        <a href="{{ url_for('profile_page', username=u['username']) }}">
+            <img src="{{ url_for('static', filename=u['picture']) }}" height="100" width="100">
+        </a>
+        <br><br>
     {% endfor %}
 </body>
 </html>

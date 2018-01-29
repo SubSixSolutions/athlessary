@@ -168,12 +168,7 @@ def login():
 @login_required
 def userlist():
     cur = conn.cursor()
-    cur.execute("SELECT password,\n"
-                "       id,\n"
-                "       first,\n"
-                "       last\n"
-                "      FROM users;\n"
-                "      ")
+    cur.execute("SELECT * FROM users ORDER BY username;")
     users = cur.fetchall()
 
     return render_template('userlist.html', user_list=users)
