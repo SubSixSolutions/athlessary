@@ -1,19 +1,19 @@
 import os
-from flask import Flask
-from flask_wtf import FlaskForm
+import sqlite3
+
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
+from flask_wtf import FlaskForm
 from flask_wtf.file import FileRequired, FileAllowed
 from passlib.hash import pbkdf2_sha256
-import sqlite3
-import hashlib, uuid
-from flask import Flask, render_template, request, redirect, url_for, send_file, flash, jsonify
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.utils import secure_filename
-from wtforms import StringField, TextField, RadioField, IntegerField, SelectField, SubmitField, PasswordField, \
-    BooleanField, FileField
+from wtforms import BooleanField, StringField, PasswordField, validators
+from wtforms import IntegerField, SubmitField, FileField
 from wtforms.validators import InputRequired, Length
+# import flask_resize
+
 from User.user import User
-from wtforms import Form, BooleanField, StringField, PasswordField, validators
 
 
 app = Flask(__name__)
@@ -21,11 +21,15 @@ app = Flask(__name__)
 app.secret_key = 'super secret string'  # Change this!
 app.debug = True
 app.config['UPLOADED_PHOTOS_DEST'] = os.getcwd()
+# app.config['RESIZE_URL'] = 'https://mysite.com/'
+# app.config['RESIZE_ROOT'] = 'static/images'
 
 
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 patch_request_class(app)  # set maximum file size, default is 16MB
+
+# resize = flask_resize.Resize(app)
 
 
 def dict_factory(cursor, row):
@@ -57,7 +61,7 @@ def load_user(user_id):
 
 
 class SignUpForm(FlaskForm):
-    username = StringField('username', validators=[Length(min=1, max=5, message="must be less than 5 chars"), InputRequired("must not be empty")])
+    username = StringField('username', validators=[Length(min=1, max=25, message="must be less than 5 chars"), InputRequired("must not be empty")])
     password = PasswordField('New Password', [
         validators.InputRequired(),
         validators.EqualTo('retype_pass', message='Passwords must match')
