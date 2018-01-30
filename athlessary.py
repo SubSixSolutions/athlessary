@@ -4,11 +4,11 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_uploads import configure_uploads, patch_request_class
 from passlib.hash import pbkdf2_sha256
-from werkzeug.utils import secure_filename
 
 import Forms.web_forms as web_forms
 from User.user import User
-from Utils.db import select, update
+from Utils.db import select
+from Utils.util_basic import save_photo
 
 app = Flask(__name__)
 # TODO Update secret key and move to external file
@@ -96,35 +96,8 @@ def profile_page(username):
         # check to see if user is trying to upload a photo
         if form.validate_on_submit():
 
-            # get the name of the photo
-            f = form.photo.data
-            filename = secure_filename(f.filename)
-            extension = filename.split('.')[-1]
-            name = 'profile.' + extension
-
-            # specify the directory
-            directory = os.getcwd() + '/static/images/%s' % current_user.user_id
-
-            # create directory if it does not exist
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-
-            # delete old file
-            if current_user.picture != 'images/defaults/profile.jpg':
-                try:
-                    os.remove(os.getcwd() + '/static/' + current_user.picture)
-                except OSError:
-                    pass
-
-            # save image out to disk
-            f.save(os.path.join(directory, filename))
-
-            # update current user
-            pic_location = 'images/%s/%s' % (current_user.user_id, filename)
-            current_user.picture = pic_location
-
-            # update the database
-            update('users', ['picture'], [pic_location], ['id'], [current_user.user_id])
+            # save file and update the current user
+            current_user.picture = save_photo(form, current_user)
 
             # TODO Should we commit the changes here? It won't hurt to commit them later
 
