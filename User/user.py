@@ -5,7 +5,7 @@ class User:
 
     def __init__(self, user_id, active=True):
 
-        result = db.temp_select(user_id)
+        result = db.select('users', ['ALL'], ['id'], [user_id])
 
         # TODO what if the user id does not exist??
 

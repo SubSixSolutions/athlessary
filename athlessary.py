@@ -1,5 +1,4 @@
 import os
-import sqlite3
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -13,6 +12,7 @@ from wtforms import IntegerField, SubmitField, FileField
 from wtforms.validators import InputRequired, Length
 
 from User.user import User
+from Utils.db import select, update
 
 # import flask_resize
 
@@ -32,32 +32,12 @@ patch_request_class(app)  # set maximum file size, default is 16MB
 
 # resize = flask_resize.Resize(app)
 
-
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
-
-
-def create_connection(db_file):
-    try:
-        conn = sqlite3.connect(db_file, check_same_thread=False)
-        conn.row_factory = dict_factory
-        return conn
-    except sqlite3.Error as e:
-        print(e)
-        return None
-
-
 login_manager = LoginManager()
 login_manager.init_app(app)
-conn = create_connection('athlessary-database.db')
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    cur = conn.cursor()
     return User(user_id)
 
 
@@ -114,18 +94,8 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        sql = '''
-              SELECT *
-              FROM users
-              WHERE username = ?
-              '''
+        result = select('users', ['password', 'id'], ['username'], [username])
 
-        params = (username,)
-
-        cur = conn.cursor()
-        cur.execute(sql, params)
-
-        result = cur.fetchone()
         print(result)
         hash = result['password']
         password_match = pbkdf2_sha256.verify(password, hash)
@@ -140,23 +110,13 @@ def login():
 @app.route('/userlist')
 @login_required
 def userlist():
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM users ORDER BY username;")
-    users = cur.fetchall()
+    users = select('users', ['ALL'], order_by=['username'])
 
     return render_template('userlist.html', user_list=users)
 
 
 @app.route('/')
 def hello_world():
-
-    cur = conn.cursor()
-    cur.execute('''SELECT password,
-         id,
-         first,
-         last
-    FROM users;''')
-    row = cur.fetchone()
     return "hi"
 
 
@@ -202,11 +162,9 @@ def profile_page(username):
             current_user.picture = pic_location
 
             # update the database
-            cur = conn.cursor()
-            cur.execute('''UPDATE users SET picture=? WHERE id=?''', (pic_location, current_user.user_id))
+            update('users', ['picture'], [pic_location], ['id'], [current_user.user_id])
 
             # TODO Should we commit the changes here? It won't hurt to commit them later
-            conn.commit()
 
         # render profile page
         return render_template('profile.html', photo_form=form)
