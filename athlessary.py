@@ -2,35 +2,22 @@ import os
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
-from flask_wtf import FlaskForm
-from flask_wtf.file import FileRequired, FileAllowed
+from flask_uploads import configure_uploads, patch_request_class
 from passlib.hash import pbkdf2_sha256
 from werkzeug.utils import secure_filename
-from wtforms import BooleanField, StringField, PasswordField, validators
-from wtforms import IntegerField, SubmitField, FileField
-from wtforms.validators import InputRequired, Length
 
+import Forms.web_forms as web_forms
 from User.user import User
 from Utils.db import select, update
-
-# import flask_resize
-
 
 app = Flask(__name__)
 # TODO Update secret key and move to external file
 app.secret_key = 'super secret string'  # Change this!
 app.debug = True
 app.config['UPLOADED_PHOTOS_DEST'] = os.getcwd()
-# app.config['RESIZE_URL'] = 'https://mysite.com/'
-# app.config['RESIZE_ROOT'] = 'static/images'
 
-
-photos = UploadSet('photos', IMAGES)
-configure_uploads(app, photos)
+configure_uploads(app, web_forms.photos)
 patch_request_class(app)  # set maximum file size, default is 16MB
-
-# resize = flask_resize.Resize(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -41,26 +28,6 @@ def load_user(user_id):
     return User(user_id)
 
 
-class SignUpForm(FlaskForm):
-    username = StringField('username', validators=[Length(min=1, max=25, message="must be less than 5 chars"), InputRequired("must not be empty")])
-    password = PasswordField('New Password', [
-        validators.InputRequired(),
-        validators.EqualTo('retype_pass', message='Passwords must match')
-    ])
-    retype_pass = PasswordField('retype password')
-    address = StringField('address', validators=[validators.InputRequired()])
-    first = StringField('first name', validators=[validators.InputRequired()])
-    last = StringField('last name', validators=[validators.InputRequired()])
-    has_car = BooleanField('do you have a car?', validators=[validators.InputRequired()])
-    num_seats = IntegerField('num seats', validators=[validators.InputRequired()])
-    submit = SubmitField(u'Create Account')
-
-
-class PhotoForm(FlaskForm):
-    photo = FileField('Update Your Profile Pic', validators=[FileAllowed(photos, u'Image only!'), FileRequired(u'File was empty!')])
-    submit = SubmitField(u'Upload')
-
-
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     """
@@ -69,7 +36,7 @@ def signup():
     """
 
     # form to handle sign up
-    form = SignUpForm()
+    form = web_forms.SignUpForm()
 
     # if form is validated and method is post
     if request.method == 'POST' and form.validate():
@@ -86,7 +53,7 @@ def signup():
     return render_template('signup.html', form=form)
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/', methods=['POST', 'GET'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -104,7 +71,7 @@ def login():
             login_user(curr_user)
             flash("LOGIN SUCCESSFUL")
             return redirect(url_for('profile_page', username=username))
-        return "go back and try again"
+        return render_template('login.html')
 
 
 @app.route('/userlist')
@@ -113,11 +80,6 @@ def userlist():
     users = select('users', ['ALL'], order_by=['username'])
 
     return render_template('userlist.html', user_list=users)
-
-
-@app.route('/')
-def hello_world():
-    return "hi"
 
 
 @app.route('/<username>', methods=['POST', 'GET'])
@@ -129,7 +91,7 @@ def profile_page(username):
     if username == current_user.username:
 
         # create photo form
-        form = PhotoForm()
+        form = web_forms.PhotoForm()
 
         # check to see if user is trying to upload a photo
         if form.validate_on_submit():
