@@ -1,11 +1,14 @@
-from Utils import hashes, db
+from Utils import hashes
+from Utils.db import Database
 
 
 class User:
 
+    db = Database("athlessary-database.db")
+
     def __init__(self, user_id, active=True):
 
-        result = db.select('users', ['ALL'], ['id'], [user_id])
+        result = self.db.select('users', ['ALL'], ['id'], [user_id])
 
         # TODO what if the user id does not exist??
 
@@ -37,7 +40,7 @@ class User:
         col_names = attr_dict.keys()
         col_vals = attr_dict.values()
 
-        user_id = db.insert('users', col_names, col_vals)
+        user_id = cls.db.insert('users', col_names, col_vals)
 
         return cls(user_id, None)
 
