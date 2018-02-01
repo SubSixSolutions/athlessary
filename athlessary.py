@@ -7,7 +7,7 @@ from passlib.hash import pbkdf2_sha256
 
 import Forms.web_forms as web_forms
 from User.user import User
-from Utils.db import select
+from Utils.db import Database
 from Utils.util_basic import save_photo
 
 app = Flask(__name__)
@@ -21,6 +21,8 @@ patch_request_class(app)  # set maximum file size, default is 16MB
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+db = Database("athlessary-database.db")
 
 
 @login_manager.user_loader
@@ -61,7 +63,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        result = select('users', ['password', 'id'], ['username'], [username])
+        result = db.select('users', ['password', 'id'], ['username'], [username])
 
         print(result)
         hash = result['password']
@@ -77,7 +79,7 @@ def login():
 @app.route('/userlist')
 @login_required
 def userlist():
-    users = select('users', ['ALL'], order_by=['username'])
+    users = db.select('users', ['ALL'], order_by=['username'])
 
     return render_template('userlist.html', user_list=users)
 
