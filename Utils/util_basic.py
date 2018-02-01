@@ -2,10 +2,8 @@ import os
 
 from werkzeug.utils import secure_filename
 
-from Utils.db import update
 
-
-def save_photo(form, current_user):
+def save_photo(db, form, current_user):
     """
     takes form data and the current user
     :param form: data from the flask photo form
@@ -39,7 +37,7 @@ def save_photo(form, current_user):
     pic_location = 'images/%s/%s' % (current_user.user_id, filename)
 
     # update the database
-    update('users', ['picture'], [pic_location], ['id'], [current_user.user_id])
+    db.update('users', ['picture'], [pic_location], ['id'], [current_user.user_id])
 
     # return location to update the current user
     return pic_location

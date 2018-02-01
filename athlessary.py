@@ -8,7 +8,6 @@ from passlib.hash import pbkdf2_sha256
 import Forms.web_forms as web_forms
 from User.user import User
 from Utils.db import Database
-from Utils.util_basic import save_photo
 
 app = Flask(__name__)
 # TODO Update secret key and move to external file
@@ -99,7 +98,7 @@ def profile_page(username):
         if form.validate_on_submit():
 
             # save file and update the current user
-            current_user.picture = save_photo(form, current_user)
+            current_user.change_profile_picture(form)
 
             # TODO Should we commit the changes here? It won't hurt to commit them later
 

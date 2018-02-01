@@ -1,3 +1,7 @@
+import os
+
+from werkzeug.utils import secure_filename
+
 from Utils import hashes
 from Utils.db import Database
 
@@ -26,13 +30,9 @@ class User:
     @classmethod
     def user_from_form(cls, form_data, active=True):
 
-        first = form_data['first']
-        last = form_data['last']
-        username = form_data['username']
-        password = hashes.hash_password(form_data['password'])
-        address = form_data['address']
-        has_car = form_data['has_car']
-        num_seats = form_data['num_seats']
+        form_data['password'] = hashes.hash_password(form_data['password'])
+
+        print(form_data['password'])
 
         wanted_attrs = ['first', 'last', 'username', 'password', 'address', 'has_car', 'num_seats']
         attr_dict = {x: form_data[x] for x in wanted_attrs}
@@ -58,3 +58,43 @@ class User:
 
     def get_id(self):
         return str(self.user_id)
+
+    def change_profile_picture(self, form):
+        """
+        takes form data and the current user
+        :param form: data from the flask photo form
+        :param current_user: pointer to the current user
+        :return:
+        """
+        # get the name of the photo
+        f = form.photo.data
+        filename = secure_filename(f.filename)
+        extension = filename.split('.')[-1]
+        name = 'profile.' + extension
+
+        # specify the directory
+        directory = os.getcwd() + '/static/images/%s' % self.user_id
+
+        # create directory if it does not exist
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        # delete old file
+        if self.picture != 'images/defaults/profile.jpg':
+            try:
+                os.remove(os.getcwd() + '/static/' + self.picture)
+            except OSError:
+                pass
+
+        # save image out to disk
+        f.save(os.path.join(directory, filename))
+
+        # update current user
+        pic_location = 'images/%s/%s' % (self.user_id, filename)
+        self.picture = pic_location
+
+        # update the database
+        self.db.update('users', ['picture'], [pic_location], ['id'], [self.user_id])
+
+        # return location to update the current user
+        return pic_location
