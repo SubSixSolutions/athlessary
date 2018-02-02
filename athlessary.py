@@ -111,7 +111,15 @@ def profile_page(username):
 @login_required
 def logout():
     logout_user()
-    return redirect('login')
+    print("LOGGING OUT")
+    return redirect(url_for('login'))
+
+
+@app.route('/add_workout')
+@login_required
+def add_workout():
+    return render_template('workout.html')
+
 
 
 if __name__ == '__main__':
