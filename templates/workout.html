@@ -5,37 +5,71 @@
         <title>Title</title>
     </head>
     <body>
-      <script src="/wp-includes/js/addInput.js" language="Javascript" type="text/javascript"></script>
-      <form method="POST">
-          <div class="">
+      <form method="POST" id="myForm">
+        <h1>Add a Workout</h1>
+          <div id="piece_count">
             Number of Pieces <br>
             <input type="number" name="" value="" id="num_pieces">
+            <span>BY</span>
+            <input type="number" name="" value="" id="default_val">
+            <span id="default_val_div"></span>
+            <input type="radio" name="workout_type" value="Distance" checked onclick="hide_me()">
+            <span>Meters</span>
+            <input type="radio" name="workout_type" value="Length" id="len" onclick="show_me()">
+            <span>Time</span><br>
           </div>
-           <div id="dynamicInput">
-                Entry 1<br><input type="text" name="myInputs[]">
-           </div>
-           <input type="button" value="Add another text input" onClick="addInput('dynamicInput');">
+          <input type="button" value="Add Pieces" onClick="addInput('add_pieces');">
+          <div id="add_pieces">
+            <!-- Pieces go here -->
+          </div>
       </form>
     </body>
     <script type="text/javascript">
-      var counter = 1;
-      var limit = 3;
+      function show_me(){
+        var span = document.createElement('span');
+        span.innerHTML = ":<input type='number' name='' value='00' id='default_val_1'>"
+        document.getElementById('default_val_div').appendChild(span);
+        return;
+      }
+
+      function hide_me(){
+        let elem = document.getElementById("default_val_div");
+        if (elem) {
+          elem.innerHTML = '';
+        }
+      }
+
       function addInput(divName){
-        let value = document.getElementById("num_pieces").value;
-        window.alert(value);
-         if (counter == limit)  {
-              alert("You have reached the limit of adding " + counter + " inputs");
-         }
-         else {
-              var newdiv = document.createElement('div');
-              newdiv.innerHTML = "Entry " + (counter + 1) + " <br><input type='text' name='myInputs[]'>";
-              document.getElementById(divName).appendChild(newdiv);
-              counter++;
-         }
+        var value = document.getElementById("num_pieces").value;
+        var w_type = document.querySelector("input[name=workout_type]:checked").value;
+        var d_value = document.getElementById("default_val").value;
+
+        // verify that the 'BY' section is specified
+        if (d_value == ''){
+          if (w_type != 'Length' || document.getElementById("default_val_1").value == 0){
+            var span = document.createElement('span');
+            span.style.color = 'red';
+            span.innerHTML = "*"
+            document.getElementById('default_val_div').appendChild(span);
+            return;
+          }
+        }
+
+        // add inputs
          for (i = 0; i < value; i++) {
-           var newdiv = document.createElement('div');
-           newdiv.innerHTML = "Entry " + (counter + 1) + " <br><input type='text' name='myInputs[]'>";
-           document.getElementById(divName).appendChild(newdiv);
+           if (w_type == 'Length'){
+             var newdiv = document.createElement('div');
+             var d_value_1 = document.getElementById("default_val_1").value;
+             newdiv.innerHTML = "Piece " + (i + 1) + " <br><span>Time</span><input type='number' value='" + d_value +
+              "' name=''>:<input type='number' value='" + d_value_1 + "'><span>Meters</span><input type='number'>";
+             document.getElementById(divName).appendChild(newdiv);
+           }
+           else {
+             var newdiv = document.createElement('div');
+             newdiv.innerHTML = "Piece " + (i + 1) + " <br><span>Time</span><input type='number'" +
+              "name='myInputs[]'>:<input type='number'><span>Meters</span><input type='number' value='" + d_value + "'>";
+             document.getElementById(divName).appendChild(newdiv);
+           }
         }
       }
     </script>
