@@ -3,78 +3,26 @@
     <head>
         <meta charset="UTF-8">
         <title>Title</title>
+        <script src="{{ url_for('static', filename='js/workout.js') }}"></script>
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     </head>
     <body>
+      <h1>Add a Workout</h1>
       <form method="POST" id="myForm">
-        <h1>Add a Workout</h1>
-          <div id="piece_count">
-            Number of Pieces <br>
-            <input type="number" name="" value="" id="num_pieces">
-            <span>BY</span>
-            <input type="number" name="" value="" id="default_val">
-            <span id="default_val_div"></span>
-            <input type="radio" name="workout_type" value="Distance" checked onclick="hide_me()">
-            <span>Meters</span>
-            <input type="radio" name="workout_type" value="Length" id="len" onclick="show_me()">
-            <span>Time</span><br>
-          </div>
-          <input type="button" value="Add Pieces" onClick="addInput('add_pieces');">
+        <span>Number of Pieces</span>
+        <input type="number" value="1" id="num_pieces">
+        <span>BY</span>
+        <span id="default_val_div">
+          <input type="number" name="" value="2000" id="deflt_val">
+        </span>
+        <input type="radio" name="workout_type" value="Distance" checked onclick="hide_me('default_val_div')">
+        <span>Meters</span>
+        <input type="radio" name="workout_type" value="Length" id="len" onclick="show_me('default_val_div', 'seconds')">
+        <span>Time</span><br>
+        <input type="button" value="Add Pieces" onClick="addInput('add_pieces', 'num_pieces', 'deflt_val', 'seconds');">
       </form>
       <form action="{{ url_for('add_workout') }}" method="POST" id="add_pieces">
           <!-- Pieces go here -->
       </form>
     </body>
-    <script type="text/javascript">
-      function show_me(){
-        var span = document.createElement('span');
-        span.innerHTML = ":<input type='number' name='' value='00' id='default_val_1'>"
-        document.getElementById('default_val_div').appendChild(span);
-        return;
-      }
-
-      function hide_me(){
-        var elem = document.getElementById("default_val_div");
-        if (elem) {
-          elem.innerHTML = '';
-        }
-      }
-
-      function addInput(divName){
-        var value = document.getElementById("num_pieces").value;
-        var w_type = document.querySelector("input[name=workout_type]:checked").value;
-        var d_value = document.getElementById("default_val").value;
-
-        // verify that the 'BY' section is specified
-        if (d_value == ''){
-          if (w_type != 'Length' || document.getElementById("default_val_1").value == 0){
-            var span = document.createElement('span');
-            span.style.color = 'red';
-            span.innerHTML = "*"
-            document.getElementById('default_val_div').appendChild(span);
-            return;
-          }
-        }
-
-        // add inputs
-         for (i = 0; i < value; i++) {
-             var newdiv = document.createElement('div');
-             if (w_type == 'Length'){
-                 var d_value_1 = document.getElementById("default_val_1").value;
-                 newdiv.innerHTML = "Piece " + (i + 1) + " <br><span>Time</span><input type='number' value='" + d_value +
-                  "' name='minutes'>:<input type='number' value='" + d_value_1 + "' name='seconds'><span>Meters</span><input type='number' name='meters'>";
-                 document.getElementById(divName).appendChild(newdiv);
-             }
-             else {
-                 newdiv.innerHTML = "Piece " + (i + 1) + " <br><span>Time</span><input type='number'" +
-                  "name='minutes'>:<input type='number' name='seconds'><span>Meters</span><input type='number' name='meters' value='" + d_value + "'>";
-                 document.getElementById(divName).appendChild(newdiv);
-             }
-         }
-         // submit button
-          var submit_div = document.createElement('div');
-          submit_div.innerHTML = "<br><input type='submit' value='Save Workout'>"
-          document.getElementById(divName).appendChild(submit_div);
-
-      }
-    </script>
 </html>
