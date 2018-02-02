@@ -1,4 +1,5 @@
 import os
+import time
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -115,11 +116,29 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/add_workout')
+@app.route('/add_workout', methods=['GET', 'POST'])
 @login_required
 def add_workout():
-    return render_template('workout.html')
+    if request.method == 'POST':
 
+        # TODO implement other workouts
+
+        # get the parameters from the form
+        meters = request.form.getlist('meters')
+        minutes = request.form.getlist('minutes')
+        seconds = request.form.getlist('seconds')
+
+        utc_date_stamp = time.time()
+
+        # create workout
+        workout_id = db.insert('workout', ['user_id', 'time'], [current_user.user_id, utc_date_stamp])
+
+        # create erg workout
+        for meter, minute, second in zip(meters, minutes, seconds):
+            db.insert('erg', ['workout_id', 'distance', 'minutes', 'seconds'], [workout_id, meter, minute, second])
+
+        return redirect(url_for('profile_page', username=current_user.username))
+    return render_template('workout.html')
 
 
 if __name__ == '__main__':

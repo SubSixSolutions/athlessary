@@ -58,7 +58,7 @@ class Database:
         :param table_name: name of hte table to insert into
         :param col_names: the names of the columns
         :param col_params: the data to insert
-        :return: return the user ID
+        :return: return the ID
         """
 
         col_to_str = ', '.join(col_names)
