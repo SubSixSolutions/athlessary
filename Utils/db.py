@@ -187,3 +187,19 @@ class Database:
         cur.execute(sql, params)
 
         self.conn.commit()
+
+    def get_workouts(self, user_id):
+        cur = self.conn.cursor()
+
+        sql = 'SELECT * ' \
+              'FROM workout as w ' \
+              'JOIN erg as e ' \
+              'ON e.workout_id = w.workout_id ' \
+              'WHERE w.user_id=?'
+
+        #cur.execute('SELECT * FROM erg ORDER BY workout_id')
+        #print(cur.fetchall())
+
+        cur.execute(sql, tuple(user_id))
+
+        return cur.fetchall()

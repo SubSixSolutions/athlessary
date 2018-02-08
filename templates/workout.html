@@ -10,12 +10,12 @@
       <h1>Add a Workout</h1>
       <form method="POST" id="myForm">
         <span>Number of Pieces</span>
-        <input type="number" value="1" id="num_pieces">
+        <input type="number" value="1" id="num_pieces" style="width: 50px;">
         <span>BY</span>
         <span id="default_val_div">
-          <input type="number" name="" value="2000" id="deflt_val">
+          <input type="number" name="" value="2000" id="deflt_val" style="width: 50px;">
         </span>
-        <input type="radio" name="workout_type" value="Distance" checked onclick="hide_me('default_val_div')">
+        <input type="radio" name="workout_type" value="Distance" checked onclick="hide_me('_new')">
         <span>Meters</span>
         <input type="radio" name="workout_type" value="Length" id="len" onclick="show_me('default_val_div', 'seconds')">
         <span>Time</span><br>
@@ -24,5 +24,21 @@
       <form action="{{ url_for('add_workout') }}" method="POST" id="add_pieces">
           <!-- Pieces go here -->
       </form>
+      <h1>Your Workouts</h1>
+      <div>
+          {% with ns = namespace(foo=workouts[0]['workout_id']) %}
+              {% for i in workouts %}
+                {% if i['workout_id'] != ns.foo %}
+                    {% set ns.foo = i['workout_id'] %}
+                    <br>
+                {% endif %}
+                    <div>
+                      {{ i['distance'] }}m
+                      <span>in</span>
+                      {{ i['minutes'] }}:{% if i['seconds'] < 10 %}0{% endif %}{{ i['seconds'] }}
+                    </div>
+              {% endfor %}
+          {% endwith %}
+      </div>
     </body>
 </html>

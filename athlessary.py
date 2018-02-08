@@ -138,7 +138,11 @@ def add_workout():
             db.insert('erg', ['workout_id', 'distance', 'minutes', 'seconds'], [workout_id, meter, minute, second])
 
         return redirect(url_for('profile_page', username=current_user.username))
-    return render_template('workout.html')
+
+    workouts = db.get_workouts(current_user.user_id)
+    print(workouts)
+
+    return render_template('workout.html', workouts=workouts)
 
 
 if __name__ == '__main__':
