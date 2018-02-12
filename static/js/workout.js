@@ -78,19 +78,18 @@ function addInput(form_name, pieces, mtrs_mins, secs){
         return;
     }
 
-    // document.getElementById('rad1').disabled = true;
-    // document.getElementById('rad2').disabled = true;
-
     // add inputs
     for (var i = 0; i < num_pieces; i++) {
         var newdiv = document.createElement('div');
         if (w_type == 'Length'){
+            document.getElementById('rad1').disabled = true;
             var d_value_1 = document.getElementById(secs).value;
             newdiv.innerHTML = "<br>Piece " + (i + 1) + " <br><span>Time</span><input style='width:50px;' type='number' value='" + meter_minutes +
                 "' name='minutes'>:<input style='width: 50px;' type='number' value='" + d_value_1 + "' name='seconds'>" +
                 "<span>Meters</span><input style='width: 50px;' type='number' name='meters'>";
         }
         else {
+            document.getElementById('rad2').disabled = true;
             newdiv.innerHTML = "<br>Piece " + (i + 1) + " <br><span>Time</span><input type='number' style='width:50px;'" +
                 "name='minutes'>:<input style='width:50px;' type='number' name='seconds'><span>Meters</span>" +
                 "<input style='width:50px;' type='number' name='meters' value='" + meter_minutes + "'>";
