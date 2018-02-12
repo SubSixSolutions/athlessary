@@ -41,14 +41,23 @@ function show_incomplete(bad_elem){
 }
 
 function reset_form(form_name){
+    // clear html content
     document.getElementById(form_name).innerHTML = '';
+
+    // reset radio buttons
     document.getElementById('rad1').disabled = false;
     document.getElementById('rad2').disabled = false;
+
+    // display submit button
+    document.getElementById('add_bttn').style.display = 'block';
 }
 
 function addInput(form_name, pieces, mtrs_mins, secs){
     // clear current content
     document.getElementById(form_name).innerHTML = '';
+
+    // hide add pieces button
+    document.getElementById('add_bttn').style.display = 'none';
 
     var num_pieces = document.getElementById(pieces).value;
     var w_type = document.querySelector("input[name=workout_type]:checked").value;
@@ -69,8 +78,8 @@ function addInput(form_name, pieces, mtrs_mins, secs){
         return;
     }
 
-    document.getElementById('rad1').disabled = true;
-    document.getElementById('rad2').disabled = true;
+    // document.getElementById('rad1').disabled = true;
+    // document.getElementById('rad2').disabled = true;
 
     // add inputs
     for (var i = 0; i < num_pieces; i++) {

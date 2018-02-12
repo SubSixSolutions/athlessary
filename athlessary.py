@@ -128,13 +128,23 @@ def add_workout():
         minutes = request.form.getlist('minutes')
         seconds = request.form.getlist('seconds')
 
-        print(request.form.getlist('workout_type'))
-        print(request.form.get('rad2'))
+        print(request.form.get('workout_type'))
+
+        by_distance = False
+        if request.form.get('workout_type') == 'Distance':
+            by_distance = True
 
         utc_date_stamp = time.time()
 
+        name = str(len(meters)) + 'x'
+        if by_distance:
+            name += str(meters[0]) + 'm'
+        else:
+            name += str(minutes[0]) + 'min'
+
         # create workout
-        workout_id = db.insert('workout', ['user_id', 'time'], [current_user.user_id, utc_date_stamp])
+        workout_id = db.insert('workout', ['user_id', 'time', 'by_distance', 'name'],
+                               [current_user.user_id, utc_date_stamp, by_distance, name])
 
         # create erg workout
         for meter, minute, second in zip(meters, minutes, seconds):
