@@ -128,6 +128,9 @@ def add_workout():
         minutes = request.form.getlist('minutes')
         seconds = request.form.getlist('seconds')
 
+        print(request.form.getlist('workout_type'))
+        print(request.form.get('rad2'))
+
         utc_date_stamp = time.time()
 
         # create workout

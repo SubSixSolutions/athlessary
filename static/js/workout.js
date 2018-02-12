@@ -40,6 +40,12 @@ function show_incomplete(bad_elem){
     }
 }
 
+function reset_form(form_name){
+    document.getElementById(form_name).innerHTML = '';
+    document.getElementById('rad1').disabled = false;
+    document.getElementById('rad2').disabled = false;
+}
+
 function addInput(form_name, pieces, mtrs_mins, secs){
     // clear current content
     document.getElementById(form_name).innerHTML = '';
@@ -47,6 +53,8 @@ function addInput(form_name, pieces, mtrs_mins, secs){
     var num_pieces = document.getElementById(pieces).value;
     var w_type = document.querySelector("input[name=workout_type]:checked").value;
     var meter_minutes = document.getElementById(mtrs_mins).value;
+
+    document.getElementById(form_name).innerHTML = '';
 
     // verify that the 'BY' section is specified
     if (meter_minutes == ''){
@@ -57,8 +65,12 @@ function addInput(form_name, pieces, mtrs_mins, secs){
     }
 
     if (num_pieces == ''){
-        window.alert('HI');
+        show_incomplete('num_pieces_span');
+        return;
     }
+
+    document.getElementById('rad1').disabled = true;
+    document.getElementById('rad2').disabled = true;
 
     // add inputs
     for (var i = 0; i < num_pieces; i++) {
@@ -77,9 +89,10 @@ function addInput(form_name, pieces, mtrs_mins, secs){
         document.getElementById(form_name).appendChild(newdiv);
     }
 
-    // submit button
+    // submit and reset buttons
     var submit_div = document.createElement('div');
-    submit_div.innerHTML = "<br><input type='submit' value='Save Workout'>";
+    submit_div.innerHTML = "<br><input type='submit' value='Save Workout'><input type='button' value='Reset'" +
+        "onClick=\"reset_form(\'" + form_name + "\')\">";
     document.getElementById(form_name).appendChild(submit_div);
 
 }
