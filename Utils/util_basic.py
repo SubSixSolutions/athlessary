@@ -1,4 +1,5 @@
 import os
+import time
 
 from werkzeug.utils import secure_filename
 
@@ -6,6 +7,7 @@ from werkzeug.utils import secure_filename
 def save_photo(db, form, current_user):
     """
     takes form data and the current user
+    :param db: data base object to connect to
     :param form: data from the flask photo form
     :param current_user: pointer to the current user
     :return:
@@ -41,3 +43,28 @@ def save_photo(db, form, current_user):
 
     # return location to update the current user
     return pic_location
+
+
+def create_workout(user_id, db, meters, minutes, seconds, by_distance):
+    # TODO should this be a part of user??
+
+    # get time stamp
+    utc_date_stamp = time.time()
+
+    # name the piece
+    name = str(len(meters)) + 'x'
+    if by_distance:
+        name += str(meters[0]) + 'm'
+    else:
+        if int(minutes[0]) > 0:
+            name += str(minutes[0]) + 'min'
+        else:
+            name += str(seconds[0]) + 'sec'
+
+    # create workout
+    workout_id = db.insert('workout', ['user_id', 'time', 'by_distance', 'name'],
+                           [user_id, utc_date_stamp, by_distance, name])
+
+    # create erg workout
+    for meter, minute, second in zip(meters, minutes, seconds):
+        db.insert('erg', ['workout_id', 'distance', 'minutes', 'seconds'], [workout_id, meter, minute, second])

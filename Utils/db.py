@@ -35,9 +35,10 @@ class Database:
             return True
         return False
 
-    def init_tables(self):
-        # TODO: clean up this query
-        query = '''   CREATE TABLE IF NOT EXISTS [users] (
+    def create_users(self):
+        cur = self.conn.cursor()
+
+        sql = '''CREATE TABLE IF NOT EXISTS [users] (
                     password  STRING (1, 50),
                     id        INTEGER        PRIMARY KEY AUTOINCREMENT,
                     first     STRING (1, 20) NOT NULL,
@@ -49,9 +50,51 @@ class Database:
                     picture   BLOB           DEFAULT ('images/defaults/profile.jpg')
                     ); '''
 
-        cur = self.conn.cursor()
-        cur.execute(query)
+        cur.execute(sql)
         self.conn.commit()
+        cur.close()
+
+    def create_workouts(self):
+        cur = self.conn.cursor()
+
+        sql = '''CREATE TABLE IF NOT EXISTS workout (
+                    workout_id  INTEGER        PRIMARY KEY AUTOINCREMENT,
+                    user_id     INTEGER        NOT NULL,
+                    time        INTEGER        NOT NULL,
+                    by_distance BOOLEAN        NOT NULL,
+                    name        STRING (2, 20) NOT NULL
+                );'''
+
+        cur.execute(sql)
+        self.conn.commit()
+        cur.close()
+
+    def create_erg(self):
+        cur = self.conn.cursor()
+
+        sql = '''CREATE TABLE IF NOT EXISTS erg (
+                    erg_id     INTEGER NOT NULL
+                    PRIMARY KEY AUTOINCREMENT,
+                    workout_id INTEGER NOT NULL,
+                    distance   INTEGER NOT NULL,
+                    minutes    INTEGER NOT NULL,
+                    seconds    INTEGER NOT NULL
+                    );'''
+
+        cur.execute(sql)
+
+        self.conn.commit()
+
+        cur.close()
+
+    def init_tables(self):
+        # TODO: clean up this query
+
+        self.create_users()
+
+        self.create_workouts()
+
+        self.create_erg()
 
     def insert(self, table_name, col_names, col_params):
         """
@@ -68,7 +111,7 @@ class Database:
         sql = 'INSERT INTO %s (%s) VALUES (%s)' % (table_name, col_to_str, q_marks)
 
         cur = self.conn.cursor()
-        print('getting the execute ret val')
+
         row_id = cur.execute(sql, params_tuple).lastrowid
         self.conn.commit()
         cur.close()
@@ -197,9 +240,40 @@ class Database:
               'ON e.workout_id = w.workout_id ' \
               'WHERE w.user_id=?'
 
-        #cur.execute('SELECT * FROM erg ORDER BY workout_id')
-        #print(cur.fetchall())
+        cur.execute(sql, tuple(user_id))
+
+        result = cur.fetchall()
+        cur.close()
+        return result
+
+    def get_aggregate_workouts_by_name(self, user_id, workout_name):
+        cur = self.conn.cursor()
+
+        sql = 'SELECT w.by_distance, AVG(e.distance) AS distance, ' \
+              'AVG((e.minutes*60)+e.seconds) AS total_seconds, ' \
+              'w.time ' \
+              'FROM workout as w ' \
+              'JOIN erg as e ' \
+              'ON e.workout_id = w.workout_id ' \
+              'WHERE w.user_id=? ' \
+              'AND w.name=? ' \
+              'GROUP BY e.workout_id'
+
+        cur.execute(sql, (user_id, workout_name))
+
+        result = cur.fetchall()
+        cur.close()
+        return result
+
+    def find_all_workout_names(self, user_id):
+        cur = self.conn.cursor()
+
+        sql = '''SELECT DISTINCT name
+                 FROM workout
+                 WHERE user_id=?'''
 
         cur.execute(sql, tuple(user_id))
 
-        return cur.fetchall()
+        result = cur.fetchall()
+        cur.close()
+        return result

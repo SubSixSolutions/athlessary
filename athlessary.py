@@ -1,7 +1,8 @@
+import datetime
 import os
-import time
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, Response
+from flask import json
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_uploads import configure_uploads, patch_request_class
 from passlib.hash import pbkdf2_sha256
@@ -9,6 +10,7 @@ from passlib.hash import pbkdf2_sha256
 import Forms.web_forms as web_forms
 from User.user import User
 from Utils.db import Database
+from Utils.util_basic import create_workout
 
 app = Flask(__name__)
 # TODO Update secret key and move to external file
@@ -42,7 +44,6 @@ def signup():
 
     # if form is validated and method is post
     if request.method == 'POST' and form.validate():
-
         # log new user in
         curr_user = User.user_from_form(form.data)
         login_user(curr_user)
@@ -87,7 +88,6 @@ def userlist():
 @app.route('/<username>', methods=['POST', 'GET'])
 @login_required
 def profile_page(username):
-
     # TODO more elegant solution to not found page
 
     if username == current_user.username:
@@ -97,7 +97,6 @@ def profile_page(username):
 
         # check to see if user is trying to upload a photo
         if form.validate_on_submit():
-
             # save file and update the current user
             current_user.change_profile_picture(form)
 
@@ -128,34 +127,57 @@ def add_workout():
         minutes = request.form.getlist('minutes')
         seconds = request.form.getlist('seconds')
 
-        print(request.form.get('workout_type'))
-
+        # is workout by distance or by time?
         by_distance = False
         if request.form.get('workout_type') == 'Distance':
             by_distance = True
 
-        utc_date_stamp = time.time()
-
-        name = str(len(meters)) + 'x'
-        if by_distance:
-            name += str(meters[0]) + 'm'
-        else:
-            name += str(minutes[0]) + 'min'
-
-        # create workout
-        workout_id = db.insert('workout', ['user_id', 'time', 'by_distance', 'name'],
-                               [current_user.user_id, utc_date_stamp, by_distance, name])
-
-        # create erg workout
-        for meter, minute, second in zip(meters, minutes, seconds):
-            db.insert('erg', ['workout_id', 'distance', 'minutes', 'seconds'], [workout_id, meter, minute, second])
+        # add workout to database
+        create_workout(current_user.user_id, db, meters, minutes, seconds, by_distance)
 
         return redirect(url_for('profile_page', username=current_user.username))
 
     workouts = db.get_workouts(current_user.user_id)
-    print(workouts)
 
     return render_template('workout.html', workouts=workouts)
+
+
+@app.route("/chart")
+def chart():
+
+    workout_names = db.find_all_workout_names(current_user.user_id)
+    return render_template('chart.html', workouts=workout_names)
+
+
+@app.route('/api_hello', methods=['GET', 'POST'])
+def api_hello():
+
+    if request.method == 'POST':
+        workout_name = request.form['share']
+        results = db.get_aggregate_workouts_by_name(current_user.user_id, workout_name)
+    else:
+        results = db.get_aggregate_workouts_by_name(current_user.user_id, '5x5min')
+
+    data_arr = []
+    label_arr = []
+
+    for res in results:
+        print(res['by_distance'])
+        if res['by_distance'] == 0:
+            data_arr.append(res['distance'])
+        else:
+            data_arr.append(res['total_seconds']/float(60))
+        label_arr.append(datetime.datetime.fromtimestamp(res['time']).strftime('%Y-%m-%d %H:%M:%S'))
+
+    data = {
+        'data': data_arr,
+        'labels': label_arr
+    }
+    js = json.dumps(data)
+
+    resp = Response(js, status=200, mimetype='application/json')
+
+    return resp
 
 
 if __name__ == '__main__':

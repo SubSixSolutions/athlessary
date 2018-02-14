@@ -1,11 +1,17 @@
 import unittest
 
 from Utils.db import Database
+from Utils.util_basic import create_workout
+
+# It's okay that this doesn't exist because the database initializer ensures it's setup properly
+db = Database("test-database.db")
 
 
-class TestDB(unittest.TestCase):
+class TestAutoDB(unittest.TestCase):
+    """
+    Test automated insert, select, and update sql creation
+    """
 
-    # It's okay that this doesn't exist because the database initializer ensures it's setup properly
     db = Database("test-database.db")
 
     def test_clean_database_begin(self):
@@ -128,3 +134,25 @@ class TestDB(unittest.TestCase):
         rows = self.db.select('users', ['id'], fetchone=False)
         self.assertEqual([], rows, 'not all deleted!!')
         print(rows)
+
+
+class TestDBSpecific(unittest.TestCase):
+
+    def test_aggregate_workouts(self):
+        # add user
+        sample_col_names = ['username', 'first', 'last', 'password', 'address', 'has_car', 'num_seats']
+        sample_data = ['h1i', 'hello', 'bye', '123', '1 east green', True, 3]
+        table = 'users'
+        row_id = db.insert(table, sample_col_names, sample_data)
+
+        # add workout
+        meters = [2000, 2000]
+        minutes = [6, 7]
+        seconds = [58, 1]
+        by_distance = True
+        create_workout(row_id, db, meters, minutes, seconds, by_distance)
+
+        res = db.get_aggregate_workouts_by_name(row_id, '2x2000m')
+        print(res)
+        self.assertIsNotNone(res, 'result should not be none')
+        self.assertEqual(res[0]['total_seconds'], 419.5, 'seconds are wrong')
