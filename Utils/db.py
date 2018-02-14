@@ -82,18 +82,14 @@ class Database:
                     );'''
 
         cur.execute(sql)
-
         self.conn.commit()
-
         cur.close()
 
     def init_tables(self):
         # TODO: clean up this query
 
         self.create_users()
-
         self.create_workouts()
-
         self.create_erg()
 
     def insert(self, table_name, col_names, col_params):
@@ -240,7 +236,7 @@ class Database:
               'ON e.workout_id = w.workout_id ' \
               'WHERE w.user_id=?'
 
-        cur.execute(sql, tuple(user_id))
+        cur.execute(sql, (user_id,))
 
         result = cur.fetchall()
         cur.close()
@@ -267,13 +263,16 @@ class Database:
 
     def find_all_workout_names(self, user_id):
         cur = self.conn.cursor()
-
+        print(user_id)
         sql = '''SELECT DISTINCT name
                  FROM workout
-                 WHERE user_id=?'''
+                 WHERE user_id=?
+                 GROUP BY name
+                 HAVING COUNT(workout_id) > 1 '''
 
-        cur.execute(sql, tuple(user_id))
+        cur.execute(sql, (user_id,))
 
         result = cur.fetchall()
+        print(result)
         cur.close()
         return result

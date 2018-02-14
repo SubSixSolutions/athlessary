@@ -144,40 +144,46 @@ def add_workout():
 
 @app.route("/chart")
 def chart():
-
+    print('issue')
     workout_names = db.find_all_workout_names(current_user.user_id)
+    print(workout_names)
     return render_template('chart.html', workouts=workout_names)
 
 
-@app.route('/api_hello', methods=['GET', 'POST'])
+@app.route('/api_hello', methods=['POST'])
 def api_hello():
 
     if request.method == 'POST':
-        workout_name = request.form['share']
+        workout_name = request.form.get('share')
+
+        if workout_name is None:
+            return render_template('404.html')
+
         results = db.get_aggregate_workouts_by_name(current_user.user_id, workout_name)
-    else:
-        results = db.get_aggregate_workouts_by_name(current_user.user_id, '5x5min')
 
-    data_arr = []
-    label_arr = []
+        data_arr = []
+        label_arr = []
 
-    for res in results:
-        print(res['by_distance'])
-        if res['by_distance'] == 0:
-            data_arr.append(res['distance'])
-        else:
-            data_arr.append(res['total_seconds']/float(60))
-        label_arr.append(datetime.datetime.fromtimestamp(res['time']).strftime('%Y-%m-%d %H:%M:%S'))
+        y_axis = ''
 
-    data = {
-        'data': data_arr,
-        'labels': label_arr
-    }
-    js = json.dumps(data)
+        for res in results:
+            if res['by_distance'] == 0:
+                data_arr.append(res['distance'])
+                y_axis = 'Meters'
+            else:
+                data_arr.append(res['total_seconds']/float(60))
+                y_axis = 'Minutes'
+            label_arr.append(datetime.datetime.fromtimestamp(res['time']).strftime('%Y-%m-%d %H:%M:%S'))
 
-    resp = Response(js, status=200, mimetype='application/json')
+        data = {
+            'data': data_arr,
+            'labels': label_arr,
+            'name': workout_name,
+            'y_axis': y_axis
+        }
+        js = json.dumps(data)
 
-    return resp
+        return Response(js, status=200, mimetype='application/json')
 
 
 if __name__ == '__main__':

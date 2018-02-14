@@ -141,7 +141,7 @@ class TestDBSpecific(unittest.TestCase):
     def test_aggregate_workouts(self):
         # add user
         sample_col_names = ['username', 'first', 'last', 'password', 'address', 'has_car', 'num_seats']
-        sample_data = ['h1i', 'hello', 'bye', '123', '1 east green', True, 3]
+        sample_data = ['h1ias', 'hello', 'bye', '123', '1 east green', True, 3]
         table = 'users'
         row_id = db.insert(table, sample_col_names, sample_data)
 
@@ -156,3 +156,13 @@ class TestDBSpecific(unittest.TestCase):
         print(res)
         self.assertIsNotNone(res, 'result should not be none')
         self.assertEqual(res[0]['total_seconds'], 419.5, 'seconds are wrong')
+
+    def test_get_workout_names(self):
+        # add user
+        sample_col_names = ['username', 'first', 'last', 'password', 'address', 'has_car', 'num_seats']
+        sample_data = ['h1iaa', 'hello', 'bye', '123', '1 east green', True, 3]
+        table = 'users'
+        row_id = db.insert(table, sample_col_names, sample_data)
+
+        names = db.find_all_workout_names(row_id)
+        self.assertEqual([], names, 'names is empty')

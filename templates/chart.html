@@ -23,12 +23,23 @@
             function get_workouts() {
                 var elem = document.getElementById("workout");
                 var name = elem.options[elem.selectedIndex].text;
+                if (name == 'None'){
+                    window.alert('Please add at least 2 workouts of the same kind!');
+                    var data = {
+                        'data': [],
+                        'labels': [],
+                        'y_axis': '---',
+                        'name': 'Add Workouts!'
+                    };
+                    draw_chart(data);
+                    return;
+                }
                 console.log(name);
                 $.post("{{ url_for('api_hello') }}",
                     {share: name}, function (data, status) {
                         console.log(data['data']);
                         console.log(status);
-                        draw_chart(data['data'], data['labels'], name)
+                        draw_chart(data);
                     }
                 );
             }
@@ -40,19 +51,25 @@
         </div>
         <br>
         <form>
-            <span>Change Workout</span>
             <br>
             <select name="workout" id="workout">
                 {% for name in workouts %}
                     <option>{{ name['name'] }}</option>
                 {% endfor %}
+                {% if workouts == [] %}
+                    <option>None</option>
+                {% endif %}
             </select>
-            <br><br>
-            <input type="button" onclick="get_workouts()" value="Submit">
+            <br>
+            <input type="button" onclick="get_workouts()" value="Change Workout">
         </form>
 
         <script>
-            function draw_chart(_data, _labels, name) {
+            function draw_chart(data) {
+                var _data = data['data'];
+                var _labels = data['labels'];
+                var name = data['name'];
+                var y_axis = data['y_axis'];
                 var ctx = document.getElementById("myChart");
                 var myChart = new Chart(ctx, {
                     type: 'line',
@@ -85,6 +102,16 @@
                             yAxes: [{
                                 ticks: {
                                     beginAtZero:true
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: y_axis
+                                }
+                            }],
+                            xAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Date'
                                 }
                             }]
                         }
