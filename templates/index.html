@@ -34,7 +34,7 @@
         });
 
         $( window ).on( "load", function() {
-            get_workouts();
+            get_workouts("{{ url_for('api_hello') }}");
             console.log( "window loaded" );
         });
     </script>
@@ -137,7 +137,7 @@
                             <option>None</option>
                         {% endif %}
                     </select>
-                    <input class="form-group" type="button" onclick="get_workouts()" value="View Workout">
+                    <input class="form-group" type="button" onclick="get_workouts('{{ url_for('api_hello') }}')" value="View Workout">
                   </form>
                 </div>
               </div>
@@ -239,50 +239,8 @@
     <!--<script src="vendor/jquery/jquery.min.js"></script>-->
     <!--<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>-->
     <script src="{{ url_for( 'static', filename='js/bootstrap.bundle.min.js' ) }}"></script>
-
     <script src="{{ url_for('static', filename='js/Chart.min.js') }}"></script>
-
     <script src="{{ url_for('static', filename='js/chart_tools.js') }}"></script>
-
-
-
-    <script>
-        function get_workouts() {
-            //removeData();
-            //return;
-            var elem = document.getElementById("workout");
-            var name = elem.options[elem.selectedIndex].text;
-            if (name == 'None'){
-                window.alert('Please add at least 2 workouts of the same kind!');
-                var data = {
-                    'data': [],
-                    'labels': [],
-                    'y_axis': '---',
-                    'name': 'Add Workouts!'
-                };
-                draw_chart(data);
-                return;
-            }
-            console.log(name);
-            $.post("{{ url_for('api_hello') }}",
-                {share: name}, function (data, status) {
-                    console.log(data['data']);
-                    console.log(status);
-                    //removeData();
-                    //return;
-                    draw_chart(data);
-                }
-            );
-            // Static stuf
-            // var data = {
-            //   'data': [1,2,3,4],
-            //   'labels': ['a', 'b', 'c', 'd'],
-            //   'name': 'a_workout',
-            //   'y_axis': 'this axis'
-            // };
-            // draw_chart(data);
-        }
-    </script>
 
   </body>
 

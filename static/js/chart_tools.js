@@ -1,3 +1,4 @@
+// Declare global chart
 var ctx = $('#myChart');
 var myChart = new Chart(ctx, {
   type: 'line',
@@ -108,4 +109,28 @@ function draw_chart(data) {
     //         }
     //     }
     // });
+}
+
+function get_workouts(_url) {
+    var elem = document.getElementById("workout");
+    var name = elem.options[elem.selectedIndex].text;
+    if (name == 'None'){
+        window.alert('Please add at least 2 workouts of the same kind!');
+        var data = {
+            'data': [],
+            'labels': [],
+            'y_axis': '---',
+            'name': 'Add Workouts!'
+        };
+        draw_chart(data);
+        return;
+    }
+    console.log(name);
+    $.post(_url,
+        {share: name}, function (data, status) {
+            console.log(data['data']);
+            console.log(status);
+            draw_chart(data);
+        }
+    );
 }
