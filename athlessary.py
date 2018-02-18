@@ -186,5 +186,12 @@ def api_hello():
         return Response(js, status=200, mimetype='application/json')
 
 
+@app.route('/new_profile')
+def new_profile():
+
+    workout_names = db.find_all_workout_names(current_user.user_id)
+    return render_template('index.html', workouts=workout_names)
+
+
 if __name__ == '__main__':
     app.run()
