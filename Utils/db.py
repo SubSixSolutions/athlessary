@@ -3,6 +3,12 @@ from os import getcwd
 
 
 def dict_factory(cursor, row):
+    """
+    sets up database cursor to return a dictionary instead of a tuple
+    :param cursor: sql database cursor object
+    :param row: rows of database
+    :return: a dictionary representation of the row(s)
+    """
     d = {}
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
@@ -10,6 +16,13 @@ def dict_factory(cursor, row):
 
 
 def set_where_clause(cols, operators=None):
+    """
+    given an array of columns, this sets a string to become the 'WHERE' clause in a query
+    using the correct set of operators (=, <, >)
+    :param cols: an array of the names of columns to search for
+    :param operators: optional; an array of strings of mathematical operators
+    :return: a string of the form 'col_name=? AND col2_name>?' etc.
+    """
     if operators is None:
         operators = ['=' for i in range(len(cols))]
 
@@ -66,6 +79,21 @@ class Database:
                 );'''
 
         cur.execute(sql)
+
+        # remove  pieces in workout if workout is deleted
+        sql = '''CREATE TRIGGER IF NOT EXISTS delete_all_pieces
+                 AFTER DELETE
+                 ON workout
+                 BEGIN
+                    DELETE FROM erg
+                    WHERE erg.workout_id IN (
+                        SELECT erg.workout_id
+                        FROM erg
+                        WHERE erg.workout_id = old.workout_id
+                    );
+                 END;'''
+
+        cur.execute(sql)
         self.conn.commit()
         cur.close()
 
@@ -83,35 +111,28 @@ class Database:
 
         cur.execute(sql)
 
-        # remove other pieces in workout if one is deleted
-        sql = '''CREATE TRIGGER IF NOT EXISTS remove_other_pieces
-                 AFTER DELETE
-                 ON erg
-                 FOR EACH ROW
-                 BEGIN
-                    DELETE FROM erg
-                    WHERE erg.workout_id = old.workout_id;
-                 END;'''
-
-        cur.execute(sql)
-
         # remove workout after all pieces are deleted
-        sql = '''CREATE TRIGGER IF NOT EXISTS remove_workout_on_delete
+        sql = '''CREATE TRIGGER IF NOT EXISTS delete_me
                  AFTER DELETE
                  ON erg
-                 FOR EACH ROW
                  BEGIN
                     DELETE FROM workout
-                    WHERE workout.workout_id = old.workout_id;
+                    WHERE workout.workout_id NOT IN (
+                        SELECT erg.workout_id
+                        FROM erg
+                        GROUP BY erg.workout_id
+                    );
                  END;'''
         cur.execute(sql)
-
         self.conn.commit()
         cur.close()
 
     def init_tables(self):
-        # TODO: clean up this query
-
+        """
+        sets up the database by calling functions to create each table
+        and its relevant triggers
+        :return:
+        """
         self.create_users()
         self.create_workouts()
         self.create_erg()
@@ -157,7 +178,7 @@ class Database:
     def select(self, table_name, select_cols, where_cols=None, where_params=None, operators=None, order_by=None,
                group_by=None, fetchone=True):
         """
-        selects from database
+        selects from database; can set select_cols to ['ALL'] to use '*' SQL operator
         :param group_by:
         :param order_by: list of columns to sort results by
         :param operators: list of operators for query, =, <, >
@@ -195,21 +216,14 @@ class Database:
             cur.close()
             return result
 
-        # set operators to '=' if none are specified
-        # if operators is None:
-        #     operators = ['=' for i in range(len(where_cols))]
-        #
-        # base = '%s%s? ' % (where_cols[0], operators[0])
-        # where_col_to_str = ['AND %s%s?' % (where_cols[i], operators[i]) for i in range(1, len(where_cols))]
-        # where_col_to_str = base + ' '.join(where_col_to_str)
-
+        # set up 'WHERE' part of query
         where_col_to_str = set_where_clause(where_cols, operators)
 
         params_tuple = tuple(where_params)
         sql = 'SELECT %s FROM %s WHERE %s' % (select_cols_to_str, table_name, where_col_to_str)
 
         if order_by:
-            sql += 'ORDER BY ' + ', '.join(order_by)
+            sql += 'ORDER BY ' + ', '.join(order)
 
         print(sql)
         print(params_tuple)
@@ -227,12 +241,13 @@ class Database:
 
     def update(self, table_name, update_cols, update_params, where_cols, where_params, operators=None):
         """
-
-        :param table_name:
-        :param update_cols:
-        :param update_params:
-        :param where_cols:
-        :param where_params:
+        Similar to select; automates process of updating database rows
+        :param table_name: string; the name of the table to perform the update on
+        :param update_cols: array; the names of the columns being updated
+        :param update_params: array; the parameters to set the update columns to
+        :param where_cols: array; the names of the columns to be specified in the 'WHERE' clause
+        :param where_params: array; the parameters to search for in the 'WHERE" clause
+        :param operators: optional array; mathematical operators for 'WHERE' clause
         :return:
         """
 
@@ -252,6 +267,11 @@ class Database:
         self.conn.commit()
 
     def get_workouts(self, user_id):
+        """
+        joins workouts and ergs and returns the result
+        :param user_id: the id of the current user
+        :return: array of dictionaries representing table rows
+        """
         cur = self.conn.cursor()
 
         sql = 'SELECT * ' \
@@ -267,6 +287,14 @@ class Database:
         return result
 
     def get_aggregate_workouts_by_name(self, user_id, workout_name):
+        """
+        for each workout of a specific type (for which there may be several pieces),
+        take the average distance and time of all the pieces in the workout
+        :param user_id:
+        :param workout_name:
+        :return: an array of dictionaries, each representing a workout with
+        aggregated totals for distance and time
+        """
         cur = self.conn.cursor()
 
         sql = 'SELECT w.by_distance, AVG(e.distance) AS distance, ' \
@@ -286,6 +314,13 @@ class Database:
         return result
 
     def find_all_workout_names(self, user_id):
+        """
+        returns all the distinct names of the workouts
+        a user has completed having more than 1 workout
+        logged under that name
+        :param user_id: the id of the current user
+        :return: a list of strings (workout names)
+        """
         cur = self.conn.cursor()
         print(user_id)
         sql = '''SELECT DISTINCT name
@@ -302,6 +337,11 @@ class Database:
         return result
 
     def get_total_meters(self, user_id):
+        """
+        aggregates all of the total meters for a user
+        :param user_id: the current user to aggregate all meters for
+        :return: a integer; total meters rowed by individual
+        """
         cur = self.conn.cursor()
         sql = '''SELECT SUM(e.distance) AS total_meters
                  FROM workout as w
