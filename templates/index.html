@@ -35,6 +35,7 @@
 
         $( window ).on( "load", function() {
             get_workouts("{{ url_for('api_hello') }}");
+            get_meters_rowed("{{ url_for('meters_rowed') }}");
             console.log( "window loaded" );
         });
     </script>
@@ -94,7 +95,7 @@
                 </div>
               <div class="col-3">
                 <div style="background-color: #f8f9fa; padding:1em;">
-                  <p class="h4">348K</p>
+                  <p id="meters_rowed" class="h4">348K</p>
                   <p>Meters Rowed</p>
                 </div>
               </div>
@@ -240,7 +241,7 @@
     <!--<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>-->
     <script src="{{ url_for( 'static', filename='js/bootstrap.bundle.min.js' ) }}"></script>
     <script src="{{ url_for('static', filename='js/Chart.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/chart_tools.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 
   </body>
 

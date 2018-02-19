@@ -142,6 +142,7 @@ def add_workout():
     return render_template('workout.html', workouts=workouts)
 
 
+@login_required
 @app.route("/chart")
 def chart():
     print('issue')
@@ -186,6 +187,16 @@ def api_hello():
         return Response(js, status=200, mimetype='application/json')
 
 
+@login_required
+@app.route('/meters_rowed', methods=['GET'])
+def meters_rowed():
+    if request.method == 'GET':
+        total_meters = db.get_total_meters(current_user.user_id)
+        js = json.dumps(total_meters)
+        return Response(js, status=200, mimetype='application/json')
+
+
+@login_required
 @app.route('/new_profile')
 def new_profile():
 
@@ -194,4 +205,4 @@ def new_profile():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5001)

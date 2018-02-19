@@ -7,6 +7,15 @@ from Utils.util_basic import create_workout
 db = Database("test-database.db")
 
 
+def clean_up_users():
+    # empty users
+    rows = db.select('users', ['id'], fetchone=False)
+    for _id in rows:
+        db.delete_entry('users', 'id', _id['id'])
+    rows = db.select('users', ['id'], fetchone=False)
+    print(rows)
+
+
 class TestAutoDB(unittest.TestCase):
     """
     Test automated insert, select, and update sql creation
@@ -136,12 +145,21 @@ class TestAutoDB(unittest.TestCase):
         print(rows)
 
 
+def create_user(user_name):
+    # add user
+    sample_col_names = ['username', 'first', 'last', 'password', 'address', 'has_car', 'num_seats']
+    sample_data = [user_name, 'hello', 'bye', '123', '1 east green', True, 3]
+    table = 'users'
+    row_id = db.insert(table, sample_col_names, sample_data)
+    return row_id
+
+
 class TestDBSpecific(unittest.TestCase):
 
     def test_aggregate_workouts(self):
         # add user
         sample_col_names = ['username', 'first', 'last', 'password', 'address', 'has_car', 'num_seats']
-        sample_data = ['h1ias', 'hello', 'bye', '123', '1 east green', True, 3]
+        sample_data = ['h2', 'hello', 'bye', '123', '1 east green', True, 3]
         table = 'users'
         row_id = db.insert(table, sample_col_names, sample_data)
 
@@ -166,3 +184,20 @@ class TestDBSpecific(unittest.TestCase):
 
         names = db.find_all_workout_names(row_id)
         self.assertEqual([], names, 'names is empty')
+
+    def test_get_total_meters(self):
+        # add user
+        user_id = create_user('user123')
+
+        meters = [2000, 2000]
+        minutes = [6, 7]
+        seconds = [58, 1]
+        by_distance = True
+        create_workout(user_id, db, meters, minutes, seconds, by_distance)
+
+        total_meters = db.get_total_meters(user_id)['total_meters']
+        self.assertEqual(total_meters, 4000, 'number of meters does not match up')
+
+        clean_up_users()
+        all_users = db.select('users', ['ALL'], fetchone=False)
+        self.assertEqual([], all_users, 'users must be cleaned up')

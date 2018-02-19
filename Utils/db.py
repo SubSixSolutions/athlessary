@@ -82,6 +82,30 @@ class Database:
                     );'''
 
         cur.execute(sql)
+
+        # remove other pieces in workout if one is deleted
+        sql = '''CREATE TRIGGER IF NOT EXISTS remove_other_pieces
+                 AFTER DELETE
+                 ON erg
+                 FOR EACH ROW
+                 BEGIN
+                    DELETE FROM erg
+                    WHERE erg.workout_id = old.workout_id;
+                 END;'''
+
+        cur.execute(sql)
+
+        # remove workout after all pieces are deleted
+        sql = '''CREATE TRIGGER IF NOT EXISTS remove_workout_on_delete
+                 AFTER DELETE
+                 ON erg
+                 FOR EACH ROW
+                 BEGIN
+                    DELETE FROM workout
+                    WHERE workout.workout_id = old.workout_id;
+                 END;'''
+        cur.execute(sql)
+
         self.conn.commit()
         cur.close()
 
@@ -273,6 +297,20 @@ class Database:
         cur.execute(sql, (user_id,))
 
         result = cur.fetchall()
+        print(result)
+        cur.close()
+        return result
+
+    def get_total_meters(self, user_id):
+        cur = self.conn.cursor()
+        sql = '''SELECT SUM(e.distance) AS total_meters
+                 FROM workout as w
+                 JOIN erg as e
+                 ON e.workout_id = w.workout_id
+                 WHERE w.user_id=?
+                 GROUP BY user_id'''
+        cur.execute(sql, (user_id,))
+        result = cur.fetchone()
         print(result)
         cur.close()
         return result
