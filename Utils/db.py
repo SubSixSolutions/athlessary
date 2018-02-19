@@ -223,7 +223,7 @@ class Database:
         sql = 'SELECT %s FROM %s WHERE %s' % (select_cols_to_str, table_name, where_col_to_str)
 
         if order_by:
-            sql += 'ORDER BY ' + ', '.join(order)
+            sql += ' ORDER BY ' + ', '.join(order_by)
 
         print(sql)
         print(params_tuple)
@@ -274,11 +274,13 @@ class Database:
         """
         cur = self.conn.cursor()
 
-        sql = 'SELECT * ' \
-              'FROM workout as w ' \
-              'JOIN erg as e ' \
-              'ON e.workout_id = w.workout_id ' \
-              'WHERE w.user_id=?'
+        sql = '''
+              SELECT *
+              FROM workout as w
+              JOIN on erg a e
+              ON e.workout_id = w.workout_id
+              WHERE w.user_id=?
+              '''
 
         cur.execute(sql, (user_id,))
 
@@ -297,15 +299,16 @@ class Database:
         """
         cur = self.conn.cursor()
 
-        sql = 'SELECT w.by_distance, AVG(e.distance) AS distance, ' \
-              'AVG((e.minutes*60)+e.seconds) AS total_seconds, ' \
-              'w.time ' \
-              'FROM workout as w ' \
-              'JOIN erg as e ' \
-              'ON e.workout_id = w.workout_id ' \
-              'WHERE w.user_id=? ' \
-              'AND w.name=? ' \
-              'GROUP BY e.workout_id'
+        sql = '''
+              SELECT w.by_distance, AVG(e.distance) AS distance,
+              AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time
+              FROM workout as w
+              JOIN erg as e
+              ON e.workout_id = w.workout_id
+              WHERE w.user_id=?
+              AND w.name=?
+              GROUP BY e.workout_id
+              '''
 
         cur.execute(sql, (user_id, workout_name))
 
