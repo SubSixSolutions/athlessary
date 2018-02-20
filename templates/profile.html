@@ -42,14 +42,14 @@
         </div> -->
         <div class="nav_bar">
           <li><a href="{{ url_for('userlist') }}">Your Team</a></li>
-          <li><a href="{{ url_for('add_workout') }}">Workouts</a></li>
-          <li><a href="{{ url_for('chart') }}">Charts</a></li>
+          <li><a href="{{ url_for('workouts') }}">Workouts</a></li>
+          <li><a href="#">Charts</a></li>
           <li class="dropdown" style="float:right; margin-left:20px;">
             <a href="javascript:void(0)" class="dropbtn">Settings</a>
             <div class="dropdown-content">
               <a href={{ url_for('logout') }}>Log Out</a>
               <a href="#">Edit Profile</a>
-              <a href={{ url_for('add_workout')}}>Add Workout</a>
+              <a href={{ url_for('workouts')}}>Add Workout</a>
             </div>
           </li>
         </div>
