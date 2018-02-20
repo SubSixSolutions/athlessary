@@ -65,12 +65,27 @@
               <a class="nav-link" href="#">Services</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Contact</a>
+              <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
             </li>
           </ul>
         </div>
       </div>
     </nav>
+    <!-- <div class="row">
+      <div class="col-4">
+        <div class="card">
+          <img class="card-img" src="{{ url_for('static', filename=current_user.picture) }}" alt="John">
+          <h1>John Doe</h1>
+          <p class="title">CEO & Founder, Example</p>
+          <p>Harvard University</p>
+          <div style="margin: 24px 0;">
+            <a href="#"><i class="fa fa-dribbble"></i></a>
+            <a href="#"><i class="fa fa-twitter"></i></a>
+            <a href="#"><i class="fa fa-linkedin"></i></a>
+            <a href="#"><i class="fa fa-facebook"></i></a>
+         </div>
+      </div>
+    </div> -->
 
 
     <div class="row">

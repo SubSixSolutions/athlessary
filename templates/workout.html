@@ -21,20 +21,32 @@
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
 
     <!-- Link versions of bootstrap and JavaScript -->
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script> -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
     <!-- Custom styles for this template -->
     <style>
+      html {
+        height: 100%;
+      }
       body {
+        height: 100vh;
         padding-top: 54px;
+        display: flex;
+        flex-direction: column;
       }
       @media (min-width: 992px) {
         body {
           padding-top: 56px;
         }
+      }
+      .content-div {
+        flex: 1 0 auto;
+      }
+      .footer_style {
+        flex-shrink: 0;
       }
 
     </style>
@@ -43,137 +55,163 @@
 
   <body>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-      <div class="container">
-        <a class="navbar-brand" href="#">Athlessary</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="#">Home
-                <span class="sr-only">(current)</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Services</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Contact</a>
-            </li>
-          </ul>
+    <div class="content-div">
+      <!-- Navigation -->
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="#">Athlessary</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('new_profile') }}">Home
+                  <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="#">Workouts</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Services</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
 
-    <!-- tab bar -->
-    <div class="container">
-      <div class="row">
-        <div class="col-12" style="">
-          <h1 class="mt-5" style="text-align:center;">Your Workouts</h1>
+      <!-- tab bar -->
+      <div class="container">
+        <div class="row">
+          <div class="col-12" style="">
+            <h1 class="mt-5" style="text-align:center;">Your Workouts</h1>
 
-          <!-- Tabs -->
-          <ul class="nav nav-tabs">
-              <li class="nav-item">
-                  <a class="nav-link active" data-toggle="tab" href="#add_a_workout">Log A Workout</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" data-toggle="tab" href="#view_workouts"> View Your Workouts </a>
-              </li>
-          </ul>
+            <!-- Tabs -->
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#add_a_workout">Log A Workout</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#view_workouts"> View Your Workouts </a>
+                </li>
+            </ul>
 
-          <!-- Tab Content -->
-          <div class="tab-content">
-            <!-- Add Workout Panel -->
-              <div role="tabpanel" class="tab-pane active" id="add_a_workout">
-                <br>
-                <div class="row">
-                  <div class="col-2">
-                    <!-- empty -->
-                  </div>
-                  <div class="col-8" style="border: 1px solid black; padding:1em; background-color: #f8f9fa;">
-                    <div class="row">
-                      <div class="col-9">
-                        <form class="" action="#" method="POST">
-                          <span>Number of Pieces</span>
-                          <span id="num_pieces_span">
-                            <input type="number" min="1" id="num_pieces" value="1" style="width:50px; text-align:center;">
-                          </span>
-                          <span>BY</span>
-                          <span id="default_val_div">
-                              <input type="number" name="" value="2000" id="deflt_val" style="width: 75px; text-align:center;">
-                          </span>
-                          <input type="radio" name="workout_type" value="Distance" checked onclick="hide_me('_new')" id="rad1">
-                          <span>Meters</span>
-                          <input type="radio" name="workout_type" value="Length" id="rad2" onclick="show_me('default_val_div', 'seconds')">
-                          <span>Time</span>
-                          <span id="add_pieces">
-                              <!-- Pieces go here -->
-                          </span>
-                        </form>
-                      </div>
-                      <div class="col-2">
-                        <input type="button" value="Add Pieces" id="add_bttn" onClick="addInput('add_pieces', 'num_pieces', 'deflt_val', 'seconds');">
+            <!-- Tab Content -->
+            <div class="tab-content">
+              <!-- Add Workout Panel -->
+                <div role="tabpanel" class="tab-pane active" id="add_a_workout">
+                  <br>
+                  <div class="row">
+                    <div class="col-2">
+                      <!-- empty -->
+                    </div>
+                    <div class="col-8" style="border: 1px solid black; padding:1em; background-color: #f8f9fa; margin-bottom:1em;">
+                      <div class="row">
+                        <div class="col-9">
+                          <form class="" action="#" method="POST">
+                            <span>Number of Pieces</span>
+                            <span id="num_pieces_span">
+                              <input type="number" min="1" id="num_pieces" value="1" style="width:50px; text-align:center;">
+                            </span>
+                            <span>BY</span>
+                            <span id="default_val_div">
+                                <input type="number" name="" value="2000" id="deflt_val" style="width: 75px; text-align:center;">
+                            </span>
+                            <input type="radio" name="workout_type" value="Distance" checked onclick="hide_me('_new')" id="rad1">
+                            <span>Meters</span>
+                            <input type="radio" name="workout_type" value="Length" id="rad2" onclick="show_me('default_val_div', 'seconds')">
+                            <span>Time</span>
+                            <span id="add_pieces">
+                                <!-- Pieces go here -->
+                            </span>
+                          </form>
+                        </div>
+                        <div class="col-2">
+                          <input type="button" value="Add Pieces" id="add_bttn" onClick="addInput('add_pieces', 'num_pieces', 'deflt_val', 'seconds');">
+                        </div>
                       </div>
                     </div>
+                    <div class="col-2">
+                      <!-- empty -->
+                    </div>
                   </div>
-                  <div class="col-1">
-                    <!-- empty -->
-                  </div>
-                </div>
 
-              <!-- View Workouts Tab -->
-              </div>
-              <div role="tabpanel" class="tab-pane fade in" id="view_workouts">
-                  <ul class="list-group media-list media-list-stream">
-                    <br>
-                    <h3 style="text-align:center;">COMING SOON!</h3>
-                  </ul>
-              </div>
+                <!-- View Workouts Tab -->
+                </div>
+                <div role="tabpanel" class="tab-pane fade in" id="view_workouts">
+                    <ul class="list-group media-list media-list-stream">
+                      <br>
+                      <br>
+                      <div class="container">
+                        <div class="row">
+                          <div class="col-2">
+
+                          </div>
+                          <div class="col-8">
+                            <div class="row">
+                              
+                            </div>
+                            <div class="row">
+                              <table class="table table-striped">
+                                <thead>
+                                  <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Meters</th>
+                                    <th>Split</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                  </tr>
+                                  <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                          <div class="col-2">
+
+                          </div>
+                        </div>
+                      </div>
+                    </ul>
+                </div>
+            </div>
           </div>
-          <!-- <div class="row">
-            <div class="col-2">
-              <!- empty -->
-            <!-- </div>
-            <div class="col-8" style="border: 1px solid black; padding:1em; background-color: #f8f9fa;">
-              <div class="row">
-                <div class="col-9">
-                  <form class="" action="#" method="POST">
-                    <span>Number of Pieces</span>
-                    <span id="num_pieces_span">
-                      <input type="number" min="1" id="num_pieces" value="1" style="width:50px; text-align:center;">
-                    </span>
-                    <span>BY</span>
-                    <span id="default_val_div">
-                        <input type="number" name="" value="2000" id="deflt_val" style="width: 75px; text-align:center;">
-                    </span>
-                    <input type="radio" name="workout_type" value="Distance" checked onclick="hide_me('_new')" id="rad1">
-                    <span>Meters</span>
-                    <input type="radio" name="workout_type" value="Length" id="rad2" onclick="show_me('default_val_div', 'seconds')">
-                    <span>Time</span> -->
-                    <!-- <input type="button" value="Add Pieces" id="add_bttn" onClick="addInput('add_pieces', 'num_pieces', 'deflt_val', 'seconds');"> -->
-                    <!-- <span id="add_pieces">
-                        <!- Pieces go here -->
-                    <!-- </span>
-                  </form>
-                </div>
-                <div class="col-2">
-                  <input type="button" value="Add Pieces" id="add_bttn" onClick="addInput('add_pieces', 'num_pieces', 'deflt_val', 'seconds');">
-                </div>
-              </div>
-            </div>
-            <div class="col-1">
-              <!- empty ->
-            </div>
-          </div> -->
         </div>
       </div>
     </div>
+    <!-- Footer -->
+    <footer class="footer_style" style="padding:0em; margin:0em;">
+      <!-- <hr style="border: 0;
+                 height: 1px;
+                 background-image: -webkit-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+                 background-image: -moz-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+                 background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+                 background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+                 margin:0em;" > -->
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
+      <!-- <nav class="navbar navbar-expand-lg"> -->
+        <div class="container">
+          <div class="navbar-brand">
+            <p style="margin:0em;">This is Athlessary</p>
+          </div>
+        </div>
+      </nav>
+    </footer>
 
     <!-- Bootstrap core JavaScript -->
     <!-- <script src="/Users/Max/PycharmProjects/athlessary/static/js/bootstrap.min.js"></script> -->

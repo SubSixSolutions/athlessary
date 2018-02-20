@@ -57,9 +57,9 @@ class Database:
                     first     STRING (1, 20) NOT NULL,
                     last      STRING (1, 20) NOT NULL,
                     username  STRING (2, 20) UNIQUE NOT NULL,
-                    address   STRING (1, 50),
-                    has_car   BOOLEAN,
-                    num_seats INTEGER,
+                    address   STRING (1, 50) DEFAULT ('1 east green'),
+                    has_car   BOOLEAN        DEFAULT (0),
+                    num_seats INTEGER        DEFAULT (0),
                     picture   BLOB           DEFAULT ('images/defaults/profile.jpg')
                     ); '''
 

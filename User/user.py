@@ -34,7 +34,8 @@ class User:
 
         print(form_data['password'])
 
-        wanted_attrs = ['first', 'last', 'username', 'password', 'address', 'has_car', 'num_seats']
+        # wanted_attrs = ['first', 'last', 'username', 'password', 'address', 'has_car', 'num_seats']
+        wanted_attrs = ['first', 'last', 'username', 'password']
         attr_dict = {x: form_data[x] for x in wanted_attrs}
 
         col_names = attr_dict.keys()

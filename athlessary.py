@@ -32,51 +32,6 @@ def load_user(user_id):
     return User(user_id)
 
 
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    """
-    handles signup of the user
-    :return: profile page of the user
-    """
-
-    # form to handle sign up
-    form = web_forms.SignUpForm()
-
-    # if form is validated and method is post
-    if request.method == 'POST' and form.validate():
-        # log new user in
-        curr_user = User.user_from_form(form.data)
-        login_user(curr_user)
-
-        # redirect user to their new profile page
-        flash('signed in!')
-        return redirect(url_for('profile_page', username=current_user.username))
-
-    # display sign up form
-    return render_template('signup.html', form=form)
-
-
-@app.route('/', methods=['POST', 'GET'])
-def login():
-    if request.method == 'GET':
-        return render_template('login.html')
-    else:
-        username = request.form['username']
-        password = request.form['password']
-
-        result = db.select('users', ['password', 'id'], ['username'], [username])
-
-        print(result)
-        hash = result['password']
-        password_match = pbkdf2_sha256.verify(password, hash)
-        if password_match:
-            curr_user = User(result['id'])
-            login_user(curr_user)
-            flash("LOGIN SUCCESSFUL")
-            return redirect(url_for('profile_page', username=username))
-        return render_template('login.html')
-
-
 @app.route('/userlist')
 @login_required
 def userlist():
@@ -103,7 +58,9 @@ def profile_page(username):
             # TODO Should we commit the changes here? It won't hurt to commit them later
 
         # render profile page
-        return render_template('profile.html', photo_form=form)
+        # return render_template('profile.html', photo_form=form)
+        workout_names = db.find_all_workout_names(current_user.user_id)
+        return render_template('index.html', workouts=workout_names)
     return render_template('404.html')
 
 
@@ -112,7 +69,7 @@ def profile_page(username):
 def logout():
     logout_user()
     print("LOGGING OUT")
-    return redirect(url_for('login'))
+    return redirect(url_for('new_signup'))
 
 
 @app.route('/workouts', methods=['GET', 'POST'])
@@ -142,6 +99,7 @@ def workouts():
     return render_template('workout.html', workouts=workouts)
 
 
+@login_required
 @app.route('/api_hello', methods=['POST'])
 def api_hello():
 
@@ -195,5 +153,44 @@ def new_profile():
     return render_template('index.html', workouts=workout_names)
 
 
+@app.route('/', methods=['GET', 'POST'])
+def new_signup():
+    # forms to handle sign up and sign in
+    signup_form = web_forms.SignUpForm()
+    signin_form = web_forms.SignInForm()
+
+    login = True
+
+    if request.method == 'POST':
+        if signin_form.data['submit_bttn']:
+            if signin_form.validate():
+                username = signin_form.data['username_field']
+                password = signin_form.data['password_field']
+
+                result = db.select('users', ['password', 'id'], ['username'], [username])
+                if result:
+                    hash = result['password']
+                    password_match = pbkdf2_sha256.verify(password, hash)
+                    if password_match:
+                        curr_user = User(result['id'])
+                        login_user(curr_user)
+                        flash('signed in!')
+                        # return render_template('test_flash.html')
+                        return redirect(url_for('profile_page', username=username))
+
+        elif signup_form.data['submit']:
+            if signup_form.validate():
+                # log new user in
+                curr_user = User.user_from_form(signup_form.data)
+                login_user(curr_user)
+
+                # redirect user to their new profile page
+                flash('signed in!')
+                return redirect(url_for('profile_page', username=current_user.username))
+            login = False
+
+    return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login)
+
+
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run()
