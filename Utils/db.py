@@ -276,8 +276,8 @@ class Database:
 
         sql = '''
               SELECT *
-              FROM workout AS w
-              JOIN erg AS e
+              FROM workout as w
+              JOIN on erg a e
               ON e.workout_id = w.workout_id
               WHERE w.user_id=?
               '''

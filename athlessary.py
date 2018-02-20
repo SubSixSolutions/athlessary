@@ -115,9 +115,9 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/workouts', methods=['GET', 'POST'])
+@app.route('/add_workout', methods=['GET', 'POST'])
 @login_required
-def workouts():
+def add_workout():
     if request.method == 'POST':
 
         # TODO implement other workouts
@@ -140,6 +140,15 @@ def workouts():
     workouts = db.get_workouts(current_user.user_id)
 
     return render_template('workout.html', workouts=workouts)
+
+
+@login_required
+@app.route("/chart")
+def chart():
+    print('issue')
+    workout_names = db.find_all_workout_names(current_user.user_id)
+    print(workout_names)
+    return render_template('chart.html', workouts=workout_names)
 
 
 @app.route('/api_hello', methods=['POST'])
@@ -196,4 +205,4 @@ def new_profile():
 
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(port=5001)

@@ -15,7 +15,6 @@ function show_me(show_id, form_name){
     // change default value to 30 minutes
     var other = document.getElementById('deflt_val');
     other.value = '30';
-    other.style = 'text-align:center; width:50px;';
 }
 
 function hide_me(id_tag){
@@ -27,7 +26,6 @@ function hide_me(id_tag){
     // change default value to 2000m
     var other = document.getElementById('deflt_val');
     other.value = '2000';
-    other.style = 'text-align:center; width:75px;';
 }
 
 function show_incomplete(bad_elem){
@@ -94,7 +92,7 @@ function addInput(form_name, pieces, mtrs_mins, secs){
             document.getElementById('rad2').disabled = true;
             newdiv.innerHTML = "<br>Piece " + (i + 1) + " <br><span>Time</span><input type='number' style='width:50px;'" +
                 "name='minutes'>:<input style='width:50px;' type='number' name='seconds'><span>Meters</span>" +
-                "<input style='width:75px;' type='number' name='meters' value='" + meter_minutes + "' readonly=\"readonly\">";
+                "<input style='width:50px;' type='number' name='meters' value='" + meter_minutes + "'>";
         }
         document.getElementById(form_name).appendChild(newdiv);
     }
