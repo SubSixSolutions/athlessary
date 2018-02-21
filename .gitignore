@@ -3,3 +3,4 @@
 *.pyc
 /static/css/bootstrap.css
 profile_idea.png
+*.db
