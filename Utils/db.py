@@ -316,6 +316,41 @@ class Database:
         cur.close()
         return result
 
+    def get_aggregate_workouts_by_id(self, user_id):
+        """
+        for each workout of a specific type (for which there may be several pieces),
+        take the average distance and time of all the pieces in the workout
+        :param user_id:
+        :param workout_name:
+        :return: an array of dictionaries, each representing a workout with
+        aggregated totals for distance and time
+        """
+        cur = self.conn.cursor()
+
+        sql = '''
+              SELECT w.by_distance, AVG(e.distance) AS distance,
+              AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time, w.name
+              FROM workout as w
+              JOIN erg as e
+              ON e.workout_id = w.workout_id
+              WHERE w.user_id=?
+              GROUP BY e.workout_id
+              ORDER BY w.time DESC
+              '''
+
+        cur.execute(sql, (user_id,))
+
+        result = cur.fetchall()
+        cur.close()
+        import datetime
+        for res in result:
+            res['time'] = datetime.datetime.fromtimestamp(res['time']).strftime('%Y-%m-%d %H:%M:%S')
+            splits = res['distance'] / float(500)
+            res['avg_sec'] = (res['total_seconds'] / splits) % 60
+            res['avg_min'] = int(res['total_seconds'] / splits / 60)
+
+        return result
+
     def find_all_workout_names(self, user_id):
         """
         returns all the distinct names of the workouts

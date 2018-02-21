@@ -94,7 +94,8 @@ def workouts():
 
         return redirect(url_for('profile_page', username=current_user.username))
 
-    workouts = db.get_workouts(current_user.user_id)
+    #workouts = db.get_workouts(current_user.user_id)
+    workouts = db.get_aggregate_workouts_by_id(current_user.user_id)
 
     return render_template('workout.html', workouts=workouts)
 

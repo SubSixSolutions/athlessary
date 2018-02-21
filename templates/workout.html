@@ -51,6 +51,12 @@
 
     </style>
 
+    <script type="text/javascript">
+      function transorm_data(seconds){
+        return new Date(1394104654000);
+      }
+    </script>
+
   </head>
 
   <body>
@@ -148,13 +154,35 @@
                       <br>
                       <div class="container">
                         <div class="row">
+                          <div class="col-5" style="padding:1em;">
+                            <div class="row">
+
+                            </div>
+                            <div class="row">
+                              <table class="table table-striped">
+                                <thead>
+                                  <tr>
+                                    <th>Date</th>
+                                    <th>Name</th>
+                                    <th>Split</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for workout in workouts %}
+                                    <tr>
+                                      <td>{{workout['time']}}</td>
+                                      <td>{{workout['name']}}</td>
+                                      <td>{{workout['avg_min']}}:{{workout['avg_sec']}}</td>
+                                    </tr>
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
                           <div class="col-2">
 
                           </div>
-                          <div class="col-8">
-                            <div class="row">
-                              
-                            </div>
+                          <div class="col-5" style="padding:1em;">
                             <div class="row">
                               <table class="table table-striped">
                                 <thead>
@@ -181,9 +209,6 @@
                                 </tbody>
                               </table>
                             </div>
-                          </div>
-                          <div class="col-2">
-
                           </div>
                         </div>
                       </div>
