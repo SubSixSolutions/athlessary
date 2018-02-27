@@ -57,9 +57,9 @@ def create_workout(user_id, db, meters, minutes, seconds, by_distance):
         name += str(meters[0]) + 'm'
     else:
         if int(minutes[0]) > 0:
-            name += str(minutes[0]) + 'min'
+            name += str(minutes[0]) + '\''
         else:
-            name += str(seconds[0]) + 'sec'
+            name += str(seconds[0]) + '\"'
 
     # create workout
     workout_id = db.insert('workout', ['user_id', 'time', 'by_distance', 'name'],

@@ -288,6 +288,29 @@ class Database:
         cur.close()
         return result
 
+    def get_workouts_by_id(self, user_id, workout_id):
+        """
+        joins workouts and ergs and returns the result
+        :param user_id: the id of the current user
+        :return: array of dictionaries representing table rows
+        """
+        cur = self.conn.cursor()
+
+        sql = '''
+              SELECT *
+              FROM workout AS w
+              JOIN erg AS e
+              ON e.workout_id = w.workout_id
+              WHERE w.user_id=?
+              AND e.workout_id=?
+              '''
+
+        cur.execute(sql, (user_id, workout_id))
+
+        result = cur.fetchall()
+        cur.close()
+        return result
+
     def get_aggregate_workouts_by_name(self, user_id, workout_name):
         """
         for each workout of a specific type (for which there may be several pieces),
@@ -301,13 +324,14 @@ class Database:
 
         sql = '''
               SELECT w.by_distance, AVG(e.distance) AS distance,
-              AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time
+              AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time, w.workout_id
               FROM workout as w
               JOIN erg as e
               ON e.workout_id = w.workout_id
               WHERE w.user_id=?
               AND w.name=?
               GROUP BY e.workout_id
+              ORDER BY w.time
               '''
 
         cur.execute(sql, (user_id, workout_name))
@@ -329,7 +353,8 @@ class Database:
 
         sql = '''
               SELECT w.by_distance, AVG(e.distance) AS distance,
-              AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time, w.name
+              AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time,
+              w.name, w.workout_id
               FROM workout as w
               JOIN erg as e
               ON e.workout_id = w.workout_id
@@ -344,9 +369,10 @@ class Database:
         cur.close()
         import datetime
         for res in result:
-            res['time'] = datetime.datetime.fromtimestamp(res['time']).strftime('%Y-%m-%d %H:%M:%S')
+            res['time'] = datetime.datetime.fromtimestamp(res['time']).strftime('%b %d %Y %p')
+            # res['time'] = datetime.datetime.fromtimestamp(res['time']).strftime('%Y-%m-%d %H:%M:%S')
             splits = res['distance'] / float(500)
-            res['avg_sec'] = (res['total_seconds'] / splits) % 60
+            res['avg_sec'] = format(((res['total_seconds'] / splits) % 60), '.2f')
             res['avg_min'] = int(res['total_seconds'] / splits / 60)
 
         return result
