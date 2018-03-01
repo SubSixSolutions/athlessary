@@ -84,20 +84,22 @@ def workouts():
         minutes = request.form.getlist('minutes')
         seconds = request.form.getlist('seconds')
 
-        # is workout by distance or by time?
-        by_distance = False
-        if request.form.get('workout_type') == 'Distance':
-            by_distance = True
+        if meters != [''] and minutes != [''] and seconds != ['']:
 
-        # add workout to database
-        create_workout(current_user.user_id, db, meters, minutes, seconds, by_distance)
+            # is workout by distance or by time?
+            by_distance = False
+            if request.form.get('workout_type') == 'Distance':
+                by_distance = True
 
-        return redirect(url_for('profile_page', username=current_user.username))
+            # add workout to database
+            create_workout(current_user.user_id, db, meters, minutes, seconds, by_distance)
 
-    #workouts = db.get_workouts(current_user.user_id)
+            return redirect(url_for('profile_page', username=current_user.username))
+
     workouts = db.get_aggregate_workouts_by_id(current_user.user_id)
+    workout_names = db.find_all_workout_names(current_user.user_id)
 
-    return render_template('workout.html', workouts=workouts)
+    return render_template('workout.html', workouts=workouts, names=workout_names)
 
 
 @login_required
@@ -114,6 +116,7 @@ def api_hello():
 
         data_arr = []
         label_arr = []
+        _ids = []
 
         y_axis = ''
 
@@ -124,13 +127,15 @@ def api_hello():
             else:
                 data_arr.append(res['total_seconds']/float(60))
                 y_axis = 'Minutes'
-            label_arr.append(datetime.datetime.fromtimestamp(res['time']).strftime('%Y-%m-%d %H:%M:%S'))
+            label_arr.append(datetime.datetime.fromtimestamp(res['time']).strftime('%b %d %Y %p'))
+            _ids.append(res['workout_id'])
 
         data = {
             'data': data_arr,
             'labels': label_arr,
             'name': workout_name,
-            'y_axis': y_axis
+            'y_axis': y_axis,
+            '_ids': _ids
         }
         js = json.dumps(data)
 
@@ -191,6 +196,64 @@ def new_signup():
             login = False
 
     return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login)
+
+
+@app.route('/get_a_workout', methods=['POST'])
+def get_a_workout():
+    workout_id = request.form.get('workout_id')
+    print('wid')
+    print(workout_id)
+    print('wid')
+    result = db.get_workouts_by_id(current_user.user_id, workout_id)
+    js = json.dumps(result)
+    print(js)
+    return Response(js, status=200, mimetype='application/json')
+
+
+@app.route('/edit_workout', methods=['POST'])
+def edit_workout():
+
+    by_distance = int(request.form.get('by_distance'))
+    erg_ids = request.form.getlist('erg_ids[]')
+
+    if by_distance == 1:
+        meters = request.form.getlist('meters[]')
+        for i in range(len(erg_ids)):
+            db.update('erg', ['distance'], [int(meters[i])], ['erg_id'], [int(erg_ids[i])])
+    else:
+        minutes = request.form.getlist('minutes[]')
+        seconds = request.form.getlist('seconds[]')
+
+        for i in range(len(erg_ids)):
+            db.update('erg', ['minutes', 'seconds'], [int(minutes[i]), int(seconds[i])], ['erg_id'], [erg_ids[i]])
+
+    # old_date_utc = float(request.form.get('utc')) / 1000
+    # new_date_utc = float(request.form.get('new_stamp')) / 1000
+    # print(old_date_utc)
+    # print(new_date_utc)
+
+    # if old_date_utc != new_date_utc:
+    #     print('update')
+    #     workout_id = request.form.get('workout_id')
+    #     db.update('workout', ['time'], [new_date_utc], ['workout_id'], [workout_id])
+
+    old_date_stamp = float(request.form.get('old_date')) // 1
+    new_date = request.form.get('new_date')
+    new_time = request.form.get('time')
+    old_date = float(request.form.get('old_date'))
+    old_date = datetime.datetime.fromtimestamp(old_date)
+
+    new_date_arr = new_date.split('-')
+    new_time_arr = new_time.split(':')
+    import time
+    new_date_obj = datetime.datetime(int(new_date_arr[0]), int(new_date_arr[1]), int(new_date_arr[2]), int(new_time_arr[0]), int(new_time_arr[1]), old_date.second)
+    new_date = time.mktime(new_date_obj.timetuple())
+
+    if old_date_stamp != new_date:
+        workout_id = request.form.get('workout_id')
+        db.update('workout', ['time'], [new_date], ['workout_id'], [workout_id])
+
+    return redirect(url_for('workouts'))
 
 
 if __name__ == '__main__':

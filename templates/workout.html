@@ -36,6 +36,11 @@
         padding-top: 54px;
         display: flex;
         flex-direction: column;
+        /* background-image: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.6) 100%), url({{url_for('static', filename='images/defaults/login_photo.jpg')}});
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover; */
       }
       @media (min-width: 992px) {
         body {
@@ -50,12 +55,6 @@
       }
 
     </style>
-
-    <script type="text/javascript">
-      function transorm_data(seconds){
-        return new Date(1394104654000);
-      }
-    </script>
 
   </head>
 
@@ -95,14 +94,17 @@
         <div class="row">
           <div class="col-12" style="">
             <h1 class="mt-5" style="text-align:center;">Your Workouts</h1>
-
+            <br>
             <!-- Tabs -->
             <ul class="nav nav-tabs">
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#add_a_workout">Log A Workout</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#view_workouts"> View Your Workouts </a>
+                    <a class="nav-link" data-toggle="tab" href="#view_workouts">View Your Workouts </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#list_view">Edit A Workout</a>
                 </li>
             </ul>
 
@@ -145,26 +147,84 @@
                       <!-- empty -->
                     </div>
                   </div>
-
-                <!-- View Workouts Tab -->
                 </div>
-                <div role="tabpanel" class="tab-pane fade in" id="view_workouts">
+                <!-- View Workouts Tab -->
+                <div role="tabpanel" class="tab-pane fade in" id="view_workouts" style="margin-top:1em; margin-bottom:1em;">
+                  <ul class="list-group media-list media-list-stream">
+                    <div class="row">
+                      <!-- Graph Here -->
+                      <div class="col-8" id="graph_col">
+                        <div class="text-center" style="border: 1px solid black; max-height:65vh; overflow-y:scroll; height:100%; padding-bottom:0em; padding:1em; background-color: #f8f9fa;">
+                          <canvas id="myChart" class="chart" id="a_chart"></canvas>
+                          <div class="col text-center" style="padding-top:1em;">
+                            <form>
+                              <select name="workout" id="workout">
+                                  {% for name in names %}
+                                      <option>{{ name['name'] }}</option>
+                                  {% endfor %}
+                                  {% if workouts == [] %}
+                                      <option>None</option>
+                                  {% endif %}
+                              </select>
+                              <!-- <input class="form-group" type="button" onclick="get_workouts('{{ url_for('api_hello') }}')" value="View Workout" id='change_workout'> -->
+                              <input class="form-group" type="button" value="View Workout" id="change_workout">
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- Info Panel -->
+                      <div class="col-4">
+                        <div class="" style="border: 1px solid black; max-height: 65vh; overflow-y:scroll; height:100%; padding-bottom:0em; padding:1em; background-color: #f8f9fa;">
+                          <div class="col text-center">
+                            <h5 id='cap'></h5>
+                            <p id="_date"></p>
+                          </div>
+                          <table class="table table-striped" id="side_table">
+                            <thead>
+                              <tr>
+                                <th id="head-1"></th>
+                                <th>Split</th>
+                              </tr>
+                            </thead>
+                            <tbody id="tb2_body">
+
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </ul>
+                </div>
+
+                <!-- List View -->
+                <div role="tabpanel" class="tab-pane fade in" id="list_view">
                     <ul class="list-group media-list media-list-stream">
                       <br>
                       <br>
                       <div class="container">
                         <div class="row">
-                          <div class="col-5" style="padding:1em;">
-                            <div class="row">
+                          <div class="col-1">
 
+                          </div>
+                          <div class="col-10" style="border: 1px solid black; padding:1em; background-color: #f8f9fa; margin-bottom:1em;">
+                            <div class="col" style="padding-bottom:1em; text-align:center;">
+                              <form class="" action="index.html" method="post">
+                                <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search by Name" title="Type in a name">
+                                <input type="radio" checked name="a" onclick="reset_text('by Name')" value="Name">
+                                <span>Name</span>
+                                <input type="radio" name="a" onclick="reset_text('by Date')" value="Date">
+                                <span>Date</span>
+                              </form>
                             </div>
                             <div class="row">
-                              <table class="table table-striped">
+                              <table class="table table-striped" id="myTable">
                                 <thead>
                                   <tr>
                                     <th>Date</th>
                                     <th>Name</th>
                                     <th>Split</th>
+                                    <th>Edit</th>
+                                    <th>X</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -173,41 +233,51 @@
                                       <td>{{workout['time']}}</td>
                                       <td>{{workout['name']}}</td>
                                       <td>{{workout['avg_min']}}:{{workout['avg_sec']}}</td>
+                                      <td onclick="modal_edit('{{workout['workout_id']}}', '{{ url_for('get_a_workout') }}')">Edit</td>
+                                      <td>Delete</td>
                                     </tr>
                                   {% endfor %}
                                 </tbody>
                               </table>
                             </div>
                           </div>
-                          <div class="col-2">
+                          <div class="col-1">
 
                           </div>
-                          <div class="col-5" style="padding:1em;">
-                            <div class="row">
-                              <table class="table table-striped">
-                                <thead>
-                                  <tr>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Meters</th>
-                                    <th>Split</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                  </tr>
-                                  <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                  </tr>
-                                </tbody>
-                              </table>
+                          <!-- Modal -->
+                          <div class="modal fade" id="a_modal">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content" id="m_content">
+                                <div class="modal-header" id='m_header'>
+                                  <h5 class="modal-title"></h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <form class="form-inline" method="POST" id='edit_form'>
+                                  <div class="modal-body" id='m_body' style="max-height:50vh; overflow-y:scroll;">
+                                    <div class="row text-center" style="margin-bottom:1em;padding-left:1em;">
+                                      <label for="date">Date:</label>
+                                      <input type="date" name="date" value="" id="date">
+                                      <label for="time">Time:</label>
+                                      <input type="time" name="time" value="" id="time">
+                                    </div>
+                                    <table id='modal_table' class="table table-striped">
+                                      <thead>
+                                      </thead>
+                                      <tbody>
+
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </form>
+                                  <div class="modal-footer">
+                                  <input type="button" class="btn btn-primary" data-dismiss="modal" name="" value="Save Changes" id='save_changes'>
+                                  <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                  </div>
+                                <!-- </form> -->
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -221,13 +291,6 @@
     </div>
     <!-- Footer -->
     <footer class="footer_style" style="padding:0em; margin:0em;">
-      <!-- <hr style="border: 0;
-                 height: 1px;
-                 background-image: -webkit-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
-                 background-image: -moz-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
-                 background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
-                 background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
-                 margin:0em;" > -->
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
       <!-- <nav class="navbar navbar-expand-lg"> -->
         <div class="container">
@@ -244,5 +307,10 @@
 
 
   </body>
+
+  <!-- workout javascript -->
+  <script src="{{ url_for('static', filename='js/Chart.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/workout_page.js') }}"></script>
+
 
 </html>

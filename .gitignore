@@ -1,6 +1,6 @@
-/venv/*
+venv
 .idea
 *.pyc
-/static/css/bootstrap.css
+log
 profile_idea.png
 *.db
