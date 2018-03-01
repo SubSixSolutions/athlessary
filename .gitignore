@@ -1,6 +1,9 @@
+# Folders to ignore
 venv
-.idea
-*.pyc
+lib
 log
-profile_idea.png
+.idea
+# Filetypes to ignore
+*.pyc
 *.db
+*.png
