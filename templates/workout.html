@@ -98,13 +98,13 @@
             <!-- Tabs -->
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#add_a_workout">Log A Workout</a>
+                    <a class="nav-link active" data-toggle="tab" href="#add_a_workout" id="tab-1">Log A Workout</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#view_workouts">View Your Workouts </a>
+                    <a class="nav-link" data-toggle="tab" href="#view_workouts" id="tab-2">View Your Workouts</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#list_view">Edit A Workout</a>
+                    <a class="nav-link" data-toggle="tab" href="#list_view" id="tab-3">Edit A Workout</a>
                 </li>
             </ul>
 
@@ -112,39 +112,50 @@
             <div class="tab-content">
               <!-- Add Workout Panel -->
                 <div role="tabpanel" class="tab-pane active" id="add_a_workout">
-                  <br>
-                  <div class="row">
-                    <div class="col-2">
-                      <!-- empty -->
-                    </div>
-                    <div class="col-8" style="border: 1px solid black; padding:1em; background-color: #f8f9fa; margin-bottom:1em;">
-                      <div class="row">
-                        <div class="col-9">
-                          <form class="" action="#" method="POST">
-                            <span>Number of Pieces</span>
-                            <span id="num_pieces_span">
-                              <input type="number" min="1" id="num_pieces" value="1" style="width:50px; text-align:center;">
-                            </span>
-                            <span>BY</span>
-                            <span id="default_val_div">
-                                <input type="number" name="" value="2000" id="deflt_val" style="width: 75px; text-align:center;">
-                            </span>
-                            <input type="radio" name="workout_type" value="Distance" checked onclick="hide_me('_new')" id="rad1">
-                            <span>Meters</span>
-                            <input type="radio" name="workout_type" value="Length" id="rad2" onclick="show_me('default_val_div', 'seconds')">
-                            <span>Time</span>
-                            <span id="add_pieces">
-                                <!-- Pieces go here -->
-                            </span>
-                          </form>
-                        </div>
-                        <div class="col-2">
-                          <input type="button" value="Add Pieces" id="add_bttn" onClick="addInput('add_pieces', 'num_pieces', 'deflt_val', 'seconds');">
-                        </div>
+                  <!-- <br> -->
+                  <div class="row justify-content-center">
+                    <!-- <div class="align-items-center justify-content-center" style="border: 1px solid black; padding:1em; background-color: #f8f9fa;"> -->
+                    <div class="align-items-center justify-content-center">
+                      <div class="col">
+                        <form class="mt-3" action="{{url_for('workouts')}}" id="add_workout_form" style="border: 1px solid black; padding-top:0.5em; background-color: #f8f9fa;">
+                          <div class="row form-row align-items-center mx-2 mt-2">
+                            <div class="col-auto form-group">
+                              <small class="form-text text-muted" for="num_pieces">Number of Peices</small>
+                              <input type="number" min="1" class="form-control mb-2" id="num_pieces" value="1">
+                            </div>
+                            <div class="col-auto">
+                              <div class="input-group-prepend">
+                                <div class="input-group-text">X</div>
+                              </div>
+                            </div>
+                            <div class="col-auto form-group">
+                              <small id="min_meter_txt" class="form-text text-muted" for="min_meter_input">Number of Meters</small>
+                              <div class="input-group mb-2">
+                                <input type="number" class="form-control" id="min_meter_input" value="2000">
+                              </div>
+                            </div>
+                            <div class="col-auto form-group" hidden id="second_input_div">
+                              <small class="form-text text-muted" for="second_input">Number of Seconds</small>
+                              <div class="input-group mb-2">
+                                <input type="number" class="form-control" id="second_input" value="00">
+                              </div>
+                            </div>
+                            <div class="col-auto">
+                              <div class="form-check check form-check-inline mb-2">
+                                <input name="workout_type" class="form-check-input" type="radio" value="Distance" checked onclick="switch_input();" id="meter_bttn">
+                                <label class="form-check-label" for="meter_bttn">Meters</label>
+                              </div>
+                              <div class="form-check check form-check-inline mb-2">
+                                <input name="workout_type" class="form-check-input" type="radio" value="Length" id="minute_bttn" onclick="switch_input();">
+                                <label class="form-check-label" for="minute_bttn">Minutes</label>
+                              </div>
+                            </div>
+                            <div class="col-auto">
+                              <button id="submit_bttn" type="button" class="btn btn-primary mb-2" onclick="generate_form();">Submit</button>
+                            </div>
+                          </div>
+                        </form>
                       </div>
-                    </div>
-                    <div class="col-2">
-                      <!-- empty -->
                     </div>
                   </div>
                 </div>
@@ -157,18 +168,21 @@
                         <div class="text-center" style="border: 1px solid black; max-height:65vh; overflow-y:scroll; height:100%; padding-bottom:0em; padding:1em; background-color: #f8f9fa;">
                           <canvas id="myChart" class="chart" id="a_chart"></canvas>
                           <div class="col text-center" style="padding-top:1em;">
-                            <form>
-                              <select name="workout" id="workout">
-                                  {% for name in names %}
-                                      <option>{{ name['name'] }}</option>
-                                  {% endfor %}
-                                  {% if workouts == [] %}
-                                      <option>None</option>
-                                  {% endif %}
+                            <!-- <form class=""> -->
+                            <div class="input-group">
+                              <select class="custom-select form-control" name="workout" id="workout">
+                                {% for name in names %}
+                                    <option>{{ name['name'] }}</option>
+                                {% endfor %}
+                                {% if workouts == [] %}
+                                    <option>None</option>
+                                {% endif %}
                               </select>
-                              <!-- <input class="form-group" type="button" onclick="get_workouts('{{ url_for('api_hello') }}')" value="View Workout" id='change_workout'> -->
-                              <input class="form-group" type="button" value="View Workout" id="change_workout">
-                            </form>
+                              <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" id="change_workout" type="button">View Workout</button>
+                              </div>
+                            </div>
+                            <!-- </form> -->
                           </div>
                         </div>
                       </div>
@@ -224,19 +238,10 @@
                                     <th>Name</th>
                                     <th>Split</th>
                                     <th>Edit</th>
-                                    <th>X</th>
+                                    <th>Delete</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {% for workout in workouts %}
-                                    <tr>
-                                      <td>{{workout['time']}}</td>
-                                      <td>{{workout['name']}}</td>
-                                      <td>{{workout['avg_min']}}:{{workout['avg_sec']}}</td>
-                                      <td onclick="modal_edit('{{workout['workout_id']}}', '{{ url_for('get_a_workout') }}')">Edit</td>
-                                      <td>Delete</td>
-                                    </tr>
-                                  {% endfor %}
                                 </tbody>
                               </table>
                             </div>

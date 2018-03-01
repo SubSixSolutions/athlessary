@@ -129,20 +129,19 @@ function create_chart_object(){
   });
 
   // populate the chart with data
-  populate_chart('/api_hello', myChart);
+  // populate_chart('/api_hello', myChart);
 
   // set change workouts to be responsive
   elemm = document.getElementById('change_workout');
   elemm.onclick = function(){
     populate_chart('/api_hello', myChart);
   }
+
+  // return chart object; will be drawn later
+  return myChart;
 }
 
-// function draw_chart(data) {
 function draw_chart(data, myChart){
-    //get data
-    // data = get_workouts_by_name('/api_hello');
-    // console.log(data);
 
     // unpack data dictionary
     var _data = data['data'];
@@ -179,28 +178,6 @@ function draw_chart(data, myChart){
     // reload the chart
     myChart.update();
 }
-
-// function get_workouts(_url) {
-//     var elem = document.getElementById("workout");
-//     var name = elem.options[elem.selectedIndex].text;
-//     if (name == 'None'){
-//         window.alert('Please add at least 2 workouts of the same kind!');
-//         var data = {
-//             'data': [],
-//             'labels': [],
-//             'y_axis': '---',
-//             'name': 'Add Workouts!'
-//         };
-//         draw_chart(data);
-//         return;
-//     }
-//     $.post(_url,
-//         {share: name}, function (data, status) {
-//             draw_chart(data);
-//         }
-//     );
-//     return 0;
-// }
 
 function populate_chart(_url, chart_instance) {
     var elem = document.getElementById("workout");
@@ -288,6 +265,31 @@ function modal_edit(_id, _url){
   }
 }
 
+function update_workout_table(){
+  var table = document.getElementById('myTable');
+  if (table){
+    $.get('/get_all_workouts',
+      function(data, status){
+        $("#myTable > tbody").empty();
+
+        for (var i = 0; i < data.length; i++) {
+
+          var newRow = $("<tr>");
+          var cols = "";
+
+          cols += '<td>' + data[i]['time'] + '</td>';
+          cols += '<td>' + data[i]['name'] + '</td>';
+          cols += '<td>' + data[i]['avg_min'] + ':' + data[i]['avg_sec'] + '</td>';
+          cols += '<td><button type=\"button\" onclick=\"modal_edit(\'' + data[i]['workout_id'] + '\', \'get_a_workout\')\" class=\"btn btn-outline-warning btn-sm\">Edit</button></td>';
+          cols += '<td><button type=\"button\" class=\"btn btn-sm btn-outline-danger\">Delete</button></td>';
+
+          newRow.append(cols);
+          $("#myTable > tbody").append(newRow);
+        }
+      });
+  }
+}
+
 function edit_a_workout(_id){
   $.post('/get_a_workout',
       {workout_id: _id}, function (data, status) {
@@ -354,7 +356,7 @@ function edit_a_workout(_id){
                   workout_id: w_id,
                   time: time,
               }, function (data, status) {
-                window.location.reload();
+                update_workout_table();
           });
         }
   });
@@ -362,5 +364,17 @@ function edit_a_workout(_id){
 
 
 $(window).ready(function(){
-  create_chart_object();
+  // create chart object; draw it only when clicked on
+  var myChart = create_chart_object();
+
+  // set up on click function to update data
+  elemm = document.getElementById('tab-2');
+  elemm.onclick = function() {
+    populate_chart('/api_hello', myChart);
+  };
+
+  elemm = document.getElementById('tab-3');
+  elemm.onclick = function() {
+    update_workout_table();
+  };
 });

@@ -1,34 +1,55 @@
-function show_me(show_id, form_name){
-    // get element
-    var span = document.getElementById('_new');
+$(document).ready(function(){
+  $("#add_workout_form").on('submit', function(e){
+    e.preventDefault();
+    var _url = $(this).attr('action');
 
-    // make a the span if it does not exist
-    if (!span){
-        span = document.createElement('span');
-        span.id = '_new';
-        document.getElementById(show_id).appendChild(span);
-    }
+    var meters = []; var minutes = []; var seconds = []; var by_distance = "";
+    var arr = $(this).serializeArray()
+    $.each(arr, function(obj, item) {
+        if (item.name == 'meters'){
+          meters.push(item.value);
+        }
+        else if (item.name == 'minutes') {
+          minutes.push(item.value);
+        }
+        else if (item.name == 'seconds'){
+          seconds.push(item.value);
+        }
+        else if (item.name = 'workout_type'){
+          by_distance = item.value;
+        }
+    });
+    console.log(meters, minutes, seconds, by_distance);
+    $.post(_url, {
+      workout_type: by_distance,
+      meters: meters,
+      minutes: minutes,
+      seconds: seconds
+    }, function(data, status){
+      console.log(status);
+      reset_form();
+    });
+  });
+});
 
-    // set the value of the span
-    span.innerHTML = ":<input type='number' name='' style='width:50px;' value='00' id=".concat(form_name, ">");
 
-    // change default value to 30 minutes
-    var other = document.getElementById('deflt_val');
-    other.value = '30';
-    other.style = 'text-align:center; width:50px;';
+function switch_input(){
+  var input = document.getElementById('second_input_div');
+  is_visible = input.hidden;
+  var min_meter_txt = document.getElementById('min_meter_txt');
+  console.log(is_visible);
+  if (is_visible == false){
+    min_meter_txt.innerHTML = "Number of Meters";
+    input.hidden = true;
+  }
+  else {
+    min_meter_txt.innerHTML = "Number of Minutes";
+    document.getElementById('min_meter_input').setAttribute('value','30');
+    input.hidden = false;
+  }
+  // $('#min_meter_input').attr('type', 'time');
 }
 
-function hide_me(id_tag){
-    var elem = document.getElementById(id_tag);
-    if (elem) {
-        elem.innerHTML = '';
-    }
-
-    // change default value to 2000m
-    var other = document.getElementById('deflt_val');
-    other.value = '2000';
-    other.style = 'text-align:center; width:75px;';
-}
 
 function show_incomplete(bad_elem){
     var name = bad_elem.concat('-red');
@@ -42,67 +63,95 @@ function show_incomplete(bad_elem){
     }
 }
 
-function reset_form(form_name){
+function reset_form(){
     // clear html content
-    document.getElementById(form_name).innerHTML = '';
+    // document.getElementById("add_workout_form").innerHTML = '';
+    $("#add_workout_form > div:not(:first)").empty();
 
     // reset radio buttons
-    document.getElementById('rad1').disabled = false;
-    document.getElementById('rad2').disabled = false;
+    document.getElementById('minute_bttn').disabled = false;
+    document.getElementById('meter_bttn').disabled = false;
+
+    // hide seconds input
+    document.getElementById('second_input_div').hidden = true;
+
+    // set text to say Meters
+    document.getElementById('min_meter_txt').innerHTML = "Number of Meters";
+
+    // set default to 2000
+    document.getElementById('min_meter_input').setAttribute('value','2000');
 
     // display submit button
-    document.getElementById('add_bttn').style.display = 'block';
+    document.getElementById('submit_bttn').style.display = 'block';
 }
 
-function addInput(form_name, pieces, mtrs_mins, secs){
-    // clear current content
-    document.getElementById(form_name).innerHTML = '';
+function generate_form(){
 
-    // hide add pieces button
-    document.getElementById('add_bttn').style.display = 'none';
+  // hide submit button
+  document.getElementById('submit_bttn').style.display = 'none';
 
-    var num_pieces = document.getElementById(pieces).value;
-    var w_type = document.querySelector("input[name=workout_type]:checked").value;
-    var meter_minutes = document.getElementById(mtrs_mins).value;
+  var num_pieces = document.getElementById("num_pieces").value;
+  var w_type = document.querySelector("input[name=workout_type]:checked").value;
+  var meter_minutes = document.getElementById("min_meter_input").value;
 
-    document.getElementById(form_name).innerHTML = '';
+  // <div class="col-auto form-group">
+  //   <small class="form-text text-muted" for="num_pieces">Number of Peices</small>
+  //   <input type="number" min="1" class="form-control mb-2" id="num_pieces" placeholder="Number of Peices">
+  // </div>
 
-    // verify that the 'BY' section is specified
-    if (meter_minutes == ''){
-        if (w_type != 'Length' || document.getElementById(secs).value == 0){
-            show_incomplete('default_val_div');
-            return;
-        }
-    }
+  content_div = "<div class=\"col-4 form-group\">";
+  small_class = "<small class=\"form-text text-muted\">";
+  end_small = "</small>";
+  input = "<input type=\"number\" min=\"0\" class=\"form-control mb-2\"";
+  end_input = ">";
+  end_content_div = "</div>";
+  label = "<div class=\"col-sm-2\"><label class=\"row-form-label\">"
+  end_label = "</label></div>"
 
-    if (num_pieces == ''){
-        show_incomplete('num_pieces_span');
-        return;
-    }
+  for (var i = 0; i < num_pieces; i++) {
+      var main_div = document.createElement('div');
+      main_div.className = 'form-row col align-items-center';
+      main_div.innerHTML = label + 'Peice ' + (i+1) + end_label;
 
-    // add inputs
-    for (var i = 0; i < num_pieces; i++) {
-        var newdiv = document.createElement('div');
-        if (w_type == 'Length'){
-            document.getElementById('rad1').disabled = true;
-            var d_value_1 = document.getElementById(secs).value;
-            newdiv.innerHTML = "<br>Piece " + (i + 1) + " <br><span>Time</span><input style='width:50px;' type='number' value='" + meter_minutes +
-                "' name='minutes'>:<input style='width: 50px;' type='number' value='" + d_value_1 + "' name='seconds'>" +
-                "<span>Meters</span><input style='width: 50px;' type='number' name='meters'>";
-        }
-        else {
-            document.getElementById('rad2').disabled = true;
-            newdiv.innerHTML = "<br>Piece " + (i + 1) + " <br><span>Time</span><input type='number' style='width:50px;'" +
-                "name='minutes'>:<input style='width:50px;' type='number' name='seconds'><span>Meters</span>" +
-                "<input style='width:75px;' type='number' name='meters' value='" + meter_minutes + "' readonly=\"readonly\">";
-        }
-        document.getElementById(form_name).appendChild(newdiv);
-    }
+      var col_10_div = document.createElement('div');
+      col_10_div.className = 'col-sm-10';
 
-    // submit and reset buttons
-    var submit_div = document.createElement('div');
-    submit_div.innerHTML = "<br><input type='submit' value='Save Workout'><input type='button' value='Reset'" +
-        "onClick=\"reset_form(\'" + form_name + "\')\">";
-    document.getElementById(form_name).appendChild(submit_div);
+      inner_div = document.createElement('div');
+      inner_div.className = 'form-row';
 
+      var input1 = ""; var input2 = ""; var input3 = "";
+      if (w_type == 'Length'){
+          document.getElementById('meter_bttn').disabled = true;
+          var d_value_1 = document.getElementById('second_input').value;
+          input1 = content_div + small_class + "Meters" + end_small + input + "name=\"meters\"" + end_input + end_content_div;
+          input2 = content_div + small_class + "Minutes" + end_small + input + "name=\"minutes\" value=\"" + meter_minutes + "\"" + end_input + end_content_div;
+          input3 = content_div + small_class + "Seconds" + end_small + input + "name=\"seconds\" value=\"" + d_value_1 + "\"" + end_input + end_content_div;
+      }
+      else {
+          document.getElementById('minute_bttn').disabled = true;
+          input1 = content_div + small_class + "Meters" + end_small + input + "name=\"meters\" value=\"" + meter_minutes + "\"" + end_input + end_content_div;
+          input2 = content_div + small_class + "Minutes" + end_small + input + "name=\"minutes\"" + end_input + end_content_div;
+          input3 = content_div + small_class + "Seconds" + end_small + input + "name=\"seconds\"" + end_input + end_content_div;
+      }
+      inner_div.innerHTML = input1 + input2 + input3;
+      col_10_div.appendChild(inner_div);
+
+      main_div.appendChild(col_10_div);
+
+      document.getElementById('add_workout_form').appendChild(main_div);
+  }
+
+  var submit_div = document.createElement('div');
+  submit_div.className = 'form-row col mb-2';
+
+  var save_div = document.createElement('div');
+  save_div.className = 'col-auto';
+  save_div.innerHTML = '<input class=\"btn btn-primary\" type=\"submit\" value=\"Save Workout\">';
+  submit_div.appendChild(save_div);
+
+  var reset_div = document.createElement('div');
+  reset_div.innerHTML = '<input class=\"btn btn-primary\" type=\"button\" onClick=\"reset_form();\" value=\"Reset\">';
+  submit_div.appendChild(reset_div);
+
+  document.getElementById('add_workout_form').appendChild(submit_div);
 }

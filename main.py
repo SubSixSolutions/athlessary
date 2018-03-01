@@ -80,9 +80,9 @@ def workouts():
         # TODO implement other workouts
 
         # get the parameters from the form
-        meters = request.form.getlist('meters')
-        minutes = request.form.getlist('minutes')
-        seconds = request.form.getlist('seconds')
+        meters = request.form.getlist('meters[]')
+        minutes = request.form.getlist('minutes[]')
+        seconds = request.form.getlist('seconds[]')
 
         if meters != [''] and minutes != [''] and seconds != ['']:
 
@@ -94,9 +94,8 @@ def workouts():
             # add workout to database
             create_workout(current_user.user_id, db, meters, minutes, seconds, by_distance)
 
-            return redirect(url_for('profile_page', username=current_user.username))
+            return Response(json.dumps({}), status=201, mimetype='application/json')
 
-    workouts = db.get_aggregate_workouts_by_id(current_user.user_id)
     workout_names = db.find_all_workout_names(current_user.user_id)
 
     return render_template('workout.html', workouts=workouts, names=workout_names)
@@ -210,6 +209,13 @@ def get_a_workout():
     return Response(js, status=200, mimetype='application/json')
 
 
+@app.route('/get_all_workouts', methods=['GET'])
+def get_all_workouts():
+    workouts = db.get_aggregate_workouts_by_id(current_user.user_id)
+    js = json.dumps(workouts)
+    return Response(js, status=200, mimetype='application/json')
+
+
 @app.route('/edit_workout', methods=['POST'])
 def edit_workout():
 
@@ -227,16 +233,6 @@ def edit_workout():
         for i in range(len(erg_ids)):
             db.update('erg', ['minutes', 'seconds'], [int(minutes[i]), int(seconds[i])], ['erg_id'], [erg_ids[i]])
 
-    # old_date_utc = float(request.form.get('utc')) / 1000
-    # new_date_utc = float(request.form.get('new_stamp')) / 1000
-    # print(old_date_utc)
-    # print(new_date_utc)
-
-    # if old_date_utc != new_date_utc:
-    #     print('update')
-    #     workout_id = request.form.get('workout_id')
-    #     db.update('workout', ['time'], [new_date_utc], ['workout_id'], [workout_id])
-
     old_date_stamp = float(request.form.get('old_date')) // 1
     new_date = request.form.get('new_date')
     new_time = request.form.get('time')
@@ -253,7 +249,7 @@ def edit_workout():
         workout_id = request.form.get('workout_id')
         db.update('workout', ['time'], [new_date], ['workout_id'], [workout_id])
 
-    return redirect(url_for('workouts'))
+    return Response(json.dumps({}), status=201, mimetype='application/json')
 
 
 if __name__ == '__main__':
