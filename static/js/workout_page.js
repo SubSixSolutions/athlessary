@@ -128,9 +128,6 @@ function create_chart_object(){
     }
   });
 
-  // populate the chart with data
-  // populate_chart('/api_hello', myChart);
-
   // set change workouts to be responsive
   elemm = document.getElementById('change_workout');
   elemm.onclick = function(){
@@ -165,7 +162,6 @@ function draw_chart(data, myChart){
         var index = activePoints[0]._index;
         get_workout_by_id(data['_ids'][index], '/get_a_workout');
       }
-      // go(evt, '{{url_for('get_a_workout')}}', data['_ids']);
     };
 
     // update side table with the curr workouts
@@ -179,19 +175,30 @@ function draw_chart(data, myChart){
     myChart.update();
 }
 
+function update_graph_options(workout_names){
+  var elem = document.getElementById("workout");
+  for (var i = 0; i < workout_names.length; i++){
+    option = document.createElement('option');
+    option.innerHTML = workout_names[i];
+  }
+}
+
 function populate_chart(_url, chart_instance) {
+    //generate workout workout
+    $.get('/get_workout_names', {}, function(data, status) {
+      update_graph_options(data);
+    });
+
+    // don't navigate to tab if there are no workouts to show
+    var length = $('#workout > option').length;
+    if (length < 1){
+      window.alert('Please add at least 2 workouts of the same kind!');
+      return;
+    }
+
+    // request data and draw the chart
     var elem = document.getElementById("workout");
     var name = elem.options[elem.selectedIndex].text;
-    if (name == 'None'){
-        window.alert('Please add at least 2 workouts of the same kind!');
-        var data = {
-            'data': [],
-            'labels': [],
-            'y_axis': '---',
-            'name': 'Add Workouts!'
-        };
-        draw_chart(data, chart_instance);
-    }
     $.post(_url,
         {share: name}, function (data, status) {
             console.log(data);
@@ -288,6 +295,7 @@ function update_workout_table(){
         }
       });
   }
+  return 0;
 }
 
 function edit_a_workout(_id){
@@ -362,19 +370,30 @@ function edit_a_workout(_id){
   });
 }
 
+function disable_tab(tab_id){
+  $("#" + tab_id).addClass('disabled');
+}
+
+function enable_tab(tab_id){
+  if ($("#" + tab_id).hasClass('disabled')){
+    $$("#" + tab_id).removeClass('disabled');
+  }
+}
 
 $(window).ready(function(){
   // create chart object; draw it only when clicked on
   var myChart = create_chart_object();
 
-  // set up on click function to update data
+  // set up on click function to update data for chart tab
   elemm = document.getElementById('tab-2');
-  elemm.onclick = function() {
+  elemm.onclick = function(e) {
     populate_chart('/api_hello', myChart);
   };
 
+  // update table tab
   elemm = document.getElementById('tab-3');
   elemm.onclick = function() {
     update_workout_table();
   };
+
 });

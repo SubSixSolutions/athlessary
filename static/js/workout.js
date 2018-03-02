@@ -47,7 +47,6 @@ function switch_input(){
     document.getElementById('min_meter_input').setAttribute('value','30');
     input.hidden = false;
   }
-  // $('#min_meter_input').attr('type', 'time');
 }
 
 

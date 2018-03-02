@@ -173,6 +173,7 @@ def new_signup():
                 password = signin_form.data['password_field']
 
                 result = db.select('users', ['password', 'id'], ['username'], [username])
+                print(result)
                 if result:
                     hash = result['password']
                     password_match = pbkdf2_sha256.verify(password, hash)
@@ -250,6 +251,13 @@ def edit_workout():
         db.update('workout', ['time'], [new_date], ['workout_id'], [workout_id])
 
     return Response(json.dumps({}), status=201, mimetype='application/json')
+
+
+@app.route('/get_workout_names')
+def get_workout_names():
+    workout_names = db.find_all_workout_names(current_user.user_id)
+    js = json.dumps(workout_names)
+    return Response(js, status=200, mimetype='application/json')
 
 
 if __name__ == '__main__':
