@@ -96,9 +96,7 @@ def workouts():
 
             return Response(json.dumps({}), status=201, mimetype='application/json')
 
-    workout_names = db.find_all_workout_names(current_user.user_id)
-
-    return render_template('workout.html', workouts=workouts, names=workout_names)
+    return render_template('workout.html')
 
 
 @login_required

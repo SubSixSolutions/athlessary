@@ -32,7 +32,7 @@
         height: 100%;
       }
       body {
-        height: 100vh;
+        height: 100%;
         padding-top: 54px;
         display: flex;
         flex-direction: column;
@@ -171,12 +171,6 @@
                             <!-- <form class=""> -->
                             <div class="input-group">
                               <select class="custom-select form-control" name="workout" id="workout">
-                                {% for name in names %}
-                                    <option>{{ name['name'] }}</option>
-                                {% endfor %}
-                                {% if workouts == [] %}
-                                    <option>None</option>
-                                {% endif %}
                               </select>
                               <div class="input-group-append">
                                 <button class="btn btn-outline-secondary" id="change_workout" type="button">View Workout</button>

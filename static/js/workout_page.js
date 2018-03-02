@@ -179,25 +179,26 @@ function update_graph_options(workout_names){
   var elem = document.getElementById("workout");
   for (var i = 0; i < workout_names.length; i++){
     option = document.createElement('option');
-    option.innerHTML = workout_names[i];
+    option.innerHTML = workout_names[i]['name'];
+    elem.appendChild(option);
   }
 }
 
 function populate_chart(_url, chart_instance) {
+    // var length = 0;
+
     //generate workout workout
     $.get('/get_workout_names', {}, function(data, status) {
+      console.log(data);
       update_graph_options(data);
     });
 
-    // don't navigate to tab if there are no workouts to show
-    var length = $('#workout > option').length;
-    if (length < 1){
+    // request data and draw the chart
+    var elem = document.getElementById("workout");
+    if (elem.selectedIndex < 0){
       window.alert('Please add at least 2 workouts of the same kind!');
       return;
     }
-
-    // request data and draw the chart
-    var elem = document.getElementById("workout");
     var name = elem.options[elem.selectedIndex].text;
     $.post(_url,
         {share: name}, function (data, status) {
