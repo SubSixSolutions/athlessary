@@ -251,11 +251,18 @@ def edit_workout():
     return Response(json.dumps({}), status=201, mimetype='application/json')
 
 
-@app.route('/get_workout_names')
+@app.route('/get_workout_names', methods=['GET'])
 def get_workout_names():
     workout_names = db.find_all_workout_names(current_user.user_id)
     js = json.dumps(workout_names)
     return Response(js, status=200, mimetype='application/json')
+
+
+@app.route('/delete_workout', methods=['POST'])
+def delete_workout():
+    workout_id = request.form.get('workout_id')
+    db.delete_entry('workout', 'workout_id', workout_id)
+    return Response(json.dumps({}), 201, mimetype='application/json')
 
 
 if __name__ == '__main__':

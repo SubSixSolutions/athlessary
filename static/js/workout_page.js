@@ -175,28 +175,28 @@ function draw_chart(data, myChart){
     myChart.update();
 }
 
-function update_graph_options(workout_names){
-  var elem = document.getElementById("workout");
-  for (var i = 0; i < workout_names.length; i++){
-    option = document.createElement('option');
-    option.innerHTML = workout_names[i]['name'];
-    elem.appendChild(option);
-  }
+function update_graph_options(){
+  console.log('update the options');
+  $.get('/get_workout_names', {}, function(data, status) {
+    var elem = document.getElementById("workout");
+    for (var i = 0; i < data.length; i++){
+      option = document.createElement('option');
+      option.innerHTML = data[i]['name'];
+      elem.appendChild(option);
+    }
+  });
 }
 
 function populate_chart(_url, chart_instance) {
     // var length = 0;
 
     //generate workout workout
-    $.get('/get_workout_names', {}, function(data, status) {
-      console.log(data);
-      update_graph_options(data);
-    });
+    update_graph_options();
 
     // request data and draw the chart
     var elem = document.getElementById("workout");
     if (elem.selectedIndex < 0){
-      window.alert('Please add at least 2 workouts of the same kind!');
+      // window.alert('Please add at least 2 workouts of the same kind!');
       return;
     }
     var name = elem.options[elem.selectedIndex].text;
@@ -289,7 +289,7 @@ function update_workout_table(){
           cols += '<td>' + data[i]['name'] + '</td>';
           cols += '<td>' + data[i]['avg_min'] + ':' + data[i]['avg_sec'] + '</td>';
           cols += '<td><button type=\"button\" onclick=\"modal_edit(\'' + data[i]['workout_id'] + '\', \'get_a_workout\')\" class=\"btn btn-outline-warning btn-sm\">Edit</button></td>';
-          cols += '<td><button type=\"button\" class=\"btn btn-sm btn-outline-danger\">Delete</button></td>';
+          cols += '<td><button type=\"button\" class=\"btn btn-sm btn-outline-danger\" onclick=\"delete_workout(\'' + data[i]['workout_id'] + '\',\'' + i + '\')\">Delete</button></td>';
 
           newRow.append(cols);
           $("#myTable > tbody").append(newRow);
@@ -297,6 +297,20 @@ function update_workout_table(){
       });
   }
   return 0;
+}
+
+function delete_workout(workout_id, idx){
+
+  // request server to delete
+  $.post('/delete_workout',
+      {workout_id: workout_id}, function (data, status){
+        console.log(data);
+        console.log(status);
+
+        // ask server for data
+        update_workout_table();
+        populate_chart();
+  });
 }
 
 function edit_a_workout(_id){
@@ -384,6 +398,12 @@ function enable_tab(tab_id){
 $(window).ready(function(){
   // create chart object; draw it only when clicked on
   var myChart = create_chart_object();
+
+  // add to the chart
+  populate_chart();
+
+  // create the table;
+  update_workout_table();
 
   // set up on click function to update data for chart tab
   elemm = document.getElementById('tab-2');
