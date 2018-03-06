@@ -177,7 +177,12 @@ function draw_chart(data, myChart){
 
 function update_graph_options(){
   console.log('update the options');
+  // $("#workout").empty();
   $.get('/get_workout_names', {}, function(data, status) {
+    // clear old workouts
+    $("#workout").empty();
+
+    // add new workouts
     var elem = document.getElementById("workout");
     for (var i = 0; i < data.length; i++){
       option = document.createElement('option');
@@ -238,14 +243,14 @@ function modal_edit(_id, _url){
 
             date_cell = '<input type=text ></input>'
 
-            cols += '<td>' + (i+1) + '</td>';
+            cols += '<td class=\"align-middle"\">' + (i+1) + '</td>';
 
             if (data[i]['by_distance'] == 0){
-              cols += '<td><input type=\"number\" name=\"meters' + data[i]['erg_id'] + '\" value=\'' + data[i]['distance'] + '\'></td>';
+              cols += '<td><input class=\"form-control\" type=\"number\" name=\"meters' + data[i]['erg_id'] + '\" value=\'' + data[i]['distance'] + '\'></td>';
             }
             else {
-              cols += '<td><input type=number name=\"minutes' + data[i]['erg_id'] + '\" value=\'' + data[i]['minutes'] + '\'></td>';
-              cols += '<td><input type=number name=\"seconds' + data[i]['erg_id'] + '\" value=\'' + data[i]['seconds'] + '\'></td>';
+              cols += '<td><input class=\"form-control\" type=number name=\"minutes' + data[i]['erg_id'] + '\" value=\'' + data[i]['minutes'] + '\'></td>';
+              cols += '<td><input class=\"form-control\" type=number name=\"seconds' + data[i]['erg_id'] + '\" value=\'' + data[i]['seconds'] + '\'></td>';
             }
 
             newRow.append(cols);
