@@ -85,18 +85,18 @@
       <!-- Your Content Here -->
       <div class="row justify-content-center">
         <div class="col-auto">
-          <table class="table table-striped">
+          <table class="table table-striped" id="athlete_table">
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Address</th>
+                <th>Number of Seats</th>
+                <th>Going to Practice</th>
+                <th>Driving?</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Jane Doe</td>
-                <td>1 East Green Street</td>
-              </tr>
+
             </tbody>
           </table>
         </div>
@@ -117,8 +117,8 @@
     </footer>
 
     <!-- Bootstrap core JavaScript -->
-    <!-- <script src="/Users/Max/PycharmProjects/athlessary/static/js/bootstrap.min.js"></script> -->
-    <!-- <script src="{{ url_for( 'static', filename='js/bootstrap.min.js' ) }}"></script> -->
+    <!-- <script src="/Users/Max/PycharmProjects/athlessary/static/js/roster.js"></script> -->
+    <script src="{{ url_for( 'static', filename='js/roster.js' ) }}"></script>
 
   </body>
 
