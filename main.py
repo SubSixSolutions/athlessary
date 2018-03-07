@@ -276,5 +276,30 @@ def get_all_athletes():
 def roster():
     return render_template('roster_page.html')
 
+
+@app.route('/profile')
+def profile():
+    form = web_forms.ProfileForm()
+    return render_template('profile_5.html', form=form)
+
+
+@app.route('/save_img', methods=['POST'])
+def save_img():
+    import base64
+    img = request.form.get('img')
+
+    if img:
+        img = img.split(',')[1]
+
+        data = img.encode()
+        data = base64.b64decode(data)
+
+        imgFile = open('my_pic.png', 'wb')
+        imgFile.write(data)
+        print('done')
+
+    return Response(json.dumps({}), 201, mimetype='application/json')
+
+
 if __name__ == '__main__':
     app.run()
