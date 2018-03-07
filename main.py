@@ -277,9 +277,14 @@ def roster():
     return render_template('roster_page.html')
 
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET','POST'])
 def profile():
     form = web_forms.ProfileForm()
+    if form.validate_on_submit():
+        print('go')
+    else:
+        print('no go')
+
     return render_template('profile_5.html', form=form)
 
 

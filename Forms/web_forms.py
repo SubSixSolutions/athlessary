@@ -36,7 +36,7 @@ class PhotoForm(FlaskForm):
 
 
 class ProfileForm(FlaskForm):
-    bio = TextAreaField('bio', validators=[Length(max=250), validators.InputRequired()])
+    bio = TextAreaField('bio', validators=[Length(min=5, max=250, message='hey!'), validators.InputRequired()])
     address = StringField('address', validators=[validators.InputRequired()])
     city = StringField('city', validators=[validators.InputRequired()])
     state = StringField('state', validators=[validators.InputRequired()])

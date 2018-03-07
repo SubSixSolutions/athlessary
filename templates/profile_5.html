@@ -85,13 +85,13 @@
       <!-- Your Content Here -->
       <div class="">
         <div class="row mt-5">
-          <div class="col-4 pr-0">
+          <div class="col-4">
             <!-- <div class="row center-block"> -->
-              <img class="img-responsive center-block" src="{{url_for('static', filename='images/my_pic.png')}}" alt="">
+              <img style="max-width:100%;" class="img-responsive center-block" src="{{url_for('static', filename='images/my_pic.png')}}" alt="">
             <!-- </div> -->
           </div>
           <div class="col-8">
-            <form class="" action="#" method="POST">
+            <form class="needs-validation" action="{{url_for('profile')}}" method="POST">
               <h3>{{current_user.username}}</h3>
               <!-- <div class="row form-row align-items-center">
                 <div class="col-auto">
@@ -108,6 +108,11 @@
                     {{form.bio(class_="form-control", rows='3', maxlength='250')}}
                     <!-- <textarea class="form-control" id="exampleTextarea" rows="3"></textarea> -->
                   </div>
+                  <small>
+                    {% for err in form.bio.errors %}
+                      <p class="text-danger mb-0">{{err}}</p>
+                    {% endfor %}
+                  </small>
                 </div>
               </div>
               <div class="form-row">
@@ -117,6 +122,11 @@
                     {{form.address(class_="form-control", placeholder=current_user.address, autocomplete="street-address")}}
                     <!-- <input autocomplete="street-address" class="form-control" type="text" name="time" value="" id="addr-1"> -->
                   </div>
+                  <small>
+                    {% for err in form.address.errors %}
+                      <p class="text-danger mb-0">{{err}}</p>
+                    {% endfor %}
+                  </small>
                 </div>
                 <div class="col-4 form-group">
                   <small class="form-text text-muted" for="addr-1">City</small>
@@ -124,6 +134,11 @@
                     {{form.city(class_="form-control", placeholder="", autocomplete="address-level2")}}
                     <!-- <input autocomplete="address-level2" class="form-control" type="text" name="time" value="" id="addr-1"> -->
                   </div>
+                  <small>
+                    {% for err in form.city.errors %}
+                      <p class="text-danger mb-0">{{err}}</p>
+                    {% endfor %}
+                  </small>
                 </div>
               </div>
               <div class="row form-row">
@@ -133,6 +148,11 @@
                     {{form.state(class_="form-control", placeholder="", autocomplete="address-level1")}}
                     <!-- <input autocomplete="address-level1" class="form-control" type="text" name="time" value="" id="addr-1"> -->
                   </div>
+                  <small>
+                    {% for err in form.state.errors %}
+                      <p class="text-danger mb-0">{{err}}</p>
+                    {% endfor %}
+                  </small>
                 </div>
                 <div class="col-3 form-group">
                   <small class="form-text text-muted" for="addr-2">Zip</small>
@@ -140,6 +160,11 @@
                     {{form.zip(class_="form-control", placeholder="", autocomplete="postal-code")}}
                     <!-- <input autocomplete="postal-code" class="form-control" type="text" name="time" value="" id="addr-2"> -->
                   </div>
+                  <small>
+                    {% for err in form.zip.errors %}
+                      <p class="text-danger mb-0">{{err}}</p>
+                    {% endfor %}
+                  </small>
                 </div>
                 <div class="col-6 form-group">
                   <small class="form-text text-muted" for="phone">Phone</small>
@@ -147,10 +172,15 @@
                     {{form.phone(class_="form-control", placeholder="", autocomplete="tel-national")}}
                     <!-- <input autocomplete="tel" class="form-control" type="tel" name="time" value="" id="phone"> -->
                   </div>
+                  <small>
+                    {% for err in form.phone.errors %}
+                      <p class="text-danger mb-0">{{err}}</p>
+                    {% endfor %}
+                  </small>
                 </div>
               </div>
               <div class="row form-row">
-                <div class="col-4 form-group">
+                <div class="col-6 form-group">
                   <small class="form-text text-muted" for="addr-1">Team</small>
                   <div class="input-group mb-1">
                     {{form.team(class_="form-control custom-select")}}
@@ -159,28 +189,34 @@
                     </select> -->
                   </div>
                 </div>
-                <div class="col-4 form-group">
+                <!-- <div class="col-4 form-group justify-content-center">
                   <small class="form-text text-muted" for="phone">I Certify I Can Drive To Practice</small>
                   <div class="input-group mb-1">
                     {{form.can_drive(class_="form-control custom-checkbox")}}
-                    <!-- <input class="form-control custom-checkbox" type="checkbox" name="time" value="" id="phone"> -->
+                    <input class="form-control custom-checkbox" type="checkbox" name="time" value="" id="phone">
                   </div>
-                </div>
-                <div class="col-4 form-group">
+                </div> -->
+                <div class="col-6 form-group">
                   <small class="form-text text-muted" for="phone">Number of Seats</small>
                   <div class="input-group mb-1">
-                    {{form.num_seats(class_="form-control custom-select")}}
-                    <!-- <select class="custom-select form-control"  name="time" value="" id="addr-1">
-                      <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option>
-                    </select> -->
+                    {{form.num_seats(class_="form-control custom-select", id="num_seats", onchange="reveal_driver_elem()")}}
+                  </div>
+                </div>
+              </div>
+              <div class="form-row" style="display:none;" id="certify_driver">
+                <div class="col-12 form-group">
+                  <div class="form-check">
+                    {{form.can_drive(class_="form-check-input form-control-sm")}}
+                    <label class="form-check-label" for="can_drive">
+                      I Certify I Can Drive To Practice
+                    </label>
                   </div>
                 </div>
               </div>
               <div class="row form-row">
-                <div class="col-12">
+                <div class="col-auto">
                   {{form.submit(class_="btn btn-secondary mb-2")}}
                 </div>
-                <!-- <input class="btn btn-secondary" type="submit" name="" value="Update"> -->
               </div>
             </form>
           </div>
@@ -205,6 +241,7 @@
     <!-- Bootstrap core JavaScript -->
     <!-- <script src="/Users/Max/PycharmProjects/athlessary/static/js/bootstrap.min.js"></script> -->
     <script src="{{ url_for( 'static', filename='js/bootstrap.min.js' ) }}"></script>
+    <script src="{{url_for('static', filename='js/new_profile.js')}}"></script>
 
   </body>
 
