@@ -82,6 +82,9 @@ function reset_form(){
 
     // display submit button
     document.getElementById('submit_bttn').style.display = 'block';
+
+    // check meters button
+    $("#meter_bttn").prop('checked', true);
 }
 
 function generate_form(){

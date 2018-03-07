@@ -175,29 +175,35 @@ function draw_chart(data, myChart){
     myChart.update();
 }
 
-function update_graph_options(workout_names){
-  var elem = document.getElementById("workout");
-  for (var i = 0; i < workout_names.length; i++){
-    option = document.createElement('option');
-    option.innerHTML = workout_names[i];
-  }
+function update_graph_options(){
+  console.log('update the options');
+  // $("#workout").empty();
+  $.get('/get_workout_names', {}, function(data, status) {
+    // clear old workouts
+    $("#workout").empty();
+
+    // add new workouts
+    var elem = document.getElementById("workout");
+    for (var i = 0; i < data.length; i++){
+      option = document.createElement('option');
+      option.innerHTML = data[i]['name'];
+      elem.appendChild(option);
+    }
+  });
 }
 
 function populate_chart(_url, chart_instance) {
-    //generate workout workout
-    $.get('/get_workout_names', {}, function(data, status) {
-      update_graph_options(data);
-    });
+    // var length = 0;
 
-    // don't navigate to tab if there are no workouts to show
-    var length = $('#workout > option').length;
-    if (length < 1){
-      window.alert('Please add at least 2 workouts of the same kind!');
-      return;
-    }
+    //generate workout workout
+    update_graph_options();
 
     // request data and draw the chart
     var elem = document.getElementById("workout");
+    if (elem.selectedIndex < 0){
+      // window.alert('Please add at least 2 workouts of the same kind!');
+      return;
+    }
     var name = elem.options[elem.selectedIndex].text;
     $.post(_url,
         {share: name}, function (data, status) {
@@ -237,14 +243,14 @@ function modal_edit(_id, _url){
 
             date_cell = '<input type=text ></input>'
 
-            cols += '<td>' + (i+1) + '</td>';
+            cols += '<td class=\"align-middle"\">' + (i+1) + '</td>';
 
             if (data[i]['by_distance'] == 0){
-              cols += '<td><input type=\"number\" name=\"meters' + data[i]['erg_id'] + '\" value=\'' + data[i]['distance'] + '\'></td>';
+              cols += '<td><input class=\"form-control\" type=\"number\" name=\"meters' + data[i]['erg_id'] + '\" value=\'' + data[i]['distance'] + '\'></td>';
             }
             else {
-              cols += '<td><input type=number name=\"minutes' + data[i]['erg_id'] + '\" value=\'' + data[i]['minutes'] + '\'></td>';
-              cols += '<td><input type=number name=\"seconds' + data[i]['erg_id'] + '\" value=\'' + data[i]['seconds'] + '\'></td>';
+              cols += '<td><input class=\"form-control\" type=number name=\"minutes' + data[i]['erg_id'] + '\" value=\'' + data[i]['minutes'] + '\'></td>';
+              cols += '<td><input class=\"form-control\" type=number name=\"seconds' + data[i]['erg_id'] + '\" value=\'' + data[i]['seconds'] + '\'></td>';
             }
 
             newRow.append(cols);
@@ -288,7 +294,7 @@ function update_workout_table(){
           cols += '<td>' + data[i]['name'] + '</td>';
           cols += '<td>' + data[i]['avg_min'] + ':' + data[i]['avg_sec'] + '</td>';
           cols += '<td><button type=\"button\" onclick=\"modal_edit(\'' + data[i]['workout_id'] + '\', \'get_a_workout\')\" class=\"btn btn-outline-warning btn-sm\">Edit</button></td>';
-          cols += '<td><button type=\"button\" class=\"btn btn-sm btn-outline-danger\">Delete</button></td>';
+          cols += '<td><button type=\"button\" class=\"btn btn-sm btn-outline-danger\" onclick=\"delete_workout(\'' + data[i]['workout_id'] + '\',\'' + i + '\')\">Delete</button></td>';
 
           newRow.append(cols);
           $("#myTable > tbody").append(newRow);
@@ -296,6 +302,20 @@ function update_workout_table(){
       });
   }
   return 0;
+}
+
+function delete_workout(workout_id, idx){
+
+  // request server to delete
+  $.post('/delete_workout',
+      {workout_id: workout_id}, function (data, status){
+        console.log(data);
+        console.log(status);
+
+        // ask server for data
+        update_workout_table();
+        populate_chart();
+  });
 }
 
 function edit_a_workout(_id){
@@ -383,6 +403,12 @@ function enable_tab(tab_id){
 $(window).ready(function(){
   // create chart object; draw it only when clicked on
   var myChart = create_chart_object();
+
+  // add to the chart
+  populate_chart();
+
+  // create the table;
+  update_workout_table();
 
   // set up on click function to update data for chart tab
   elemm = document.getElementById('tab-2');

@@ -32,7 +32,7 @@
         height: 100%;
       }
       body {
-        height: 100vh;
+        height: 100%;
         padding-top: 54px;
         display: flex;
         flex-direction: column;
@@ -171,12 +171,6 @@
                             <!-- <form class=""> -->
                             <div class="input-group">
                               <select class="custom-select form-control" name="workout" id="workout">
-                                {% for name in names %}
-                                    <option>{{ name['name'] }}</option>
-                                {% endfor %}
-                                {% if workouts == [] %}
-                                    <option>None</option>
-                                {% endif %}
                               </select>
                               <div class="input-group-append">
                                 <button class="btn btn-outline-secondary" id="change_workout" type="button">View Workout</button>
@@ -223,11 +217,26 @@
                           <div class="col-10" style="border: 1px solid black; padding:1em; background-color: #f8f9fa; margin-bottom:1em;">
                             <div class="col" style="padding-bottom:1em; text-align:center;">
                               <form class="" action="index.html" method="post">
-                                <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search by Name" title="Type in a name">
-                                <input type="radio" checked name="a" onclick="reset_text('by Name')" value="Name">
-                                <span>Name</span>
-                                <input type="radio" name="a" onclick="reset_text('by Date')" value="Date">
-                                <span>Date</span>
+                                <div class="row form-row align-items-center mx-2 mt-2 justify-content-center">
+                                  <div class="col-auto">
+                                    <input class="form-control" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search by Name" title="Type in a name">
+                                  </div>
+                                  <div class="col-auto">
+                                    <div class="form-check check form-check-inline mb-2">
+                                      <input class="form-check-input" type="radio" checked name="a" onclick="reset_text('by Name')" value="Name" id="by_name">
+                                      <label class="form-check-label" for="by_name">Name</label>
+                                    </div>
+                                    <div class="form-check check form-check-inline mb-2">
+                                      <input class="form-check-input" type="radio" name="a" onclick="reset_text('by Date')" value="Date" id="by_date">
+                                      <label class="form-check-label" for="by_date">Date</label>
+                                    </div>
+                                  </div>
+                                  <!-- <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search by Name" title="Type in a name"> -->
+                                  <!-- <input type="radio" checked name="a" onclick="reset_text('by Name')" value="Name"> -->
+                                  <!-- <span>Name</span> -->
+                                  <!-- <input type="radio" name="a" onclick="reset_text('by Date')" value="Date"> -->
+                                  <!-- <span>Date</span> -->
+                                </div>
                               </form>
                             </div>
                             <div class="row">
@@ -259,15 +268,23 @@
                                     <span aria-hidden="true">&times;</span>
                                   </button>
                                 </div>
-                                <form class="form-inline" method="POST" id='edit_form'>
+                                <form class="align-middle" method="POST" id='edit_form'>
                                   <div class="modal-body" id='m_body' style="max-height:50vh; overflow-y:scroll;">
-                                    <div class="row text-center" style="margin-bottom:1em;padding-left:1em;">
-                                      <label for="date">Date:</label>
-                                      <input type="date" name="date" value="" id="date">
-                                      <label for="time">Time:</label>
-                                      <input type="time" name="time" value="" id="time">
+                                    <div class="row form-row align-items-center justify-content-center">
+                                      <div class="col-6 form-group">
+                                        <small class="form-text text-muted" for="date">Date</small>
+                                        <div class="input-group mb-2">
+                                          <input class="form-control mb-2" type="date" name="date" value="" id="date">
+                                        </div>
+                                      </div>
+                                      <div class="col-6 form-group">
+                                        <small class="form-text text-muted" for="time">Time</small>
+                                        <div class="input-group mb-2">
+                                          <input class="form-control mb-2" type="time" name="time" value="" id="time">
+                                        </div>
+                                      </div>
                                     </div>
-                                    <table id='modal_table' class="table table-striped">
+                                    <table id='modal_table' class="table table-striped justify-content-center align-items-center align-middle">
                                       <thead>
                                       </thead>
                                       <tbody>

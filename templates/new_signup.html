@@ -30,8 +30,9 @@
         height: 100%;
       }
       body {
-        height: 100vh;
+        height: 100%;
         padding-top: 54px;
+        padding-bottom: 56px;
         display: flex;
         flex-direction: column;
       }
@@ -78,7 +79,7 @@
 
   <body>
 
-    <div class="content-div">
+    <div class="content-div h-100">
       <!-- Navigation -->
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
@@ -108,177 +109,86 @@
       </nav>
 
       <!-- Your Content Here -->
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
-            <h1 class="mt-5 text-white" style="text-align:center;">Welcome</h1>
-            <br>
-            <!-- Login / Sign up Div -->
-            <div class="container">
+      <div class="container h-100">
+        <div class="row align-items-center h-100">
+            <div class="col-6 mx-auto">
+                <div class="transparent_box" style="border: 1px solid white; padding:1em;">
+                  <h1 class="my-3 text-white" style="text-align:center;">Welcome</h1>
 
-            </div>
-            <!-- Tabs -->
-            <div class="row">
-              <div class="col-4">
+                  <!-- Tabs -->
+                  <div class="container">
+                    <ul class="nav nav-tabs justify-content-center">
+                      <li class="nav-item">
+                        <a class="nav-link {% if login %}active{% endif %}" data-toggle="tab" href="#sign_in_tab" style="border:1px solid white;">Log In</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link {% if login == false %}active{% endif %}" data-toggle="tab" href="#sign_up_tab" style="border:1px solid white;">Sign Up</a>
+                      </li>
+                    </ul>
+                    <br>
+                  </div>
 
-              </div>
-              <div class="col-4 transparent_box" style="border: 1px solid white; padding:1em;">
-                <!-- Tabs -->
-                <div class="container">
-                  <ul class="nav nav-tabs justify-content-center">
-                    <li class="nav-item">
-                      <a class="nav-link {% if login %}active{% endif %}" data-toggle="tab" href="#sign_in_tab" style="border:1px solid white;">Log In</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link {% if login == false %}active{% endif %}" data-toggle="tab" href="#sign_up_tab" style="border:1px solid white;">Sign Up</a>
-                    </li>
-                  </ul>
-                  <br>
-                </div>
-                <!-- Tab Content -->
-                <div class="container">
-                  <!-- Tab Content -->
-                  <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane {% if login %}active{% else %}fade in{% endif %}" id="sign_in_tab">
-                      <br>
-                      <div class="row">
-                        <div class="col-12">
-                          <form class="" action="{{ url_for('new_signup') }}" method="POST">
-                          <!-- change ID so 2 things don't have the same ID -->
-                              {{ sign_in.csrf_token(id='tag1') }}
-                            <div class="row" style="padding:1em;">
-                              <div class="col text-center">
-                                {{ sign_in.username_field(placeholder='User Name') }}
+                  <div class="container">
+                    <!-- Tab Content -->
+                    <div class="tab-content">
+                      <div role="tabpanel" class="tab-pane {% if login %}active{% else %}fade in{% endif %}" id="sign_in_tab">
+                        <br>
+                        <div class="row">
+                          <div class="col-12">
+                            <form class="" action="{{ url_for('new_signup') }}" method="POST">
+                            <!-- change ID so 2 things don't have the same ID -->
+                                {{ sign_in.csrf_token(id='tag1') }}
+                              <div class="row" style="padding:1em;">
+                                <div class="col text-center">
+                                  {{ sign_in.username_field(placeholder='User Name') }}
+                                </div>
                               </div>
-                            </div>
-                            <div class="row" style="padding:1em;">
-                              <div class="col text-center">
-                                {{ sign_in.password_field(placeholder='Password') }}
+                              <div class="row" style="padding:1em;">
+                                <div class="col text-center">
+                                  {{ sign_in.password_field(placeholder='Password') }}
+                                </div>
                               </div>
-                            </div>
-                            <div class="row" style="padding:1em;">
-                              <div class="col text-center">
-                                {{ sign_in.submit_bttn }}
+                              <div class="row" style="padding:1em;">
+                                <div class="col text-center">
+                                  {{ sign_in.submit_bttn }}
+                                </div>
                               </div>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane {% if login == false %}active{% else %}fade in{% endif %}" id="sign_up_tab">
-                      <form class="align-content-center" action="{{ url_for('new_signup') }}" method="POST">
-                        {{ sign_up.hidden_tag() }}
-                        <div class="row" style="text-align:center;">
-                          <div class="col text-center">
-                            <div class="col" style="padding:.5em;">
-                              {{ sign_up.first(placeholder='First Name') }}
-                            </div>
-                            <div class="col" style="padding:.5em;">
-                              {{ sign_up.last(placeholder='Last Name') }}
-                            </div>
-                            <div class="col" style="padding:.5em;">
-                              {{ sign_up.username(placeholder='User Name') }}
-                            </div>
-                            <div class="col" style="padding:.5em;">
-                              {{ sign_up.password(placeholder='Password')}}
-                            </div>
-                            <div class="col" style="padding:.5em;">
-                              {{ sign_up.retype_pass(placeholder='Retype Password')}}
-                            </div>
-                            <div class="col" style="padding:.5em;">
-                              {{ sign_up.submit }}
-                            </div>
+                            </form>
                           </div>
                         </div>
-                      </form>
+                      </div>
+                      <div role="tabpanel" class="tab-pane {% if login == false %}active{% else %}fade in{% endif %}" id="sign_up_tab">
+                        <form class="align-content-center" action="{{ url_for('new_signup') }}" method="POST">
+                          {{ sign_up.hidden_tag() }}
+                          <div class="row" style="text-align:center;">
+                            <div class="col text-center">
+                              <div class="col" style="padding:.5em;">
+                                {{ sign_up.first(placeholder='First Name') }}
+                              </div>
+                              <div class="col" style="padding:.5em;">
+                                {{ sign_up.last(placeholder='Last Name') }}
+                              </div>
+                              <div class="col" style="padding:.5em;">
+                                {{ sign_up.username(placeholder='User Name') }}
+                              </div>
+                              <div class="col" style="padding:.5em;">
+                                {{ sign_up.password(placeholder='Password')}}
+                              </div>
+                              <div class="col" style="padding:.5em;">
+                                {{ sign_up.retype_pass(placeholder='Retype Password')}}
+                              </div>
+                              <div class="col" style="padding:.5em;">
+                                {{ sign_up.submit }}
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="col-4">
-
-              </div>
             </div>
-            <!-- <ul class="nav nav-tabs justify-content-center">
-              <li class="nav-item">
-                <a class="nav-link {% if login %}active{% endif %}" data-toggle="tab" href="#sign_in_tab" style="border:1px solid white;">Log In</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link {% if login == false %}active{% endif %}" data-toggle="tab" href="#sign_up_tab" style="border:1px solid white;">Sign Up</a>
-              </li>
-            </ul>
-            <br> -->
-
-            <!-- Tab Content -->
-            <!-- <div class="tab-content">
-              <div role="tabpanel" class="tab-pane {% if login %}active{% else %}fade in{% endif %}" id="sign_in_tab">
-                <br>
-                <div class="row">
-                  <div class="col-4">
-                  </div>
-                  <div class="col-4 transparent_box" style="border: 1px solid white; padding:1em;">
-                    <form class="" action="{{ url_for('new_signup') }}" method="POST">
-                        {{ sign_in.csrf_token(id='tag1') }}
-                      <div class="row" style="padding:1em;">
-                        <div class="col text-center">
-                          {{ sign_in.username_field(placeholder='User Name') }}
-                        </div>
-                      </div>
-                      <div class="row" style="padding:1em;">
-                        <div class="col text-center">
-                          {{ sign_in.password_field(placeholder='Password') }}
-                        </div>
-                      </div>
-                      <div class="row" style="padding:1em;">
-                        <div class="col text-center">
-                          {{ sign_in.submit_bttn }}
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                  <div class="col-4">
-                  </div>
-                </div>
-              </div>
-              <div role="tabpanel" class="tab-pane {% if login == false %}active{% else %}fade in{% endif %}" id="sign_up_tab">
-                <br>
-                <div class="row">
-                  <div class="col-3">
-                  </div>
-                  <div class="col-6 transparent_box" style="border: 1px solid white; padding:1em;">
-                    <form class="" action="{{ url_for('new_signup') }}" method="POST">
-                      {{ sign_up.hidden_tag() }}
-                      <div class="row" style="text-align:center;">
-                        <div class="col-6">
-                          <div class="col" style="padding:1em;">
-                          </div>
-                          <div class="col" style="padding:1em;">
-                            {{ sign_up.password(placeholder='Password')}}
-                          </div>
-                          <div class="col" style="padding:1em;">
-                            {{ sign_up.username(placeholder='User Name') }}
-                          </div>
-                        </div>
-                        <div class="col-6">
-                          <div class="col" style="padding:1em;">
-                            {{ sign_up.last(placeholder='Last Name') }}
-                          </div>
-                          <div class="col" style="padding:1em;">
-                            {{ sign_up.retype_pass(placeholder='Retype Password')}}
-                          </div>
-                          <div class="col" style="padding:1em;">
-                            {{ sign_up.submit }}
-                          </div>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                  <div class="col-3">
-                  </div>
-                </div>
-              </div>
-            </div> -->
-          </div>
         </div>
       </div>
     </div>
