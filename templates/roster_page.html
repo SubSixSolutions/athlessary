@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
+<head>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -26,100 +26,109 @@
 
     <!-- Custom styles for this template -->
     <style>
-      html {
-        height: 100%;
-      }
-      body {
-        height: 100vh;
-        padding-top: 54px;
-        display: flex;
-        flex-direction: column;
-      }
-      @media (min-width: 992px) {
-        body {
-          padding-top: 56px;
+        html {
+            height: 100%;
         }
-      }
-      .content-div {
-        flex: 1 0 auto;
-      }
-      .footer_style {
-        flex-shrink: 0;
-      }
 
+        body {
+            height: 100vh;
+            padding-top: 54px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 992px) {
+            body {
+                padding-top: 56px;
+            }
+        }
+
+        .content-div {
+            flex: 1 0 auto;
+        }
+
+        .footer_style {
+            flex-shrink: 0;
+        }
+
+        .info {
+            background-color: #2f96b4 !important;
+        }
     </style>
 
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <div class="content-div">
-      <!-- Navigation -->
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+<div class="content-div">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-          <a class="navbar-brand" href="#">Athlessary</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('new_profile') }}">Home
-                  <span class="sr-only">(current)</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Workouts</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Services</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Contact</a>
-              </li>
-            </ul>
-          </div>
+            <a class="navbar-brand" href="#">Athlessary</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                    aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{ url_for('new_profile') }}">Home
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Workouts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </nav>
+    </nav>
 
-      <!-- Your Content Here -->
-      <div class="row justify-content-center">
+    <!-- Your Content Here -->
+    <div class="row justify-content-center">
         <div class="col-auto">
-          <table class="table table-striped" id="athlete_table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Address</th>
-                <th>Number of Seats</th>
-                <th>Going to Practice</th>
-                <th>Driving?</th>
-              </tr>
-            </thead>
-            <tbody>
+            <table class="table table-striped" id="athlete_table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Number of Seats</th>
+                    <th>Driving?</th>
+                </tr>
+                </thead>
+                <tbody>
 
-            </tbody>
-          </table>
+                </tbody>
+            </table>
+            <button type="button" id="done_button" class="btn btn-primary btn-lg btn-block">ok</button>
+
         </div>
-      </div>
     </div>
+</div>
 
 
-    <!-- Footer -->
-    <footer class="footer_style" style="padding:0em; margin:0em;">
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
-      <!-- <nav class="navbar navbar-expand-lg"> -->
+<!-- Footer -->
+<footer class="footer_style" style="padding:0em; margin:0em;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
+        <!-- <nav class="navbar navbar-expand-lg"> -->
         <div class="container">
-          <div class="navbar-brand">
-            <p style="margin:0em;">This is Athlessary</p>
-          </div>
+            <div class="navbar-brand">
+                <p style="margin:0em;">This is Athlessary</p>
+            </div>
         </div>
-      </nav>
-    </footer>
+    </nav>
+</footer>
 
-    <!-- Bootstrap core JavaScript -->
-    <!-- <script src="/Users/Max/PycharmProjects/athlessary/static/js/roster.js"></script> -->
-    <script src="{{ url_for( 'static', filename='js/roster.js' ) }}"></script>
+<!-- Bootstrap core JavaScript -->
+<!-- <script src="/Users/Max/PycharmProjects/athlessary/static/js/roster.js"></script> -->
+<script src="{{ url_for( 'static', filename='js/roster.js' ) }}"></script>
 
-  </body>
+</body>
 
 </html>

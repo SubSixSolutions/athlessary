@@ -276,5 +276,17 @@ def get_all_athletes():
 def roster():
     return render_template('roster_page.html')
 
+
+@app.route('/drivers', methods=['GET', 'POST'])
+def drivers():
+    if request.method == 'POST':
+        print(request.form)
+        data = request.form
+        return render_template('drivers.html')
+    else:
+        print('ok')
+        return render_template('drivers.html')
+
+
 if __name__ == '__main__':
     app.run()
