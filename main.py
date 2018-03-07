@@ -265,5 +265,28 @@ def delete_workout():
     return Response(json.dumps({}), 201, mimetype='application/json')
 
 
+@app.route('/get_all_athletes', methods=['GET'])
+def get_all_athletes():
+    users = db.select('users', ['ALL'], fetchone=False)
+    js = json.dumps(users)
+    return Response(js, status=200, mimetype='application/json')
+
+
+@app.route('/roster')
+def roster():
+    return render_template('roster_page.html')
+
+
+@app.route('/drivers', methods=['GET', 'POST'])
+def drivers():
+    if request.method == 'POST':
+        print(request.form)
+        data = request.form
+        return render_template('drivers.html')
+    else:
+        print('ok')
+        return render_template('drivers.html')
+
+
 if __name__ == '__main__':
     app.run()
