@@ -26,7 +26,7 @@ def save_photo(db, form, current_user):
         os.makedirs(directory)
 
     # delete old file
-    if current_user.picture != 'images/defaults/profile.jpg':
+    if current_user.picture != 'images/defaults/profile_square.jpg':
         try:
             os.remove(os.getcwd() + '/static/' + current_user.picture)
         except OSError:

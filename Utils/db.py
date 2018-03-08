@@ -51,18 +51,46 @@ class Database:
     def create_users(self):
         cur = self.conn.cursor()
 
-        sql = '''CREATE TABLE IF NOT EXISTS [users] (
-                    password  STRING (1, 50),
-                    id        INTEGER        PRIMARY KEY AUTOINCREMENT,
-                    first     STRING (1, 20) NOT NULL,
-                    last      STRING (1, 20) NOT NULL,
-                    username  STRING (2, 20) UNIQUE NOT NULL,
-                    address   STRING (1, 50) DEFAULT ('1 east green'),
-                    has_car   BOOLEAN        DEFAULT (0),
-                    num_seats INTEGER        DEFAULT (0),
-                    picture   BLOB           DEFAULT ('images/defaults/profile.jpg')
-                    ); '''
+        sql = '''CREATE TABLE IF NOT EXISTS users (
+                 password  STRING (1, 50),
+                 id        INTEGER          PRIMARY KEY AUTOINCREMENT,
+                 first     STRING (1, 20)   NOT NULL,
+                 last      STRING (1, 20)   NOT NULL,
+                 username  STRING (2, 20)   UNIQUE
+                                           NOT NULL,
+                 address   STRING (1, 50),
+                 city      STRING,
+                 state     STRING,
+                 zip       INTEGER,
+                 num_seats INTEGER          DEFAULT (0),
+                 phone     INTEGER (10, 10),
+                 team      STRING
+             );'''
 
+        cur.execute(sql)
+        self.conn.commit()
+
+        sql = '''CREATE TRIGGER IF NOT EXISTS delete_profile
+                 AFTER DELETE
+                 ON users
+                 BEGIN
+                    DELETE FROM profile
+                    WHERE profile.user_id = old.id;
+                 END;'''
+
+        cur.execute(sql)
+        self.conn.commit()
+        cur.close()
+
+    def create_profile(self):
+        cur = self.conn.cursor()
+        sql = '''CREATE TABLE IF NOT EXISTS profile (
+                 user_id INTEGER         UNIQUE
+                            PRIMARY KEY
+                            NOT NULL,
+                 picture STRING          NOT NULL
+                            DEFAULT ('images/defaults/profile_square.jpg'),
+                 bio     STRING (0, 250) NOT NULL);'''
         cur.execute(sql)
         self.conn.commit()
         cur.close()
@@ -136,6 +164,7 @@ class Database:
         self.create_users()
         self.create_workouts()
         self.create_erg()
+        self.create_profile()
 
     def insert(self, table_name, col_names, col_params):
         """
@@ -416,5 +445,20 @@ class Database:
         cur.execute(sql, (user_id,))
         result = cur.fetchone()
         print(result)
+        cur.close()
+        return result
+
+    def get_user(self, user_id):
+        cur = self.conn.cursor()
+
+        sql = '''SELECT *
+                 FROM users as u
+                 JOIN profile as p
+                 ON u.id = p.user_id
+                 WHERE u.id=?
+              '''
+
+        cur.execute(sql, (user_id,))
+        result = cur.fetchone()
         cur.close()
         return result

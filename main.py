@@ -277,15 +277,45 @@ def roster():
     return render_template('roster_page.html')
 
 
-@app.route('/profile', methods=['GET','POST'])
+@app.route('/profile', methods=['GET', 'POST'])
 def profile():
     form = web_forms.ProfileForm()
-    if form.validate_on_submit():
-        print('go')
-    else:
-        print('no go')
 
-    return render_template('profile_5.html', form=form)
+    if request.method == 'POST':
+        if form.validate():
+            user_attrs = ['address', 'city', 'state', 'zip', 'phone', 'team', 'num_seats']
+            profile_attrs = ['bio']
+            user_cols = []
+            profile_cols = []
+            for attribute in user_attrs:
+                user_cols.append(form.data[attribute])
+
+            for attribute in profile_attrs:
+                profile_cols.append((form.data[attribute]))
+
+            db.update('users', user_attrs, user_cols, ['id'], [current_user.user_id])
+
+            db.update('profile', profile_attrs, profile_cols, ['user_id'], [current_user.user_id])
+
+    profile = db.select('profile', ['ALL'], ['user_id'], [current_user.user_id])
+    print(profile)
+
+    if current_user.team:
+        form.team.default = current_user.team
+        form.process()
+    form.bio.data = profile['bio']
+    if current_user.address:
+        form.address.data = current_user.address
+    if current_user.state:
+        form.state.data = current_user.state
+    if current_user.city:
+        form.city.data = current_user.city
+    if current_user.zip:
+        form.zip.data = current_user.zip
+    if current_user.phone:
+        form.phone.data = current_user.phone
+    form.num_seats.data = current_user.num_seats
+    return render_template('profile_5.html', form=form, profile=profile)
 
 
 @app.route('/save_img', methods=['POST'])
@@ -299,11 +329,16 @@ def save_img():
         data = img.encode()
         data = base64.b64decode(data)
 
-        imgFile = open('my_pic.png', 'wb')
+        imgFile = open('profile.png', 'wb')
         imgFile.write(data)
         print('done')
 
     return Response(json.dumps({}), 201, mimetype='application/json')
+
+
+@app.route('/alt_profile')
+def alt_profile():
+    return render_template('profile.html')
 
 
 if __name__ == '__main__':

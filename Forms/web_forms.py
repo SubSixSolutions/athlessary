@@ -2,7 +2,7 @@ from flask_uploads import UploadSet, IMAGES
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileRequired, FileAllowed
 from wtforms import StringField, PasswordField, validators, IntegerField, SelectField, BooleanField, TextAreaField
-from wtforms import SubmitField, FileField
+from wtforms import SubmitField, FileField, ValidationError
 from wtforms.fields.html5 import TelField
 from wtforms.validators import InputRequired, Length
 
@@ -35,19 +35,25 @@ class PhotoForm(FlaskForm):
     submit = SubmitField(u'Upload')
 
 
+def can_drive_check(form, field):
+    if int(form.num_seats.data) > 0:
+        if not field.data:
+            raise ValidationError('This field is required.')
+
+
 class ProfileForm(FlaskForm):
-    bio = TextAreaField('bio', validators=[Length(min=5, max=250, message='hey!'), validators.InputRequired()])
+    bio = TextAreaField('bio', validators=[Length(min=1, max=250, message='hey!'), validators.InputRequired()])
     address = StringField('address', validators=[validators.InputRequired()])
     city = StringField('city', validators=[validators.InputRequired()])
     state = StringField('state', validators=[validators.InputRequired()])
     zip = IntegerField('zip code', validators=[validators.InputRequired()])
     phone = TelField('phone', validators=[validators.InputRequired()])
     choices_arr = ['Varsity Men', 'Varsity Women']
-    team = SelectField('team', choices=[('vm', 'Varsity Men'), ('vw', 'Varsity Women'), ('nm', 'Novice Men'),
+    team = SelectField('team', choices=[('blank', '...'), ('vm', 'Varsity Men'), ('vw', 'Varsity Women'), ('nm', 'Novice Men'),
                                         ('nw', 'Novice Women'), ('cox', 'Coxswain')])
-    choices_arr = [(i, str(i)) for i in range(9)]
+    choices_arr = [(str(i), str(i)) for i in range(9)]
     num_seats = SelectField('num_seats', choices=choices_arr)
-    can_drive = BooleanField('has_car', validators=[validators.InputRequired()])
+    can_drive = BooleanField('has_car', validators=[can_drive_check])
     submit = SubmitField(u'Update')
 
 
