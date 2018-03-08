@@ -24,6 +24,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
+    <!-- croppie -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.1/croppie.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.1/croppie.min.js"></script>
+
     <!-- Custom styles for this template -->
     <style>
       html {
@@ -46,7 +50,32 @@
       .footer_style {
         flex-shrink: 0;
       }
+      .upload-demo .upload-demo-wrap,
+      .upload-demo .upload-result,
+      .upload-demo.ready .upload-msg {
+          display: none;
+      }
+      .upload-demo.ready .upload-demo-wrap {
+          display: block;
+      }
+      .upload-demo.ready .upload-result {
+          display: inline-block;
+      }
+      .upload-demo-wrap {
+          width: 300px;
+          height: 300px;
+          margin: 0 auto;
+      }
 
+      .upload-msg {
+          text-align: center;
+          padding: 50px;
+          font-size: 22px;
+          color: #aaa;
+          width: 260px;
+          margin: 50px auto;
+          border: 1px solid #aaa;
+      }
     </style>
 
   </head>
@@ -83,31 +112,27 @@
       </nav>
 
       <!-- Your Content Here -->
-      <div class="">
+      <div class="container">
         <div class="row mt-5">
-          <div class="col-4">
-            <!-- <div class="row center-block"> -->
+          <div class="col-4 align-items-center">
+            <div class="row">
               <img style="max-width:100%;" class="img-responsive center-block" src="{{url_for('static', filename=profile['picture'])}}" alt="">
-            <!-- </div> -->
+            </div>
+            <!-- <img style="max-width:100%;" class="img-responsive center-block" src="{{url_for('static', filename=profile['picture'])}}" alt=""> -->
+            <div class="row">
+              <button type="button" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#profile_modal" name="button">Change Picture</button>
+            </div>
+            <!-- <button type="button" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#profile_modal" name="button">Change Picture</button> -->
           </div>
           <div class="col-8">
             <form class="needs-validation" action="{{url_for('profile')}}" method="POST">
               {{form.csrf_token}}
               <h3>{{current_user.username}}</h3>
-              <!-- <div class="row form-row align-items-center">
-                <div class="col-auto">
-                  <label for="example-text-input" class="col-auto col-form-label"><h3>MYUSERNAME</h3></label>
-                </div>
-                <div class="col-auto">
-                  <input class="form-control" type="text" value="Joe Sixpack" id="example-text-input">
-                </div>
-              </div> -->
               <div class="form-row">
                 <div class="form-group col-12">
-                  <small for="exampleTextarea">About Me (Maximum 250 Characters)</small>
+                  <small for="bio">About Me (Maximum 250 Characters)</small>
                   <div class="input-group">
                     {{form.bio(class_="form-control", rows='3', maxlength='250')}}
-                    <!-- <textarea class="form-control" id="exampleTextarea" rows="3"></textarea> -->
                   </div>
                   <small>
                     {% for err in form.bio.errors %}
@@ -118,10 +143,9 @@
               </div>
               <div class="form-row">
                 <div class="col-8 form-group">
-                  <small class="form-text text-muted" for="addr-1">Address Line 1</small>
+                  <small class="form-text text-muted" for="address">Street Address</small>
                   <div class="input-group mb-1">
                     {{form.address(class_="form-control", placeholder="10 East Washington Street", autocomplete="street-address")}}
-                    <!-- <input autocomplete="street-address" class="form-control" type="text" name="time" value="" id="addr-1"> -->
                   </div>
                   <small>
                     {% for err in form.address.errors %}
@@ -130,10 +154,9 @@
                   </small>
                 </div>
                 <div class="col-4 form-group">
-                  <small class="form-text text-muted" for="addr-1">City</small>
+                  <small class="form-text text-muted" for="city">City</small>
                   <div class="input-group mb-1">
                     {{form.city(class_="form-control", placeholder="Champaign", autocomplete="address-level2")}}
-                    <!-- <input autocomplete="address-level2" class="form-control" type="text" name="time" value="" id="addr-1"> -->
                   </div>
                   <small>
                     {% for err in form.city.errors %}
@@ -147,7 +170,6 @@
                   <small class="form-text text-muted" for="addr-1">State</small>
                   <div class="input-group mb-1">
                     {{form.state(class_="form-control", placeholder="Illinois", autocomplete="address-level1")}}
-                    <!-- <input autocomplete="address-level1" class="form-control" type="text" name="time" value="" id="addr-1"> -->
                   </div>
                   <small>
                     {% for err in form.state.errors %}
@@ -159,7 +181,6 @@
                   <small class="form-text text-muted" for="addr-2">Zip</small>
                   <div class="input-group mb-1">
                     {{form.zip(class_="form-control", placeholder="61820", autocomplete="postal-code")}}
-                    <!-- <input autocomplete="postal-code" class="form-control" type="text" name="time" value="" id="addr-2"> -->
                   </div>
                   <small>
                     {% for err in form.zip.errors %}
@@ -171,7 +192,6 @@
                   <small class="form-text text-muted" for="phone">Phone</small>
                   <div class="input-group mb-1">
                     {{form.phone(class_="form-control", placeholder="0123456789", autocomplete="tel-national")}}
-                    <!-- <input autocomplete="tel" class="form-control" type="tel" name="time" value="" id="phone"> -->
                   </div>
                   <small>
                     {% for err in form.phone.errors %}
@@ -182,23 +202,13 @@
               </div>
               <div class="row form-row">
                 <div class="col-6 form-group">
-                  <small class="form-text text-muted" for="addr-1">Team</small>
+                  <small class="form-text text-muted" for="team">Team</small>
                   <div class="input-group mb-1">
                     {{form.team(class_="form-control custom-select")}}
-                    <!-- <select class="custom-select form-control"  name="time" value="" id="addr-1">
-                      <option>None</option>
-                    </select> -->
                   </div>
                 </div>
-                <!-- <div class="col-4 form-group justify-content-center">
-                  <small class="form-text text-muted" for="phone">I Certify I Can Drive To Practice</small>
-                  <div class="input-group mb-1">
-                    {{form.can_drive(class_="form-control custom-checkbox")}}
-                    <input class="form-control custom-checkbox" type="checkbox" name="time" value="" id="phone">
-                  </div>
-                </div> -->
                 <div class="col-6 form-group">
-                  <small class="form-text text-muted" for="phone">Number of Seats</small>
+                  <small class="form-text text-muted" for="num_seats">Number of Seats</small>
                   <div class="input-group mb-1">
                     {{form.num_seats(class_="form-control custom-select", id="num_seats", onchange="reveal_driver_elem()")}}
                   </div>
@@ -227,6 +237,46 @@
             </form>
           </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="profile_modal" tabindex="-1" role="dialog" aria-labelledby="modal_label" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal_label">Change Profile Picture</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" name="button">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" style="overflow:auto">
+                <div class="demo-wrap upload-demo">
+                  <div class="container">
+                     <div class="grid">
+                       <div class="col-1-2">
+                           <div class="upload-msg">
+                               Upload a file to start cropping
+                           </div>
+                           <div class="upload-demo-wrap">
+                               <div id="upload-demo"></div>
+                           </div>
+                       </div>
+                     </div>
+                   </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <div class="custom-file col-8">
+                  <input type="file" class="custom-file-input" id="upload" accept="/image/*">
+                  <label class="custom-file-label" for="customFile">Choose File</label>
+                </div>
+                <!-- <input type="file" name="" class="form-control-file col-8" value="Choose a File" accept="/image/*" id="upload"> -->
+                <button type="button" class="btn btn-primary col-auto disabled" name="button" id="save_profile_img" data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-secondary col-auto" data-dismiss="modal" name="button">Close</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
 
 
@@ -238,7 +288,7 @@
       <!-- <nav class="navbar navbar-expand-lg"> -->
         <div class="container">
           <div class="navbar-brand">
-            <p style="margin:0em;">This is Athlessary</p>
+            <p style="margin:0em;">Sub Six Solutions Group&trade; 2018</p>
           </div>
         </div>
       </nav>

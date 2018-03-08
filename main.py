@@ -329,16 +329,26 @@ def save_img():
         data = img.encode()
         data = base64.b64decode(data)
 
-        imgFile = open('profile.png', 'wb')
+        # specify the directory
+        directory = os.getcwd() + '/static/images/%s' % current_user.user_id
+
+        # create directory if it does not exist
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        imgFile = open(directory + '/profile.png', 'wb')
         imgFile.write(data)
+
+        # update current user
+        pic_location = 'images/%s/%s' % (current_user.user_id, 'profile.png')
+        current_user.picture = pic_location
+
+        # update the database
+        db.update('profile', ['picture'], [pic_location], ['user_id'], [current_user.user_id])
+
         print('done')
 
     return Response(json.dumps({}), 201, mimetype='application/json')
-
-
-@app.route('/alt_profile')
-def alt_profile():
-    return render_template('profile.html')
 
 
 if __name__ == '__main__':
