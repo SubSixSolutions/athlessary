@@ -89,7 +89,7 @@ class Database:
                             PRIMARY KEY
                             NOT NULL,
                  picture STRING          NOT NULL
-                            DEFAULT ('images/defaults/profile_square.jpg'),
+                            DEFAULT ('images/defaults/profile.jpg'),
                  bio     STRING (0, 250) NOT NULL);'''
         cur.execute(sql)
         self.conn.commit()
