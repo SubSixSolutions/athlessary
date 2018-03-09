@@ -51,6 +51,9 @@ def new_signup():
 
         elif signup_form.data['submit']:
             if signup_form.validate():
+                # get all user names
+                names = db.select('users', ['username'], fetchone=False)
+                print(names)
                 # log new user in
                 curr_user = User.user_from_form(signup_form.data)
                 login_user(curr_user)
@@ -58,7 +61,7 @@ def new_signup():
                 # redirect user to their new profile page
                 return redirect(url_for('profile'))
 
-        login = False
+            login = False
 
     return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login)
 
@@ -67,7 +70,7 @@ def new_signup():
 def profile():
     user_profile = db.select('profile', ['ALL'], ['user_id'], [current_user.user_id])
 
-    form = util_basic.set_up_profile_form(current_user, user_profile)
+    form = web_forms.ProfileForm()
 
     if form.validate_on_submit():
         user_attrs = ['address', 'city', 'state', 'zip', 'phone', 'team', 'num_seats']
@@ -83,6 +86,25 @@ def profile():
         db.update('users', user_attrs, user_cols, ['id'], [current_user.user_id])
 
         db.update('profile', profile_attrs, profile_cols, ['user_id'], [current_user.user_id])
+
+    if form.team:
+        form.team.default = current_user.team
+        form.process()
+        form.num_seats.default = str(current_user.num_seats)
+        form.process()
+    if current_user.address:
+        form.address.data = current_user.address
+    if current_user.state:
+        form.state.data = current_user.state
+    if current_user.city:
+        form.city.data = current_user.city
+    if current_user.zip:
+        form.zip.data = current_user.zip
+    if current_user.phone:
+        form.phone.data = current_user.phone
+
+    form.num_seats.data = current_user.num_seats
+    form.bio.data = user_profile['bio']
 
     return render_template('profile_5.html', form=form, profile=user_profile)
 
