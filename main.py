@@ -148,14 +148,6 @@ def meters_rowed():
         return Response(js, status=200, mimetype='application/json')
 
 
-@login_required
-@app.route('/new_profile')
-def new_profile():
-
-    workout_names = db.find_all_workout_names(current_user.user_id)
-    return render_template('index.html', workouts=workout_names)
-
-
 @app.route('/', methods=['GET', 'POST'])
 def new_signup():
     # forms to handle sign up and sign in
@@ -180,7 +172,8 @@ def new_signup():
                         login_user(curr_user)
                         flash('signed in!')
                         # return render_template('test_flash.html')
-                        return redirect(url_for('profile_page', username=username))
+                        # return redirect(url_for('profile_page', username=username))
+                        return redirect(url_for('profile'))
 
         elif signup_form.data['submit']:
             if signup_form.validate():
@@ -190,8 +183,10 @@ def new_signup():
 
                 # redirect user to their new profile page
                 flash('signed in!')
-                return redirect(url_for('profile_page', username=current_user.username))
-            login = False
+                # return redirect(url_for('profile_page', username=current_user.username))
+                return redirect(url_for('profile'))
+
+        login = False
 
     return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login)
 
@@ -199,12 +194,8 @@ def new_signup():
 @app.route('/get_a_workout', methods=['POST'])
 def get_a_workout():
     workout_id = request.form.get('workout_id')
-    print('wid')
-    print(workout_id)
-    print('wid')
     result = db.get_workouts_by_id(current_user.user_id, workout_id)
     js = json.dumps(result)
-    print(js)
     return Response(js, status=200, mimetype='application/json')
 
 
@@ -324,6 +315,7 @@ def save_img():
     img = request.form.get('img')
 
     if img:
+        print(img)
         img = img.split(',')[1]
 
         data = img.encode()
@@ -348,7 +340,7 @@ def save_img():
 
         print('done')
 
-    return Response(json.dumps({}), 201, mimetype='application/json')
+    return Response(json.dumps({img: pic_location}), 201, mimetype='application/json')
 
 
 if __name__ == '__main__':

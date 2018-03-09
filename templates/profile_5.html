@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Workouts</title>
+    <title>{{current_user.first}} {{current_user.last}}</title>
 
     <!-- Bootstrap core CSS -->
     <!-- Hard Links -->
@@ -93,12 +93,12 @@
           <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
               <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('new_profile') }}">Home
+                <a class="nav-link" href="{{ url_for('profile') }}">Home
                   <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Workouts</a>
+                <a class="nav-link" href="{{url_for('workouts')}}">Workouts</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">Services</a>
@@ -114,20 +114,22 @@
       <!-- Your Content Here -->
       <div class="container">
         <div class="row mt-5">
-          <div class="col-4 align-items-center">
+          <div class="col-4 align-items-center" id="img_row">
             <div class="row">
-              <img style="max-width:100%;" class="img-responsive center-block" src="{{url_for('static', filename=profile['picture'])}}" alt="">
+              <div class="col-auto mx-auto">
+                <img style="width:auto;" id="profile_img" class="img-responsive center-block" src="{{url_for('static', filename=profile['picture'])}}" alt="">
+              </div>
             </div>
-            <!-- <img style="max-width:100%;" class="img-responsive center-block" src="{{url_for('static', filename=profile['picture'])}}" alt=""> -->
             <div class="row">
-              <button type="button" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#profile_modal" name="button">Change Picture</button>
+              <div class="col-auto mx-auto">
+                <button type="button" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#profile_modal" name="button">Change Picture</button>
+              </div>
             </div>
-            <!-- <button type="button" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#profile_modal" name="button">Change Picture</button> -->
           </div>
           <div class="col-8">
             <form class="needs-validation" action="{{url_for('profile')}}" method="POST">
               {{form.csrf_token}}
-              <h3>{{current_user.username}}</h3>
+              <h3>{{current_user.username.upper()}}</h3>
               <div class="form-row">
                 <div class="form-group col-12">
                   <small for="bio">About Me (Maximum 250 Characters)</small>
@@ -251,15 +253,11 @@
               <div class="modal-body" style="overflow:auto">
                 <div class="demo-wrap upload-demo">
                   <div class="container">
-                     <div class="grid">
-                       <div class="col-1-2">
-                           <div class="upload-msg">
-                               Upload a file to start cropping
-                           </div>
-                           <div class="upload-demo-wrap">
-                               <div id="upload-demo"></div>
-                           </div>
-                       </div>
+                     <div class="upload-msg">
+                         Upload a file to start cropping
+                     </div>
+                     <div class="upload-demo-wrap">
+                         <div id="upload-demo"></div>
                      </div>
                    </div>
                 </div>
@@ -269,23 +267,18 @@
                   <input type="file" class="custom-file-input" id="upload" accept="/image/*">
                   <label class="custom-file-label" for="customFile">Choose File</label>
                 </div>
-                <!-- <input type="file" name="" class="form-control-file col-8" value="Choose a File" accept="/image/*" id="upload"> -->
                 <button type="button" class="btn btn-primary col-auto disabled" name="button" id="save_profile_img" data-dismiss="modal">Save</button>
                 <button type="button" class="btn btn-secondary col-auto" data-dismiss="modal" name="button">Close</button>
               </div>
             </div>
-
           </div>
         </div>
       </div>
-
-
-
     </div>
+
     <!-- Footer -->
     <footer class="footer_style" style="padding:0em; margin:0em;">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
-      <!-- <nav class="navbar navbar-expand-lg"> -->
         <div class="container">
           <div class="navbar-brand">
             <p style="margin:0em;">Sub Six Solutions Group&trade; 2018</p>
@@ -294,8 +287,7 @@
       </nav>
     </footer>
 
-    <!-- Bootstrap core JavaScript -->
-    <!-- <script src="/Users/Max/PycharmProjects/athlessary/static/js/bootstrap.min.js"></script> -->
+    <!-- Core JavaScript -->
     <script src="{{ url_for( 'static', filename='js/bootstrap.min.js' ) }}"></script>
     <script src="{{url_for('static', filename='js/new_profile.js')}}"></script>
 

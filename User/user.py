@@ -20,7 +20,7 @@ class User:
         self.first = result['first']
         self.last = result['last']
         self.username = result['username']
-        self.password = result['password']
+        # self.password = result['password']
         # self.picture = result['picture']
         self.address = result['address']
         self.city = result['city']
