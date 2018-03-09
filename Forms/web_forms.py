@@ -10,8 +10,8 @@ photos = UploadSet('photos', IMAGES)
 
 
 class SignInForm(FlaskForm):
-    username_field = StringField('username')
-    password_field = PasswordField('Password')
+    username_field = StringField('username', validators=[validators.InputRequired()])
+    password_field = PasswordField('Password', validators=[validators.InputRequired()])
     submit_bttn = SubmitField('Sign In')
 
 
