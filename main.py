@@ -200,7 +200,7 @@ def get_all_athletes():
 def roster():
     return render_template('roster_page.html')
 
-
+  
 @login_required
 @app.route('/save_img', methods=['POST'])
 def save_img():
@@ -220,6 +220,17 @@ def save_img():
 
     return Response(json.dumps({}), status=400, mimetype='application/json')
 
+
+@app.route('/drivers', methods=['GET', 'POST'])
+def drivers():
+    if request.method == 'POST':
+        print(request.form)
+        data = request.form
+        return render_template('drivers.html')
+    else:
+        print('ok')
+        return render_template('drivers.html')
+      
 
 if __name__ == '__main__':
     app.run()
