@@ -131,7 +131,7 @@ function create_chart_object(){
   // set change workouts to be responsive
   elemm = document.getElementById('change_workout');
   elemm.onclick = function(){
-    populate_chart('/api_hello', myChart);
+    populate_chart('/generate_graph_data', myChart);
   }
 
   // return chart object; will be drawn later
@@ -413,7 +413,7 @@ $(window).ready(function(){
   // set up on click function to update data for chart tab
   elemm = document.getElementById('tab-2');
   elemm.onclick = function(e) {
-    populate_chart('/api_hello', myChart);
+    populate_chart('/generate_graph_data', myChart);
   };
 
   // update table tab

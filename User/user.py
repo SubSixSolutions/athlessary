@@ -12,6 +12,7 @@ class User:
 
     def __init__(self, user_id, active=True):
 
+        # result = self.db.get_user(user_id)
         result = self.db.select('users', ['ALL'], ['id'], [user_id])
 
         # TODO what if the user id does not exist??
@@ -19,11 +20,15 @@ class User:
         self.first = result['first']
         self.last = result['last']
         self.username = result['username']
-        self.password = result['password']
-        self.picture = result['picture']
+        # self.password = result['password']
+        # self.picture = result['picture']
         self.address = result['address']
-        self.has_car = result['has_car']
+        self.city = result['city']
+        self.state = result['state']
+        self.zip = result['zip']
         self.num_seats = result['num_seats']
+        self.team = result['team']
+        self.phone = result['phone']
         self.user_id = user_id
         self.active = active
 
@@ -42,6 +47,9 @@ class User:
         col_vals = attr_dict.values()
 
         user_id = cls.db.insert('users', col_names, col_vals)
+
+        bio_string = 'Hi, my name is %s!' % form_data['first']
+        cls.db.insert('profile', ['bio', 'user_id'], [bio_string, user_id])
 
         return cls(user_id, None)
 
@@ -81,7 +89,7 @@ class User:
             os.makedirs(directory)
 
         # delete old file
-        if self.picture != 'images/defaults/profile.jpg':
+        if self.picture != 'images/defaults/profile_square.jpg':
             try:
                 os.remove(os.getcwd() + '/static/' + self.picture)
             except OSError:
