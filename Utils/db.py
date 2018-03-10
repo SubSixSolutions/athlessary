@@ -249,13 +249,19 @@ class Database:
         where_col_to_str = set_where_clause(where_cols, operators)
 
         params_tuple = tuple(where_params)
-        sql = 'SELECT %s FROM %s WHERE %s' % (select_cols_to_str, table_name, where_col_to_str)
+        if type(params_tuple[0]) == list:
+            litty_list = tuple(map(int, params_tuple[0]))
+            sql = 'SELECT %s FROM %s WHERE %s IN %s;' % (select_cols_to_str, table_name, where_cols[0], litty_list)
+            cur.execute(sql)
+            result = cur.fetchall()
+            return result
+        else:
+            sql = 'SELECT %s FROM %s WHERE %s' % (select_cols_to_str, table_name, where_col_to_str)
 
         if order_by:
             sql += ' ORDER BY ' + ', '.join(order_by)
 
         print(sql)
-        print(params_tuple)
         # execute the query
         cur.execute(sql, params_tuple)
 

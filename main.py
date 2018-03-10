@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, Response, json
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from passlib.hash import pbkdf2_sha256
-
+from werkzeug.datastructures import ImmutableMultiDict
 import Forms.web_forms as web_forms
 from User.user import User
 from Utils import util_basic
 from Utils.db import Database
+from Utils.driver_generation import generate_cars
 from Utils.util_basic import create_workout, build_graph_data
 
 app = Flask(__name__)
@@ -21,6 +22,7 @@ db = Database("athlessary-database.db")
 
 @login_manager.user_loader
 def load_user(user_id):
+
     return User(user_id)
 
 
@@ -178,7 +180,6 @@ def edit_workout():
 @login_required
 @app.route('/generate_graph_data', methods=['POST'])
 def generate_graph_data():
-
     if request.method == 'POST':
         workout_name = request.form.get('share')
 
@@ -246,8 +247,10 @@ def save_img():
 @app.route('/drivers', methods=['GET', 'POST'])
 def drivers():
     if request.method == 'POST':
-        print(request.form)
-        data = request.form
+        athletes = request.form.getlist('athletes[]')
+        drivers = request.form.getlist('drivers[]')
+        print(athletes, drivers)
+        generate_cars(athletes, drivers, db)
         return render_template('drivers.html')
     else:
         print('ok')

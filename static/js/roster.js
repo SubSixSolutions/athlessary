@@ -39,6 +39,7 @@ function on_submit() {
     let table =  document.getElementById('athlete_table');
     let tableRows = table.rows;
     let athletes = [];
+    let drivers = [];
     for(let i = 1; i < tableRows.length; i++) {
         let id = tableRows[i].id;
         let row = document.getElementById(id.toString());
@@ -51,16 +52,20 @@ function on_submit() {
         let going_string = going ? "is going to practice" : "";
         let driving_string = driving ? "and is driving" : "";
         //console.log('Athlete', id, going_string, driving_string);
-        let athlete_obj = {};
-        athlete_obj[id] = [going, driving];
-        //athlete_obj.isGoing = going;
-        //athlete_obj.driving = driving;
-        athletes.push(athlete_obj);
+        if(going) {
+            if(driving) {
+                drivers.push(id);
+            } else {
+                athletes.push(id);
+            }
+        }
     }
-    console.log(athletes);
-    let json = JSON.stringify(athletes);
-    $.post('/drivers', json);
-     return false;
+    //console.log(athletes);
+    //let json = JSON.stringify(athletes);
+    //console.log(json);
+
+    $.post('/drivers', {athletes: athletes, drivers:drivers});
+    return false;
 }
 function submit_success() {
     console.log('success');
@@ -83,10 +88,11 @@ function initialize_roster() {
 
             let drivingCell = newRow.insertCell(3);
             drivingCell.innerHTML = '<td class=\"text-center\">';
-            if (data[i]['has_car'] === 1) {
+            if (data[i]['num_seats'] > 0) {
                 let drivingButton = document.createElement('input');
                 drivingButton.type = "checkbox";
                 drivingButton.autocomplete = "off";
+                drivingButton.classList.add("text-center");
                 drivingCell.appendChild(drivingButton);
             }
             //newRow.append(cols);
