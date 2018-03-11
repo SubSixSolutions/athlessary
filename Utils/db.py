@@ -2,6 +2,10 @@ import sqlite3
 from os import getcwd
 
 
+def array_factory(cursor, row):
+    return row[0]
+
+
 def dict_factory(cursor, row):
     """
     sets up database cursor to return a dictionary instead of a tuple
@@ -461,4 +465,21 @@ class Database:
         cur.execute(sql, (user_id,))
         result = cur.fetchone()
         cur.close()
+        return result
+
+    def get_names(self):
+        self.conn.row_factory = array_factory
+
+        cur = self.conn.cursor()
+
+        sql = '''SELECT username
+                 FROM users
+              '''
+
+        cur.execute(sql)
+        result = cur.fetchall()
+        cur.close()
+
+        self.conn.row_factory = dict_factory
+
         return result
