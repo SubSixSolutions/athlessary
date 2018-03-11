@@ -52,14 +52,20 @@ def new_signup():
         elif signup_form.data['submit']:
             if signup_form.validate():
                 # get all user names
-                names = db.select('users', ['username'], fetchone=False)
+                names = db.get_names()
                 print(names)
-                # log new user in
-                curr_user = User.user_from_form(signup_form.data)
-                login_user(curr_user)
 
-                # redirect user to their new profile page
-                return redirect(url_for('profile'))
+                curr_username = signup_form.data['username']
+
+                if curr_username not in names:
+                    # log new user in
+                    curr_user = User.user_from_form(signup_form.data)
+                    login_user(curr_user)
+
+                    # redirect user to their new profile page
+                    return redirect(url_for('profile'))
+
+                signup_form.username.errors.append('Username \'%s\' is taken!' % curr_username)
 
             login = False
 
@@ -87,11 +93,10 @@ def profile():
 
         db.update('profile', profile_attrs, profile_cols, ['user_id'], [current_user.user_id])
 
+    if current_user.num_seats > 0:
+        form.num_seats.data = int(current_user.num_seats)
     if form.team:
-        form.team.default = current_user.team
-        form.process()
-        form.num_seats.default = str(current_user.num_seats)
-        form.process()
+        form.team.data = current_user.team
     if current_user.address:
         form.address.data = current_user.address
     if current_user.state:

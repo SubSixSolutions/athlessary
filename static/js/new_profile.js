@@ -44,7 +44,6 @@ function demoUpload() {
         $uploadCrop.croppie('bind', {
           url: e.target.result }).then(function(){
                   console.log('jQuery bind complete');
-                  swal('hello');
           });
       }
 

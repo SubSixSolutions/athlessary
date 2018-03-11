@@ -114,7 +114,7 @@
       <!-- Your Content Here -->
       <div class="container">
         <div class="row mt-5">
-          <div class="col-4 align-items-center" id="img_row">
+          <div class="col-sm-4 align-items-center" id="img_row">
             <div class="row">
               <div class="col-auto mx-auto">
                 <img style="width:auto;" id="profile_img" class="img-responsive center-block" src="{{url_for('static', filename=profile['picture'])}}" alt="">
@@ -126,7 +126,7 @@
               </div>
             </div>
           </div>
-          <div class="col-8">
+          <div class="col-sm-8">
             <form class="needs-validation" action="{{url_for('profile')}}" method="POST">
               {{form.csrf_token}}
               <h3>{{current_user.username.upper()}}</h3>
@@ -171,7 +171,7 @@
                 <div class="col-3 form-group">
                   <small class="form-text text-muted" for="addr-1">State</small>
                   <div class="input-group mb-1">
-                    {{form.state(class_="form-control", placeholder="Illinois", autocomplete="address-level1")}}
+                    {{form.state(class_="form-control custom-select", placeholder="Illinois", autocomplete="address-level1")}}
                   </div>
                   <small>
                     {% for err in form.state.errors %}
@@ -212,6 +212,7 @@
                 <div class="col-6 form-group">
                   <small class="form-text text-muted" for="num_seats">Number of Seats</small>
                   <div class="input-group mb-1">
+                    <!-- {{form.num_seats(class_="form-control custom-select")}} -->
                     {{form.num_seats(class_="form-control custom-select", id="num_seats", onchange="reveal_driver_elem()")}}
                   </div>
                 </div>
@@ -288,6 +289,7 @@
     </footer>
 
     <!-- Core JavaScript -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="{{ url_for( 'static', filename='js/bootstrap.min.js' ) }}"></script>
     <script src="{{url_for('static', filename='js/new_profile.js')}}"></script>
 
