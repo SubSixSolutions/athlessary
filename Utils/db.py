@@ -1,6 +1,8 @@
 import sqlite3
 from os import getcwd
 
+from Utils.log import log
+
 
 def array_factory(cursor, row):
     return row[0]
@@ -43,8 +45,9 @@ class Database:
             self.conn = sqlite3.connect(abs_path, check_same_thread=False)
             self.conn.row_factory = df
             self.init_tables()
+            log.info('Return NEW database object')
         except sqlite3.Error as e:
-            print(e)
+            log.error(e, exc_info=True)
             self.conn = None
 
     def valid_connection(self):
@@ -190,6 +193,8 @@ class Database:
         self.conn.commit()
         cur.close()
 
+        log.info('Insert on %s' % table_name)
+
         return row_id
 
     def delete_entry(self, table_name, id_col_name, item_id):
@@ -207,6 +212,8 @@ class Database:
         cur.execute(sql, params)
         self.conn.commit()
         cur.close()
+
+        log.info('Delete on %s' % table_name)
 
     def select(self, table_name, select_cols, where_cols=None, where_params=None, operators=None, order_by=None,
                group_by=None, fetchone=True):
@@ -258,8 +265,8 @@ class Database:
         if order_by:
             sql += ' ORDER BY ' + ', '.join(order_by)
 
-        print(sql)
-        print(params_tuple)
+        log.info('sql:%s and params:%s' % (sql, params_tuple))
+
         # execute the query
         cur.execute(sql, params_tuple)
 
@@ -269,6 +276,8 @@ class Database:
         else:
             result = cur.fetchall()
         cur.close()
+
+        log.info('Select on table %s' % table_name)
 
         return result
 
@@ -298,6 +307,10 @@ class Database:
         cur.execute(sql, params)
 
         self.conn.commit()
+
+        cur.close()
+
+        log.info('Update on table %s' % table_name)
 
     def get_workouts(self, user_id):
         """
