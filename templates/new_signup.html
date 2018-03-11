@@ -111,7 +111,7 @@
       <!-- Your Content Here -->
       <div class="container h-100">
         <div class="row align-items-center h-100">
-            <div class="col-6 mx-auto">
+            <div class="col-md-6 mx-auto">
                 <div class="transparent_box" style="border: 1px solid white; padding:1em;">
                   <h1 class="my-3 text-white" style="text-align:center;">Welcome</h1>
 
@@ -134,12 +134,12 @@
                       <div role="tabpanel" class="tab-pane {% if login %}active{% else %}fade in{% endif %}" id="sign_in_tab">
                         <br>
                         <div class="row">
-                          <div class="col-12 mx-auto">
+                          <div class="col-md-12 mx-auto">
                             <form class="mx-auto" action="{{ url_for('new_signup') }}" method="POST">
                             <!-- change ID so 2 things don't have the same ID -->
                               {{ sign_in.csrf_token(id='tag1') }}
                               <div class="form-row row">
-                                <div class="form-group col-8 mx-auto">
+                                <div class="form-group col-md-8 mx-auto">
                                   <small class="form-text text-white" for="team">User Name</small>
                                   <div class="input-group mb-1">
                                     {{ sign_in.username_field(placeholder='User Name', autocomplete="username", class_="form-control") }}
@@ -152,7 +152,7 @@
                                 </div>
                               </div>
                               <div class="form-row row">
-                                <div class="form-group col-8 mx-auto">
+                                <div class="form-group col-md-8 mx-auto">
                                   <small class="form-text text-white">Password</small>
                                   <div class="input-group mb-1">
                                     {{ sign_in.password_field(placeholder='Password', class_="form-control", autocomplete="current-password") }}
