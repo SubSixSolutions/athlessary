@@ -93,6 +93,9 @@ def profile():
 
         db.update('profile', profile_attrs, profile_cols, ['user_id'], [current_user.user_id])
 
+        # update current user
+        load_user(current_user.user_id)
+
     if current_user.num_seats > 0:
         form.num_seats.data = int(current_user.num_seats)
     if form.team:
