@@ -113,8 +113,8 @@
 
       <!-- Your Content Here -->
       <div class="container">
-        <div class="row mt-5">
-          <div class="col-sm-4 align-items-center" id="img_row">
+        <div class="row">
+          <div class="col-sm-4 align-items-center mt-5" id="img_row">
             <div class="row">
               <div class="col-auto mx-auto">
                 <img style="width:auto;" id="profile_img" class="img-responsive center-block" src="{{url_for('static', filename=profile['picture'])}}" alt="">
@@ -126,7 +126,7 @@
               </div>
             </div>
           </div>
-          <div class="col-sm-8">
+          <div class="col-sm-8 mt-5">
             <form class="needs-validation" action="{{url_for('profile')}}" method="POST">
               {{form.csrf_token}}
               <h3>{{current_user.username.upper()}}</h3>
@@ -222,7 +222,7 @@
                 </div>
               </div>
               <div class="form-row" style="display:none;" id="certify_driver">
-                <div class="col-md12 form-group">
+                <div class="col-md-12 form-group">
                   <div class="form-check">
                     {{form.can_drive(class_="form-check-input form-control-sm")}}
                     <label class="form-check-label" for="can_drive">
@@ -267,11 +267,12 @@
                    </div>
                 </div>
               </div>
-              <div class="modal-footer">
-                <div class="custom-file col-8">
+              <div class="modal-footer col-md-12">
+                <div class="custom-file col-md-6">
                   <input type="file" class="custom-file-input" id="upload" accept="/image/*">
                   <label class="custom-file-label" for="customFile">Choose File</label>
                 </div>
+                <button type="button" class="btn btn-outline-primary col-auto" id="rotate" data-deg="90" name="button">Rotate</button>
                 <button type="button" class="btn btn-primary col-auto disabled" name="button" id="save_profile_img" data-dismiss="modal">Save</button>
                 <button type="button" class="btn btn-secondary col-auto" data-dismiss="modal" name="button">Close</button>
               </div>
