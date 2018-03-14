@@ -52,20 +52,22 @@ class Database:
         cur = self.conn.cursor()
 
         sql = '''CREATE TABLE IF NOT EXISTS users (
-                 password  STRING (1, 50),
-                 id        INTEGER          PRIMARY KEY AUTOINCREMENT,
-                 first     STRING (1, 20)   NOT NULL,
-                 last      STRING (1, 20)   NOT NULL,
-                 username  STRING (2, 20)   UNIQUE
-                                           NOT NULL,
-                 address   STRING (1, 50),
-                 city      STRING,
-                 state     STRING,
-                 zip       INTEGER,
-                 num_seats INTEGER          DEFAULT (0),
-                 phone     INTEGER (10, 10),
-                 team      STRING
-             );'''
+    password  STRING (1, 50),
+    id        INTEGER          PRIMARY KEY AUTOINCREMENT,
+    first     STRING (1, 20)   NOT NULL,
+    last      STRING (1, 20)   NOT NULL,
+    username  STRING (2, 20)   UNIQUE
+                               NOT NULL,
+    address   STRING (1, 50),
+    city      STRING,
+    state     STRING,
+    zip       INTEGER,
+    num_seats INTEGER          DEFAULT (0),
+    phone     INTEGER (10, 10),
+    team      STRING,
+    y         DOUBLE,
+    x         DOUBLE
+);'''
 
         cur.execute(sql)
         self.conn.commit()
@@ -360,8 +362,8 @@ class Database:
         sql = '''
               SELECT w.by_distance, AVG(e.distance) AS distance,
               AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time, w.workout_id
-              FROM workout as w
-              JOIN erg as e
+              FROM workout AS w
+              JOIN erg AS e
               ON e.workout_id = w.workout_id
               WHERE w.user_id=?
               AND w.name=?
@@ -390,8 +392,8 @@ class Database:
               SELECT w.by_distance, AVG(e.distance) AS distance,
               AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time,
               w.name, w.workout_id
-              FROM workout as w
-              JOIN erg as e
+              FROM workout AS w
+              JOIN erg AS e
               ON e.workout_id = w.workout_id
               WHERE w.user_id=?
               GROUP BY e.workout_id
@@ -443,8 +445,8 @@ class Database:
         """
         cur = self.conn.cursor()
         sql = '''SELECT SUM(e.distance) AS total_meters
-                 FROM workout as w
-                 JOIN erg as e
+                 FROM workout AS w
+                 JOIN erg AS e
                  ON e.workout_id = w.workout_id
                  WHERE w.user_id=?
                  GROUP BY user_id'''
@@ -458,8 +460,8 @@ class Database:
         cur = self.conn.cursor()
 
         sql = '''SELECT *
-                 FROM users as u
-                 JOIN profile as p
+                 FROM users AS u
+                 JOIN profile AS p
                  ON u.id = p.user_id
                  WHERE u.id=?
               '''
