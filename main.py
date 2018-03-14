@@ -68,7 +68,6 @@ def new_signup():
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    user_profile = db.select('profile', ['ALL'], ['user_id'], [current_user.user_id])
 
     form = web_forms.ProfileForm()
 
@@ -79,6 +78,7 @@ def profile():
         profile_cols = []
         for attribute in user_attrs:
             user_cols.append(form.data[attribute])
+            setattr(current_user, attribute, form.data[attribute])
 
         for attribute in profile_attrs:
             profile_cols.append((form.data[attribute]))
@@ -87,8 +87,8 @@ def profile():
 
         db.update('profile', profile_attrs, profile_cols, ['user_id'], [current_user.user_id])
 
-        # update current user
-        load_user(current_user.user_id)
+    # gather user profile
+    user_profile = db.select('profile', ['ALL'], ['user_id'], [current_user.user_id])
 
     if current_user.num_seats > 0:
         form.num_seats.data = int(current_user.num_seats)
