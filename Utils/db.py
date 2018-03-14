@@ -60,7 +60,7 @@ class Database:
 
         sql = '''CREATE TABLE IF NOT EXISTS users (
     password  STRING (1, 50),
-    id        INTEGER          PRIMARY KEY AUTOINCREMENT,
+    user_id        INTEGER          PRIMARY KEY AUTOINCREMENT,
     first     STRING (1, 20)   NOT NULL,
     last      STRING (1, 20)   NOT NULL,
     username  STRING (2, 20)   UNIQUE
