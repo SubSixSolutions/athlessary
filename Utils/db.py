@@ -59,20 +59,22 @@ class Database:
         cur = self.conn.cursor()
 
         sql = '''CREATE TABLE IF NOT EXISTS users (
-                 password  STRING (1, 50),
-                 user_id        INTEGER          PRIMARY KEY AUTOINCREMENT,
-                 first     STRING (1, 20)   NOT NULL,
-                 last      STRING (1, 20)   NOT NULL,
-                 username  STRING (2, 20)   UNIQUE
-                                           NOT NULL,
-                 address   STRING (1, 50),
-                 city      STRING,
-                 state     STRING,
-                 zip       INTEGER,
-                 num_seats INTEGER          DEFAULT (0),
-                 phone     INTEGER (10, 10),
-                 team      STRING
-             );'''
+    password  STRING (1, 50),
+    id        INTEGER          PRIMARY KEY AUTOINCREMENT,
+    first     STRING (1, 20)   NOT NULL,
+    last      STRING (1, 20)   NOT NULL,
+    username  STRING (2, 20)   UNIQUE
+                               NOT NULL,
+    address   STRING (1, 50),
+    city      STRING,
+    state     STRING,
+    zip       INTEGER,
+    num_seats INTEGER          DEFAULT (0),
+    phone     INTEGER (10, 10),
+    team      STRING,
+    y         DOUBLE,
+    x         DOUBLE
+);'''
 
         cur.execute(sql)
         self.conn.commit()
@@ -260,7 +262,14 @@ class Database:
         where_col_to_str = set_where_clause(where_cols, operators)
 
         params_tuple = tuple(where_params)
-        sql = 'SELECT %s FROM %s WHERE %s' % (select_cols_to_str, table_name, where_col_to_str)
+        if type(params_tuple[0]) == list:
+            litty_list = tuple(map(int, params_tuple[0]))
+            sql = 'SELECT %s FROM %s WHERE %s IN %s;' % (select_cols_to_str, table_name, where_cols[0], litty_list)
+            cur.execute(sql)
+            result = cur.fetchall()
+            return result
+        else:
+            sql = 'SELECT %s FROM %s WHERE %s' % (select_cols_to_str, table_name, where_col_to_str)
 
         if order_by:
             sql += ' ORDER BY ' + ', '.join(order_by)
@@ -371,8 +380,8 @@ class Database:
         sql = '''
               SELECT w.by_distance, AVG(e.distance) AS distance,
               AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time, w.workout_id
-              FROM workout as w
-              JOIN erg as e
+              FROM workout AS w
+              JOIN erg AS e
               ON e.workout_id = w.workout_id
               WHERE w.user_id=?
               AND w.name=?
@@ -401,8 +410,8 @@ class Database:
               SELECT w.by_distance, AVG(e.distance) AS distance,
               AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time,
               w.name, w.workout_id
-              FROM workout as w
-              JOIN erg as e
+              FROM workout AS w
+              JOIN erg AS e
               ON e.workout_id = w.workout_id
               WHERE w.user_id=?
               GROUP BY e.workout_id
@@ -454,8 +463,8 @@ class Database:
         """
         cur = self.conn.cursor()
         sql = '''SELECT SUM(e.distance) AS total_meters
-                 FROM workout as w
-                 JOIN erg as e
+                 FROM workout AS w
+                 JOIN erg AS e
                  ON e.workout_id = w.workout_id
                  WHERE w.user_id=?
                  GROUP BY user_id'''

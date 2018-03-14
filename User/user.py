@@ -1,9 +1,12 @@
 import os
+from urllib.parse import quote
 
+from geopy.geocoders import Nominatim
 from werkzeug.utils import secure_filename
 
 from Utils import hashes
 from Utils.db import Database
+from Utils.log import log
 
 
 class User:
@@ -13,15 +16,17 @@ class User:
     def __init__(self, user_id, active=True):
 
         # result = self.db.get_user(user_id)
-        result = self.db.select('users', ['ALL'], ['user_id'], [user_id])
+        result = self.db.select('users', ['ALL'], ['id'], [user_id])
+        if not result:
+            return
 
         # TODO what if the user id does not exist??
 
         self.first = result['first']
         self.last = result['last']
         self.username = result['username']
-        # self.password = result['password']
-        # self.picture = result['picture']
+        self.x = result['x']
+        self.y = result['y']
         self.address = result['address']
         self.city = result['city']
         self.state = result['state']
@@ -31,6 +36,27 @@ class User:
         self.phone = result['phone']
         self.user_id = user_id
         self.active = active
+
+        if not self.x and self.address:
+            self.init_coordinates()
+
+    def init_coordinates(self):
+        geolocator = Nominatim(user_agent="__name__", scheme="http")
+        address = ' '.join([self.address, self.city, self.state, str(self.zip)])
+        log.info(quote(address))
+        query = {
+            'street': self.address,
+            'city': self.city,
+            'state': self.state,
+            'postalcode': str(self.zip)
+        }
+        location = geolocator.geocode(query)
+        self.x = location.latitude
+        self.y = location.longitude
+        self.db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
+                       where_cols=['id'], where_params=[self.user_id])
+
+
 
     @classmethod
     def user_from_form(cls, form_data, active=True):
@@ -45,7 +71,8 @@ class User:
 
         col_names = attr_dict.keys()
         col_vals = attr_dict.values()
-
+        # col_names.append('x')
+        # col_names.append('y')
         user_id = cls.db.insert('users', col_names, col_vals)
 
         bio_string = 'Hi, my name is %s!' % form_data['first']

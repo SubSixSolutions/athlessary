@@ -6,6 +6,7 @@ import Forms.web_forms as web_forms
 from User.user import User
 from Utils import util_basic
 from Utils.db import Database
+from Utils.driver_generation import generate_cars, modified_k_means
 from Utils.log import log
 from Utils.util_basic import create_workout, build_graph_data
 
@@ -22,6 +23,7 @@ db = Database("athlessary-database.db")
 
 @login_manager.user_loader
 def load_user(user_id):
+
     return User(user_id)
 
 
@@ -180,7 +182,6 @@ def edit_workout():
 @login_required
 @app.route('/generate_graph_data', methods=['POST'])
 def generate_graph_data():
-
     if request.method == 'POST':
         workout_name = request.form.get('share')
 
@@ -248,8 +249,13 @@ def save_img():
 @app.route('/drivers', methods=['GET', 'POST'])
 def drivers():
     if request.method == 'POST':
-        print(request.form)
-        data = request.form
+        athletes = request.form.getlist('athletes[]')
+        drivers = request.form.getlist('drivers[]')
+        print(athletes, drivers)
+
+        drivers_arr, athelete_dict = generate_cars(athletes, drivers, db)
+        modified_k_means(drivers_arr, athelete_dict)
+
         return render_template('drivers.html')
     else:
         print('ok')
