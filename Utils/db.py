@@ -84,7 +84,7 @@ class Database:
                  ON users
                  BEGIN
                     DELETE FROM profile
-                    WHERE profile.user_id = old.id;
+                    WHERE profile.user_id = old.user_id;
                  END;'''
 
         cur.execute(sql)
@@ -478,10 +478,10 @@ class Database:
         cur = self.conn.cursor()
 
         sql = '''SELECT *
-                 FROM users AS u
-                 JOIN profile AS p
-                 ON u.id = p.user_id
-                 WHERE u.id=?
+                 FROM users as u
+                 JOIN profile as p
+                 ON u.user_id = p.user_id
+                 WHERE u.user_id=?
               '''
 
         cur.execute(sql, (user_id,))

@@ -130,7 +130,7 @@ class User:
         self.picture = pic_location
 
         # update the database
-        self.db.update('users', ['picture'], [pic_location], ['id'], [self.user_id])
+        self.db.update('users', ['picture'], [pic_location], ['user_id'], [self.user_id])
 
         # return location to update the current user
         return pic_location

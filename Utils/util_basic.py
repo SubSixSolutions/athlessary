@@ -44,7 +44,7 @@ def save_photo(db, form, current_user):
     pic_location = 'images/%s/%s' % (current_user.user_id, filename)
 
     # update the database
-    db.update('users', ['picture'], [pic_location], ['id'], [current_user.user_id])
+    db.update('users', ['picture'], [pic_location], ['user_id'], [current_user.user_id])
 
     # return location to update the current user
     return pic_location
