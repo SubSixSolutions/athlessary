@@ -9,10 +9,18 @@ db = Database("test-database.db")
 
 def create_user(user_name):
     # add user
-    sample_col_names = ['username', 'first', 'last', 'password', 'address', 'has_car', 'num_seats']
-    sample_data = [user_name, 'hello', 'bye', '123', '1 east green', True, 3]
+    sample_col_names = ['username', 'first', 'last', 'password', 'address', 'num_seats']
+    sample_data = [user_name, 'hello', 'bye', '123', '1 east green', 3]
     table = 'users'
     row_id = db.insert(table, sample_col_names, sample_data)
+
+    # add user profile
+    row = db.select('users', select_cols=['user_id'], where_cols=['username'], where_params=[user_name], operators=['='], fetchone=True)
+    user_id = row['user_id']
+    sample_col_names = ['user_id', 'picture', 'bio']
+    sample_data = [user_id, 'my pic', 'hello']
+    db.insert('profile', sample_col_names, sample_data)
+
     return row_id
 
 
@@ -40,7 +48,7 @@ class TestAutoDB(unittest.TestCase):
         self.assertGreater(row_id, 0, 'row id must be greater than 0')
 
         # delete user
-        clean_up_table('users', 'id')
+        clean_up_table('users', 'user_id')
 
         # assert empty
         self.assertEqual([], db.select('users', ['ALL'], fetchone=False))
@@ -54,26 +62,26 @@ class TestAutoDB(unittest.TestCase):
         cur_username = 'xyz'
         first_name = 'jimmy'
         last_name = 'ricky'
-        sample_col_names = ['username', 'first', 'last', 'password', 'address', 'has_car', 'num_seats']
-        sample_data = [cur_username, first_name, last_name, '123', '1 east green', True, 4]
+        sample_col_names = ['username', 'first', 'last', 'password', 'address', 'num_seats']
+        sample_data = [cur_username, first_name, last_name, '123', '1 east green', 4]
         table = 'users'
         row_id = db.insert(table, sample_col_names, sample_data)
 
         # select ALL by 1 parameter (ID)
-        row = db.select(table, ['ALL'], ['id'], [row_id])
+        row = db.select(table, ['ALL'], ['user_id'], [row_id])
         self.assertEqual(cur_username, row['username'], 'incorrect username')
 
         # select 1 parameter (first name) by 1 parameter (ID)
-        row = db.select(table, ['first'], ['id'], [row_id])
+        row = db.select(table, ['first'], ['user_id'], [row_id])
         self.assertEqual(first_name, row['first'], 'incorrect first name')
 
         # select 2 parameters (first, last) by 1 parameter (ID)
-        row = db.select(table, ['first', 'last'], ['id'], [row_id])
+        row = db.select(table, ['first', 'last'], ['user_id'], [row_id])
         self.assertEqual(first_name, row['first'], 'incorrect first name')
         self.assertEqual(last_name, row['last'], 'incorrect last name')
 
         # select 2 parameters (first, last) by 2 parameters (ID, username)
-        row = db.select(table, ['first', 'last'], ['id', 'username'], [row_id, cur_username])
+        row = db.select(table, ['first', 'last'], ['user_id', 'username'], [row_id, cur_username])
         self.assertEqual(first_name, row['first'], 'incorrect first name')
         self.assertEqual(last_name, row['last'], 'incorrect last name')
 
@@ -81,51 +89,51 @@ class TestAutoDB(unittest.TestCase):
         cur_username = 'jr'
         first_name = 'jane'
         last_name = 'robby'
-        sample_col_names = ['username', 'first', 'last', 'password', 'address', 'has_car', 'num_seats']
-        sample_data = [cur_username, first_name, last_name, '123', '1 east green', True, 3]
+        sample_col_names = ['username', 'first', 'last', 'password', 'address', 'num_seats']
+        sample_data = [cur_username, first_name, last_name, '123', '1 east green', 3]
         table = 'users'
         row_id = db.insert(table, sample_col_names, sample_data)
 
         # test fetch many without where clause
-        rows = db.select(table, ['id'], fetchone=False)
+        rows = db.select(table, ['user_id'], fetchone=False)
         self.assertEqual(2, len(rows))
 
         # test fetch many with where clause
-        rows = db.select(table, ['id'], ['address'], ['1 east green'], fetchone=False)
+        rows = db.select(table, ['user_id'], ['address'], ['1 east green'], fetchone=False)
         self.assertEqual(2, len(rows))
 
         # test different operator (one operator)
-        rows = db.select(table, ['username', 'id'], ['id'], [10000], ['<'], fetchone=False)
+        rows = db.select(table, ['username', 'user_id'], ['user_id'], [10000], ['<'], fetchone=False)
         self.assertEqual(2, len(rows))
 
         # test different operator (two operators)
-        rows = db.select(table, ['username', 'id'], ['id', 'address'], [10000, '1 east green'], ['<', '='],
+        rows = db.select(table, ['username', 'user_id'], ['user_id', 'address'], [10000, '1 east green'], ['<', '='],
                          fetchone=False)
         self.assertEqual(2, len(rows))
 
         # test different operator (three operators)
-        rows = db.select(table, ['username', 'id'], ['id', 'address', 'num_seats'], [10000, '1 east green', '1'],
+        rows = db.select(table, ['username', 'user_id'], ['user_id', 'address', 'num_seats'], [10000, '1 east green', '1'],
                          ['<', '=', '>'], fetchone=False)
         self.assertEqual(2, len(rows))
 
         # test oder by with where clause
 
-        rows = db.select(table, ['username', 'id'], ['id', 'address'], [-1, '1 east green'], operators=['>', '='],
+        rows = db.select(table, ['username', 'user_id'], ['user_id', 'address'], [-1, '1 east green'], operators=['>', '='],
                          fetchone=False, order_by=['username'])
 
         self.assertEqual(rows[0]['username'], 'jr', 'jr comes before xyz')
         self.assertEqual(rows[1]['username'], 'xyz', 'xyz comes last')
 
         # test order by without where clause
-        rows = db.select(table, ['username', 'id'], order_by=['username'], fetchone=False)
+        rows = db.select(table, ['username', 'user_id'], order_by=['username'], fetchone=False)
         self.assertEqual(rows[0]['username'], 'jr', 'jr comes before xyz')
         self.assertEqual(rows[1]['username'], 'xyz', 'xyz comes last')
 
         # delete all entries
-        clean_up_table('users', 'id')
+        clean_up_table('users', 'user_id')
 
         # assert empty
-        rows = db.select(table, ['id'], fetchone=False)
+        rows = db.select(table, ['user_id'], fetchone=False)
         self.assertEqual([], rows, 'not all deleted!')
 
     def test_update(self):
@@ -134,19 +142,19 @@ class TestAutoDB(unittest.TestCase):
         :return:
         """
         # insert new row
-        table = 'users'
+        table = 'profile'
         row_id = create_user('new_user')
 
         # update picture field
-        db.update(table, ['picture'], ['my pic'], ['id'], [row_id], ['='])
+        db.update(table, ['picture'], ['my pic'], ['user_id'], [row_id], ['='])
 
-        row = db.select(table, ['picture'], ['id'], [row_id])
+        row = db.select(table, ['picture'], ['user_id'], [row_id])
 
         # assert picture has changed
         self.assertEqual(row['picture'], 'my pic', 'does not match picture')
 
         # clean up
-        clean_up_table('users', 'id')
+        clean_up_table('users', 'user_id')
 
         # assert empty
         self.assertEqual([], db.select('users', ['ALL'], fetchone=False))
@@ -199,7 +207,7 @@ class TestDBSpecific(unittest.TestCase):
         self.assertEqual(0, len(db.select('workout', ['ALL'], fetchone=False)))
 
         # clean up users
-        clean_up_table('users', 'id')
+        clean_up_table('users', 'user_id')
         self.assertEqual(0, len(db.select('users', ['ALL'], fetchone=False)))
 
     def test_get_workout_names(self):
@@ -236,7 +244,7 @@ class TestDBSpecific(unittest.TestCase):
         self.assertEqual('2x2000m', names[0]['name'], 'names array must have one element, 2x2000m')
 
         # clean up users
-        clean_up_table('users', 'id')
+        clean_up_table('users', 'user_id')
         self.assertEqual(0, len(db.select('users', ['ALL'], fetchone=False)))
 
     def test_get_total_meters(self):
@@ -265,7 +273,7 @@ class TestDBSpecific(unittest.TestCase):
         self.assertEqual(0, len(db.select('workout', ['ALL'], fetchone=False)))
 
         # clean up users
-        clean_up_table('users', 'id')
+        clean_up_table('users', 'user_id')
         self.assertEqual(0, len(db.select('users', ['ALL'], fetchone=False)))
 
     def test_trigger_delete_workout_after_all_pieces_are_deleted(self):
@@ -313,7 +321,7 @@ class TestDBSpecific(unittest.TestCase):
         self.assertEqual(len(db.select('workout', ['ALL'], fetchone=False)), 0, 'workout table is empty')
 
         # clean up users
-        clean_up_table('users', 'id')
+        clean_up_table('users', 'user_id')
         self.assertEqual(0, len(db.select('users', ['ALL'], fetchone=False)))
 
     def test_trigger_del_pieces_after_del_workout(self):
@@ -342,5 +350,5 @@ class TestDBSpecific(unittest.TestCase):
         self.assertEqual(len(db.select('erg', ['ALL'], fetchone=False)), 0, 'erg table is empty')
 
         # clean up users
-        clean_up_table('users', 'id')
+        clean_up_table('users', 'user_id')
         self.assertEqual(0, len(db.select('users', ['ALL'], fetchone=False)))

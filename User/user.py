@@ -13,7 +13,7 @@ class User:
     def __init__(self, user_id, active=True):
 
         # result = self.db.get_user(user_id)
-        result = self.db.select('users', ['ALL'], ['id'], [user_id])
+        result = self.db.select('users', ['ALL'], ['user_id'], [user_id])
 
         # TODO what if the user id does not exist??
 
@@ -103,7 +103,7 @@ class User:
         self.picture = pic_location
 
         # update the database
-        self.db.update('users', ['picture'], [pic_location], ['id'], [self.user_id])
+        self.db.update('users', ['picture'], [pic_location], ['user_id'], [self.user_id])
 
         # return location to update the current user
         return pic_location

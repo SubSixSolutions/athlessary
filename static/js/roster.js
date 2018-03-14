@@ -72,7 +72,7 @@ function initialize_roster() {
         for (let i = 0; i < data.length; i++) {
             let newRow = document.createElement("tr");
             let cols = "";
-            newRow.id = data[i]['id'];
+            newRow.id = data[i]['user_id'];
             let nameCell = newRow.insertCell(0);
             nameCell.innerHTML = '<td class=\"align-middle\">' + data[i]['first'] + '</td>';
             nameCell.classList.add("align-middle");

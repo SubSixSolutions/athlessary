@@ -39,13 +39,13 @@ def new_signup():
                 username = signin_form.data['username_field']
                 password = signin_form.data['password_field']
 
-                result = db.select('users', ['password', 'id'], ['username'], [username])
+                result = db.select('users', ['password', 'user_id'], ['username'], [username])
 
                 if result:
                     hash = result['password']
                     password_match = pbkdf2_sha256.verify(password, hash)
                     if password_match:
-                        curr_user = User(result['id'])
+                        curr_user = User(result['user_id'])
                         login_user(curr_user)
 
                         return redirect(url_for('profile'))
@@ -83,7 +83,7 @@ def profile():
         for attribute in profile_attrs:
             profile_cols.append((form.data[attribute]))
 
-        db.update('users', user_attrs, user_cols, ['id'], [current_user.user_id])
+        db.update('users', user_attrs, user_cols, ['user_id'], [current_user.user_id])
 
         db.update('profile', profile_attrs, profile_cols, ['user_id'], [current_user.user_id])
 
