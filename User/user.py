@@ -16,7 +16,7 @@ class User:
     def __init__(self, user_id, active=True):
 
         # result = self.db.get_user(user_id)
-        result = self.db.select('users', ['ALL'], ['id'], [user_id])
+        result = self.db.select('users', ['ALL'], ['user_id'], [user_id])
         if not result:
             return
 
