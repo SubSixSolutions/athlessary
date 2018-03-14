@@ -7,6 +7,7 @@ from User.user import User
 from Utils import util_basic
 from Utils.db import Database
 from Utils.driver_generation import generate_cars
+from Utils.log import log
 from Utils.util_basic import create_workout, build_graph_data
 
 app = Flask(__name__)
@@ -41,7 +42,7 @@ def new_signup():
                 password = signin_form.data['password_field']
 
                 result = db.select('users', ['password', 'id'], ['username'], [username])
-                print(result)
+
                 if result:
                     hash = result['password']
                     password_match = pbkdf2_sha256.verify(password, hash)
@@ -51,11 +52,10 @@ def new_signup():
 
                         return redirect(url_for('profile'))
 
+                signin_form.username_field.errors.append("Invalid Username or Password.")
+
         elif signup_form.data['submit']:
             if signup_form.validate():
-                # get all user names
-                names = db.select('users', ['username'], fetchone=False)
-                print(names)
                 # log new user in
                 curr_user = User.user_from_form(signup_form.data)
                 login_user(curr_user)
@@ -70,7 +70,6 @@ def new_signup():
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    user_profile = db.select('profile', ['ALL'], ['user_id'], [current_user.user_id])
 
     form = web_forms.ProfileForm()
 
@@ -81,6 +80,7 @@ def profile():
         profile_cols = []
         for attribute in user_attrs:
             user_cols.append(form.data[attribute])
+            setattr(current_user, attribute, form.data[attribute])
 
         for attribute in profile_attrs:
             profile_cols.append((form.data[attribute]))
@@ -89,11 +89,13 @@ def profile():
 
         db.update('profile', profile_attrs, profile_cols, ['user_id'], [current_user.user_id])
 
+    # gather user profile
+    user_profile = db.select('profile', ['ALL'], ['user_id'], [current_user.user_id])
+
+    if current_user.num_seats > 0:
+        form.num_seats.data = int(current_user.num_seats)
     if form.team:
-        form.team.default = current_user.team
-        form.process()
-        form.num_seats.default = str(current_user.num_seats)
-        form.process()
+        form.team.data = current_user.team
     if current_user.address:
         form.address.data = current_user.address
     if current_user.state:
@@ -149,8 +151,8 @@ def workouts():
 @login_required
 @app.route('/logout')
 def logout():
+    log.info('Logging out user id:%s' % current_user.user_id)
     logout_user()
-    print("LOGGING OUT")
     return redirect(url_for('new_signup'))
 
 
@@ -258,4 +260,5 @@ def drivers():
       
 
 if __name__ == '__main__':
+    log.info('Begin Main')
     app.run()

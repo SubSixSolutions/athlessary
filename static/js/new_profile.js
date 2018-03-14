@@ -33,7 +33,13 @@ function reveal_driver_elem(){
 
 function demoUpload() {
   console.log('upload');
-  var $uploadCrop;
+
+  vEl = document.getElementById('upload-demo');
+  var $uploadCrop = new Croppie(vEl, {
+			viewport: { width: 200, height: 200, type: 'square' },
+			boundary: { width: 300, height: 300 },
+      enableOrientation: true
+		});
 
   function readFile(input) {
     if (input.files && input.files[0]) {
@@ -41,34 +47,29 @@ function demoUpload() {
 
       reader.onload = function (e) {
         $('.upload-demo').addClass('ready');
-        $uploadCrop.croppie('bind', {
-          url: e.target.result }).then(function(){
-                  console.log('jQuery bind complete');
-                  swal('hello');
-          });
+
+        $uploadCrop.bind({
+          url: e.target.result,
+          orientation: 1,}).then(function(){
+              console.log('jQuery bind complete');
+        });
       }
 
       reader.readAsDataURL(input.files[0]);
       $("#save_profile_img").removeClass('disabled');
+      $('#rotate').on('click', function(ev) {
+          $uploadCrop.rotate(90);
+      });
     }
     else {
           swal("Sorry - you're browser doesn't support the FileReader API");
     }
   }
 
-  $uploadCrop = $('#upload-demo').croppie({
-    viewport: {
-      width: 200,
-      height: 200,
-      type: 'square'
-    },
-    enableExif: true
-  });
-
   $('#upload').on('change', function () { readFile(this); });
   $('#save_profile_img').on('click', function (ev) {
     if (!$('#save_profile_img').hasClass('disabled')){
-      $uploadCrop.croppie('result', {
+      $uploadCrop.result({
         type: 'base64',
         size: { width: 300, height: 300 }
       }).then(function (img) {

@@ -39,6 +39,7 @@
       @media (min-width: 992px) {
         body {
           padding-top: 56px;
+          padding-bottom: 56px;
         }
       }
       .content-div {
@@ -109,10 +110,10 @@
       </nav>
 
       <!-- Your Content Here -->
-      <div class="container h-100">
+      <div class="container h-100" style="overflow:auto;">
         <div class="row align-items-center h-100">
-            <div class="col-6 mx-auto">
-                <div class="transparent_box" style="border: 1px solid white; padding:1em;">
+            <div class="col-md-6 mx-auto" style="">
+                <div class="transparent_box my-2 container" style="border: 1px solid white; padding:1em; overflow:auto;">
                   <h1 class="my-3 text-white" style="text-align:center;">Welcome</h1>
 
                   <!-- Tabs -->
@@ -134,13 +135,13 @@
                       <div role="tabpanel" class="tab-pane {% if login %}active{% else %}fade in{% endif %}" id="sign_in_tab">
                         <br>
                         <div class="row">
-                          <div class="col-12 mx-auto">
+                          <div class="col-md-12 mx-auto">
                             <form class="mx-auto" action="{{ url_for('new_signup') }}" method="POST">
                             <!-- change ID so 2 things don't have the same ID -->
                               {{ sign_in.csrf_token(id='tag1') }}
                               <div class="form-row row">
-                                <div class="form-group col-8 mx-auto">
-                                  <small class="form-text text-muted" for="team">User Name</small>
+                                <div class="form-group col-md-8 mx-auto">
+                                  <small class="form-text text-white" for="team">User Name</small>
                                   <div class="input-group mb-1">
                                     {{ sign_in.username_field(placeholder='User Name', autocomplete="username", class_="form-control") }}
                                   </div>
@@ -152,8 +153,8 @@
                                 </div>
                               </div>
                               <div class="form-row row">
-                                <div class="form-group col-8 mx-auto">
-                                  <small class="form-text text-muted">Password</small>
+                                <div class="form-group col-md-8 mx-auto">
+                                  <small class="form-text text-white">Password</small>
                                   <div class="input-group mb-1">
                                     {{ sign_in.password_field(placeholder='Password', class_="form-control", autocomplete="current-password") }}
                                   </div>
@@ -165,8 +166,8 @@
                                 </div>
                               </div>
                               <div class="form-row">
-                                <div class="form-group col-8 mx-auto">
-                                  <div class="input-group">
+                                <div class="form-group col-auto mx-auto">
+                                  <div class="input-group mx-auto">
                                     {{ sign_in.submit_bttn(class_="btn btn-primary") }}
                                   </div>
                                 </div>
@@ -176,77 +177,72 @@
                         </div>
                       </div>
                       <div role="tabpanel" class="tab-pane {% if login == false %}active{% else %}fade in{% endif %}" id="sign_up_tab">
-                        <form class="align-content-center" action="{{ url_for('new_signup') }}" method="POST">
+                        <form class="" action="{{ url_for('new_signup') }}" method="POST">
                           {{ sign_up.hidden_tag() }}
-                          <!-- <div class="form-row">
-                            <div class="form-group col-md-6">
-                              <small for="inputEmail4">First</small>
-                              <input type="text" class="form-control" id="inputEmail4" placeholder="First">
-                            </div>
-                            <div class="form-group col-md-6">
-                              <small for="inputPassword4">Last</small>
-                              <input type="text" class="form-control" id="inputPassword4" placeholder="Last">
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <small for="inputAddress">Address</small>
-                            <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
-                          </div>
                           <div class="form-row">
-                            <div class="form-group col-md-6">
-                              <small for="inputCity">City</small>
-                              <input type="text" class="form-control" id="inputCity">
-                            </div>
-                            <div class="form-group col-md-4">
-                              <small for="inputState">State</small>
-                              <select id="inputState" class="form-control">
-                                <option selected>Choose...</option>
-                                <option>...</option>
-                              </select>
-                            </div>
-                            <div class="form-group col-md-2">
-                              <small for="inputZip">Zip</small>
-                              <input type="text" class="form-control" id="inputZip">
+                            <div class="col-md-12 form-group">
+                              <small class="form-text text-white">Username</small>
+                              <div class="input-group mb-1">
+                                {{ sign_up.username(placeholder='User Name', class_="form-control", autocomplete="username") }}
+                              </div>
+                              <small>
+                                {% for err in sign_up.username.errors %}
+                                  <p class="text-danger mb-0">{{err}}</p>
+                                {% endfor %}
+                              </small>
                             </div>
                           </div>
                           <div class="form-row">
-                            <div class="form-group col-md-6">
-                              <small>Password</small>
-                              <input type="password" class="form-control" name="" value="">
+                            <div class="col-md-6 form-group">
+                              <small class="form-text text-white">First Name</small>
+                              <div class="input-group mb-1">
+                                {{ sign_up.first(placeholder='First Name', class_="form-control", autocomplete="given-name") }}
+                              </div>
+                              <small>
+                                {% for err in sign_up.first.errors %}
+                                  <p class="text-danger mb-0">{{err}}</p>
+                                {% endfor %}
+                              </small>
                             </div>
-                            <div class="form-group col-md-6">
-                              <small>Retype Password</small>
-                              <input type="password" class="form-control" name="" value="">
+                            <div class="col-md-6 form-group">
+                              <small class="form-text text-white">Last Name</small>
+                              <div class="input-group mb-1">
+                                {{ sign_up.last(placeholder='Last Name', class_="form-control", autocomplete="family-name") }}
+                              </div>
+                              <small>
+                                {% for err in sign_up.last.errors %}
+                                  <p class="text-danger mb-0">{{err}}</p>
+                                {% endfor %}
+                              </small>
                             </div>
                           </div>
-                          <div class="form-group">
-                            <div class="form-check">
-                              <input class="form-check-input" type="checkbox" id="gridCheck">
-                              <label class="form-check-label" for="gridCheck">
-                                Check me out
-                              </label>
+                          <div class="form-row">
+                            <div class="form-group col-md-6">
+                              <small class="form-text text-white">Password</small>
+                              <div class="input-group mb-1">
+                                {{ sign_up.password(placeholder='Password', class_="form-control", autocomplete="new-password")}}
+                              </div>
+                              <small>
+                                {% for err in sign_up.password.errors %}
+                                  <p class="text-danger mb-0">{{err}}</p>
+                                {% endfor %}
+                              </small>
                             </div>
-                          </div> -->
-                          <div class="row" style="text-align:center;">
-                            <div class="col text-center">
-                              <div class="col" style="padding:.5em;">
-                                {{ sign_up.first(placeholder='First Name') }}
+                            <div class="form-group col-md-6">
+                              <small class="form-text text-white">Confirm Password</small>
+                              <div class="input-group mb-1">
+                                {{ sign_up.retype_pass(placeholder='Confirm Password', class_="form-control", autocomplete="new-password")}}
                               </div>
-                              <div class="col" style="padding:.5em;">
-                                {{ sign_up.last(placeholder='Last Name') }}
-                              </div>
-                              <div class="col" style="padding:.5em;">
-                                {{ sign_up.username(placeholder='User Name') }}
-                              </div>
-                              <div class="col" style="padding:.5em;">
-                                {{ sign_up.password(placeholder='Password')}}
-                              </div>
-                              <div class="col" style="padding:.5em;">
-                                {{ sign_up.retype_pass(placeholder='Retype Password')}}
-                              </div>
-                              <div class="col" style="padding:.5em;">
-                                {{ sign_up.submit }}
-                              </div>
+                              <small>
+                                {% for err in sign_up.retype_pass.errors %}
+                                  <p class="text-danger mb-0">{{err}}</p>
+                                {% endfor %}
+                              </small>
+                            </div>
+                          </div>
+                          <div class="form-row">
+                            <div class="form-group col-auto mx-auto">
+                              {{ sign_up.submit(class_="btn btn-primary") }}
                             </div>
                           </div>
                         </form>
@@ -263,7 +259,6 @@
     <!-- Footer -->
     <footer class="footer_style" style="padding:0em; margin:0em;">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
-      <!-- <nav class="navbar navbar-expand-lg"> -->
         <div class="container">
           <div class="navbar-brand">
             <p style="margin:0em;">This is Athlessary</p>

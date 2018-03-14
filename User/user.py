@@ -57,7 +57,7 @@ class User:
 
         # wanted_attrs = ['first', 'last', 'username', 'password', 'address', 'has_car', 'num_seats']
         wanted_attrs = ['first', 'last', 'username', 'password']
-        attr_dict = {x: form_data[x] for x in wanted_attrs}
+        attr_dict = {x: str(form_data[x]) for x in wanted_attrs}
 
         col_names = attr_dict.keys()
         col_vals = attr_dict.values()
