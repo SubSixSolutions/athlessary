@@ -1,11 +1,13 @@
 import os
+from urllib.parse import quote
 
+from geopy.geocoders import Nominatim
 from werkzeug.utils import secure_filename
 
 from Utils import hashes
 from Utils.db import Database
+from Utils.log import log
 
-from geopy.geocoders import Nominatim
 
 class User:
 
@@ -35,12 +37,20 @@ class User:
         self.user_id = user_id
         self.active = active
 
-        if not self.x:
+        if not self.x and self.address:
             self.init_coordinates()
 
     def init_coordinates(self):
-        geolocator = Nominatim()
-        location = geolocator.geocode(' '.join([self.address, self.city, self.state, str(self.zip)]))
+        geolocator = Nominatim(user_agent="__name__", scheme="http")
+        address = ' '.join([self.address, self.city, self.state, str(self.zip)])
+        log.info(quote(address))
+        query = {
+            'street': self.address,
+            'city': self.city,
+            'state': self.state,
+            'postalcode': str(self.zip)
+        }
+        location = geolocator.geocode(query)
         self.x = location.latitude
         self.y = location.longitude
         self.db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
@@ -61,8 +71,8 @@ class User:
 
         col_names = attr_dict.keys()
         col_vals = attr_dict.values()
-        col_names.append('x')
-        col_names.append('y')
+        # col_names.append('x')
+        # col_names.append('y')
         user_id = cls.db.insert('users', col_names, col_vals)
 
         bio_string = 'Hi, my name is %s!' % form_data['first']

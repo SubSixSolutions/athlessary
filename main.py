@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, Response, json
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from passlib.hash import pbkdf2_sha256
-from werkzeug.datastructures import ImmutableMultiDict
+
 import Forms.web_forms as web_forms
 from User.user import User
 from Utils import util_basic
 from Utils.db import Database
-from Utils.driver_generation import generate_cars
+from Utils.driver_generation import generate_cars, modified_k_means
 from Utils.log import log
 from Utils.util_basic import create_workout, build_graph_data
 
@@ -252,7 +252,10 @@ def drivers():
         athletes = request.form.getlist('athletes[]')
         drivers = request.form.getlist('drivers[]')
         print(athletes, drivers)
-        generate_cars(athletes, drivers, db)
+
+        drivers_arr, athelete_dict = generate_cars(athletes, drivers, db)
+        modified_k_means(drivers_arr, athelete_dict)
+
         return render_template('drivers.html')
     else:
         print('ok')
