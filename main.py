@@ -253,7 +253,7 @@ def drivers():
         drivers = request.form.getlist('drivers[]')
         print(athletes, drivers)
 
-        drivers_arr, athelete_dict = generate_cars(athletes, drivers, db)
+        drivers_arr, athelete_dict = generate_cars(athletes, drivers)
         modified_k_means(drivers_arr, athelete_dict)
 
         return render_template('drivers.html')
