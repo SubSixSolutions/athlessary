@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, Response, json
+from urllib.parse import urlparse, urljoin
+
+from flask import Flask, render_template, request, redirect, url_for, Response, json, abort
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from passlib.hash import pbkdf2_sha256
 
@@ -22,6 +24,12 @@ db = Database("athlessary-database.db")
 
 # redirect unauthorized view to login page
 login_manager.login_view = 'new_signup'
+
+
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
 
 
 @login_manager.user_loader
@@ -56,6 +64,9 @@ def new_signup():
                         login_user(curr_user)
 
                         next_url = request.args.get('next')
+
+                        if not is_safe_url(next_url):
+                            return abort(400)
 
                         return redirect(next_url or url_for('profile'))
 
