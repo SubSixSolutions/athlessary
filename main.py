@@ -20,11 +20,16 @@ login_manager.init_app(app)
 
 db = Database("athlessary-database.db")
 
+# redirect unauthorized view to login page
+login_manager.login_view = 'new_signup'
+
 
 @login_manager.user_loader
 def load_user(user_id):
-
-    return User(user_id)
+    try:
+        return User(user_id)
+    except ValueError:
+        return None
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -37,7 +42,7 @@ def new_signup():
 
     if request.method == 'POST':
         if signin_form.data['submit_bttn']:
-            if signin_form.validate():
+            if signin_form.validate_on_submit():
                 username = signin_form.data['username_field']
                 password = signin_form.data['password_field']
 
@@ -50,7 +55,9 @@ def new_signup():
                         curr_user = User(result['user_id'])
                         login_user(curr_user)
 
-                        return redirect(url_for('profile'))
+                        next_url = request.args.get('next')
+
+                        return redirect(next_url or url_for('profile'))
 
                 signin_form.username_field.errors.append("Invalid Username or Password.")
 
@@ -69,6 +76,7 @@ def new_signup():
 
 
 @app.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
 
     form = web_forms.ProfileForm()
@@ -90,7 +98,7 @@ def profile():
         db.update('profile', profile_attrs, profile_cols, ['user_id'], [current_user.user_id])
 
     # gather user profile
-    user_profile = db.select('profile', ['ALL'], ['user_id'], [current_user.user_id])
+    user_profile = db.select('profile', ['ALL'], ['user_id'], [current_user.get_id()])
 
     if current_user.num_seats > 0:
         form.num_seats.data = int(current_user.num_seats)
@@ -121,8 +129,8 @@ def userlist():
     return render_template('userlist.html', user_list=users)
 
 
-@login_required
 @app.route('/workouts', methods=['GET', 'POST'])
+@login_required
 def workouts():
     if request.method == 'POST':
 
@@ -148,16 +156,16 @@ def workouts():
     return render_template('workout.html')
 
 
-@login_required
 @app.route('/logout')
+@login_required
 def logout():
     log.info('Logging out user id:%s' % current_user.user_id)
     logout_user()
     return redirect(url_for('new_signup'))
 
 
-@login_required
 @app.route('/get_a_workout', methods=['POST'])
+@login_required
 def get_a_workout():
     workout_id = request.form.get('workout_id')
     result = db.get_workouts_by_id(current_user.user_id, workout_id)
@@ -165,22 +173,22 @@ def get_a_workout():
     return Response(js, status=200, mimetype='application/json')
 
 
-@login_required
 @app.route('/get_all_workouts', methods=['GET'])
+@login_required
 def get_all_workouts():
     workouts = db.get_aggregate_workouts_by_id(current_user.user_id)
     return Response(json.dumps(workouts), status=200, mimetype='application/json')
 
 
-@login_required
 @app.route('/edit_workout', methods=['POST'])
+@login_required
 def edit_workout():
     util_basic.edit_erg_workout(request, db)
     return Response(json.dumps({}), status=201, mimetype='application/json')
 
 
-@login_required
 @app.route('/generate_graph_data', methods=['POST'])
+@login_required
 def generate_graph_data():
     if request.method == 'POST':
         workout_name = request.form.get('share')
@@ -196,38 +204,38 @@ def generate_graph_data():
     return Response({}, status=400, mimetype='application/json')
 
 
-@login_required
 @app.route('/get_workout_names', methods=['GET'])
+@login_required
 def get_workout_names():
     workout_names = db.find_all_workout_names(current_user.user_id)
     js = json.dumps(workout_names)
     return Response(js, status=200, mimetype='application/json')
 
 
-@login_required
 @app.route('/delete_workout', methods=['POST'])
+@login_required
 def delete_workout():
     workout_id = request.form.get('workout_id')
     db.delete_entry('workout', 'workout_id', workout_id)
     return Response(json.dumps({}), 201, mimetype='application/json')
 
 
-@login_required
 @app.route('/get_all_athletes', methods=['GET'])
+@login_required
 def get_all_athletes():
     users = db.select('users', ['ALL'], fetchone=False)
     js = json.dumps(users)
     return Response(js, status=200, mimetype='application/json')
 
 
-@login_required
 @app.route('/roster')
+@login_required
 def roster():
     return render_template('roster_page.html')
 
   
-@login_required
 @app.route('/save_img', methods=['POST'])
+@login_required
 def save_img():
 
     img = request.form.get('img')
@@ -247,6 +255,7 @@ def save_img():
 
 
 @app.route('/drivers', methods=['GET', 'POST'])
+@login_required
 def drivers():
     if request.method == 'POST':
         athletes = request.form.getlist('athletes[]')
@@ -260,6 +269,11 @@ def drivers():
     else:
         print('ok')
         return render_template('drivers.html')
+
+
+@app.route('/no_login')
+def no_login():
+    return 'no login required'
       
 
 if __name__ == '__main__':

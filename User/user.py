@@ -18,7 +18,7 @@ class User:
         # result = self.db.get_user(user_id)
         result = self.db.select('users', ['ALL'], ['user_id'], [user_id])
         if not result:
-            return
+            raise ValueError('Could Not Find User')
 
         # TODO what if the user id does not exist??
 
@@ -36,6 +36,8 @@ class User:
         self.phone = result['phone']
         self.user_id = user_id
         self.active = active
+        self.is_anonymous = False
+        self.is_authenticated = True
 
         if not self.x and self.address:
             self.init_coordinates()
@@ -55,8 +57,6 @@ class User:
         self.y = location.longitude
         self.db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
                        where_cols=['id'], where_params=[self.user_id])
-
-
 
     @classmethod
     def user_from_form(cls, form_data, active=True):
@@ -84,13 +84,13 @@ class User:
         return '<User %s>' % self.username
 
     def is_authenticated(self):
-        return True
+        return self.is_authenticated
 
     def is_active(self):
         return self.active
 
     def is_anonymous(self):
-        return False
+        return self.is_anonymous
 
     def get_id(self):
         return str(self.user_id)
