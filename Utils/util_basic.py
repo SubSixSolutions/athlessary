@@ -152,7 +152,7 @@ def edit_erg_workout(request, db):
 
     if old_stamp != new_stamp:
         workout_id = request.form.get('workout_id')
-        db.update('workout', ['time'], [new_date], ['workout_id'], [workout_id])
+        db.update('workout', ['time'], [int(new_stamp)], ['workout_id'], [workout_id])
 
 
 def set_up_profile_form(user, profile):
