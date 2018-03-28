@@ -4,13 +4,16 @@ A team management tool designed by Max McCarthy and Will Klock for the Universit
 
 Things you can do right now:
 - Login
-- View the entire users database (only if you're logged in)
+- Edit Your Profile
+- Change Your Profile Picture
+- Log an Ergometer Workout
+- Edit/Delete Workouts
+- Graph Your Workouts
 
 Things you will be able to do:
-- Upload a picture of yourself
-- Look at your profile page
-- Log your workouts
 - Change your password
+- Organize Transportation to Practice
+- View Your Team
 
 # Built With
 
