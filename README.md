@@ -12,8 +12,15 @@ Things you will be able to do:
 - Log your workouts
 - Change your password
 
-# Resources
+# Built With
 
 JavaScript:
-- https://foliotek.github.io/Croppie/
-- https://www.chartjs.org/
+- [Croppie.js](https://foliotek.github.io/Croppie/) - Profile Picture Upload
+- [Chart.js](https://www.chartjs.org/) - Workout Vizualization
+
+Flask:
+- [Login Manager](https://flask-login.readthedocs.io/en/latest/)
+- [Flask WTForms](https://flask-wtf.readthedocs.io/en/stable/)
+
+Database:
+- [SQLite3](https://docs.python.org/2/library/sqlite3.html)
