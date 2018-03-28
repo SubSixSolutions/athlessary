@@ -1,5 +1,7 @@
 # Athlessary
 
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/SubSixSolutions/athlessary.svg?columns=all)](https://waffle.io/SubSixSolutions/athlessary)
+
 A team management tool designed by Max McCarthy and Will Klock for the University of Illinois Rowing Program
 
 Things you can do right now:
