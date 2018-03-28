@@ -12,13 +12,13 @@ from Utils.driver_generation import generate_cars, modified_k_means
 from Utils.log import log
 from Utils.util_basic import create_workout, build_graph_data
 
-app = Flask(__name__)
+application = Flask(__name__)
 # TODO Update secret key and move to external file
-app.secret_key = 'super secret string'  # Change this!
-app.debug = True
+application.secret_key = 'super secret string'  # Change this!
+application.debug = True
 
 login_manager = LoginManager()
-login_manager.init_app(app)
+login_manager.init_app(application)
 
 db = Database("athlessary-database.db")
 
@@ -40,7 +40,7 @@ def load_user(user_id):
         return None
 
 
-@app.route('/', methods=['GET', 'POST'])
+@application.route('/', methods=['GET', 'POST'])
 def new_signup():
     # forms to handle sign up and sign in
     signup_form = web_forms.SignUpForm()
@@ -86,7 +86,7 @@ def new_signup():
     return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login)
 
 
-@app.route('/profile', methods=['GET', 'POST'])
+@application.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
 
@@ -132,7 +132,7 @@ def profile():
     return render_template('profile_5.html', form=form, profile=user_profile)
 
 
-@app.route('/userlist')
+@application.route('/userlist')
 @login_required
 def userlist():
     users = db.select('users', ['ALL'], order_by=['username'])
@@ -140,7 +140,7 @@ def userlist():
     return render_template('userlist.html', user_list=users)
 
 
-@app.route('/workouts', methods=['GET', 'POST'])
+@application.route('/workouts', methods=['GET', 'POST'])
 @login_required
 def workouts():
     if request.method == 'POST':
@@ -167,7 +167,7 @@ def workouts():
     return render_template('workout.html')
 
 
-@app.route('/logout')
+@application.route('/logout')
 @login_required
 def logout():
     log.info('Logging out user id:%s' % current_user.user_id)
@@ -175,7 +175,7 @@ def logout():
     return redirect(url_for('new_signup'))
 
 
-@app.route('/get_a_workout', methods=['POST'])
+@application.route('/get_a_workout', methods=['POST'])
 @login_required
 def get_a_workout():
     workout_id = request.form.get('workout_id')
@@ -184,21 +184,21 @@ def get_a_workout():
     return Response(js, status=200, mimetype='application/json')
 
 
-@app.route('/get_all_workouts', methods=['GET'])
+@application.route('/get_all_workouts', methods=['GET'])
 @login_required
 def get_all_workouts():
     workouts = db.get_aggregate_workouts_by_id(current_user.user_id)
     return Response(json.dumps(workouts), status=200, mimetype='application/json')
 
 
-@app.route('/edit_workout', methods=['POST'])
+@application.route('/edit_workout', methods=['POST'])
 @login_required
 def edit_workout():
     util_basic.edit_erg_workout(request, db)
     return Response(json.dumps({}), status=201, mimetype='application/json')
 
 
-@app.route('/generate_graph_data', methods=['POST'])
+@application.route('/generate_graph_data', methods=['POST'])
 @login_required
 def generate_graph_data():
     if request.method == 'POST':
@@ -215,7 +215,7 @@ def generate_graph_data():
     return Response({}, status=400, mimetype='application/json')
 
 
-@app.route('/get_workout_names', methods=['GET'])
+@application.route('/get_workout_names', methods=['GET'])
 @login_required
 def get_workout_names():
     workout_names = db.find_all_workout_names(current_user.user_id)
@@ -223,7 +223,7 @@ def get_workout_names():
     return Response(js, status=200, mimetype='application/json')
 
 
-@app.route('/delete_workout', methods=['POST'])
+@application.route('/delete_workout', methods=['POST'])
 @login_required
 def delete_workout():
     workout_id = request.form.get('workout_id')
@@ -231,7 +231,7 @@ def delete_workout():
     return Response(json.dumps({}), 201, mimetype='application/json')
 
 
-@app.route('/get_all_athletes', methods=['GET'])
+@application.route('/get_all_athletes', methods=['GET'])
 @login_required
 def get_all_athletes():
     users = db.select('users', ['ALL'], fetchone=False)
@@ -239,13 +239,13 @@ def get_all_athletes():
     return Response(js, status=200, mimetype='application/json')
 
 
-@app.route('/roster')
+@application.route('/roster')
 @login_required
 def roster():
     return render_template('roster_page.html')
 
   
-@app.route('/save_img', methods=['POST'])
+@application.route('/save_img', methods=['POST'])
 @login_required
 def save_img():
 
@@ -265,7 +265,7 @@ def save_img():
     return Response(json.dumps({}), status=400, mimetype='application/json')
 
 
-@app.route('/drivers', methods=['GET', 'POST'])
+@application.route('/drivers', methods=['GET', 'POST'])
 @login_required
 def drivers():
     if request.method == 'POST':
@@ -282,11 +282,11 @@ def drivers():
         return render_template('drivers.html')
 
 
-@app.route('/no_login')
+@application.route('/no_login')
 def no_login():
     return 'no login required'
       
 
 if __name__ == '__main__':
     log.info('Begin Main')
-    app.run()
+    application.run()
