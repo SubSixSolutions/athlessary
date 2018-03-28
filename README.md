@@ -11,3 +11,9 @@ Things you will be able to do:
 - Look at your profile page
 - Log your workouts
 - Change your password
+
+# Resources
+
+JavaScript:
+- https://foliotek.github.io/Croppie/
+- https://www.chartjs.org/
