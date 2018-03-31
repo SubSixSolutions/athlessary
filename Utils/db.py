@@ -1,24 +1,12 @@
 import sqlite3
-from os import getcwd
+
+import psycopg2
+from psycopg2 import extras, sql as SQL
 
 from Utils.log import log
 
-
-def array_factory(cursor, row):
-    return row[0]
-
-
-def dict_factory(cursor, row):
-    """
-    sets up database cursor to return a dictionary instead of a tuple
-    :param cursor: sql database cursor object
-    :param row: rows of database
-    :return: a dictionary representation of the row(s)
-    """
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+connect_str = "dbname='test' user='athlessary_admin' host='test-db.cwhz0vdyxldt.us-west-2.rds.amazonaws.com' " + \
+              "password='Athlessary18' port='5432'"
 
 
 def set_where_clause(cols, operators=None):
@@ -38,12 +26,9 @@ def set_where_clause(cols, operators=None):
 
 
 class Database:
-
-    def __init__(self, db_file, df=dict_factory):
-        abs_path = getcwd() + "/" + db_file
+    def __init__(self, db_file):
         try:
-            self.conn = sqlite3.connect(abs_path, check_same_thread=False)
-            self.conn.row_factory = df
+            self.conn = psycopg2.connect(connect_str, cursor_factory=extras.RealDictCursor)
             self.init_tables()
             log.info('Return NEW database object')
         except sqlite3.Error as e:
@@ -58,34 +43,48 @@ class Database:
     def create_users(self):
         cur = self.conn.cursor()
 
+        # cur.execute("DROP TABLE IF EXISTS users")
+
         sql = '''CREATE TABLE IF NOT EXISTS users (
-    password  STRING (1, 50),
-    user_id        INTEGER          PRIMARY KEY AUTOINCREMENT,
-    first     STRING (1, 20)   NOT NULL,
-    last      STRING (1, 20)   NOT NULL,
-    username  STRING (2, 20)   UNIQUE
-                               NOT NULL,
-    address   STRING (1, 50),
-    city      STRING,
-    state     STRING,
-    zip       INTEGER,
-    num_seats INTEGER          DEFAULT (0),
-    phone     INTEGER (10, 10),
-    team      STRING,
-    y         DOUBLE,
-    x         DOUBLE
-);'''
+                password  VARCHAR(255),
+                user_id   SERIAL           PRIMARY KEY,
+                first     VARCHAR(20)      NOT NULL,
+                last      VARCHAR(20)      NOT NULL,
+                username  VARCHAR(20)      UNIQUE
+                                           NOT NULL,
+                address   VARCHAR(150),
+                city      VARCHAR(255),
+                state     VARCHAR(255),
+                zip       INTEGER,
+                num_seats INTEGER          DEFAULT (0),
+                phone     INTEGER,
+                team      VARCHAR(20),
+                y         REAL,
+                x         REAL
+            );'''
 
         cur.execute(sql)
         self.conn.commit()
 
-        sql = '''CREATE TRIGGER IF NOT EXISTS delete_profile
-                 AFTER DELETE
-                 ON users
-                 BEGIN
+        sql = '''CREATE OR REPLACE FUNCTION remove_profile() RETURNS trigger AS
+                $$
+                BEGIN
                     DELETE FROM profile
                     WHERE profile.user_id = old.user_id;
-                 END;'''
+                END;
+                $$
+                LANGUAGE plpgsql;
+                '''
+
+        cur.execute(sql)
+
+        cur.execute("DROP TRIGGER IF EXISTS delete_profile on users;")
+
+        sql = '''CREATE TRIGGER delete_profile
+                 AFTER DELETE
+                 ON users
+                 FOR EACH ROW
+                 EXECUTE PROCEDURE remove_profile();'''
 
         cur.execute(sql)
         self.conn.commit()
@@ -94,12 +93,9 @@ class Database:
     def create_profile(self):
         cur = self.conn.cursor()
         sql = '''CREATE TABLE IF NOT EXISTS profile (
-                 user_id INTEGER         UNIQUE
-                            PRIMARY KEY
-                            NOT NULL,
-                 picture STRING          NOT NULL
-                            DEFAULT ('images/defaults/profile.jpg'),
-                 bio     STRING (0, 250) NOT NULL);'''
+                        user_id INTEGER      UNIQUE PRIMARY KEY NOT NULL,
+                        picture VARCHAR(255) NOT NULL DEFAULT ('images/defaults/profile.jpg'),
+                        bio     VARCHAR(250) NOT NULL);'''
         cur.execute(sql)
         self.conn.commit()
         cur.close()
@@ -108,27 +104,40 @@ class Database:
         cur = self.conn.cursor()
 
         sql = '''CREATE TABLE IF NOT EXISTS workout (
-                    workout_id  INTEGER        PRIMARY KEY AUTOINCREMENT,
+                    workout_id  SERIAL         PRIMARY KEY,
                     user_id     INTEGER        NOT NULL,
                     time        INTEGER        NOT NULL,
                     by_distance BOOLEAN        NOT NULL,
-                    name        STRING (2, 20) NOT NULL
+                    name        VARCHAR(25)    NOT NULL
                 );'''
 
         cur.execute(sql)
 
         # remove  pieces in workout if workout is deleted
-        sql = '''CREATE TRIGGER IF NOT EXISTS delete_all_pieces
-                 AFTER DELETE
-                 ON workout
-                 BEGIN
-                    DELETE FROM erg
+
+        sql = '''CREATE OR REPLACE FUNCTION remove_all_pieces() RETURNS trigger AS
+                $$
+                BEGIN
+                  DELETE FROM erg
                     WHERE erg.workout_id IN (
                         SELECT erg.workout_id
                         FROM erg
                         WHERE erg.workout_id = old.workout_id
                     );
-                 END;'''
+                END;
+                $$
+                LANGUAGE plpgsql;
+                '''
+
+        cur.execute(sql)
+
+        cur.execute("DROP TRIGGER IF EXISTS delete_all_pieces on workout;")
+
+        sql = '''CREATE TRIGGER delete_all_pieces
+                     AFTER DELETE
+                     ON workout
+                     FOR EACH ROW
+                     EXECUTE PROCEDURE remove_all_pieces();'''
 
         cur.execute(sql)
         self.conn.commit()
@@ -138,29 +147,40 @@ class Database:
         cur = self.conn.cursor()
 
         sql = '''CREATE TABLE IF NOT EXISTS erg (
-                    erg_id     INTEGER NOT NULL
-                    PRIMARY KEY AUTOINCREMENT,
+                    erg_id     SERIAL  NOT NULL PRIMARY KEY,
                     workout_id INTEGER NOT NULL,
                     distance   INTEGER NOT NULL,
                     minutes    INTEGER NOT NULL,
                     seconds    INTEGER NOT NULL
-                    );'''
+                );'''
 
         cur.execute(sql)
 
-        # remove workout after all pieces are deleted
-        sql = '''CREATE TRIGGER IF NOT EXISTS delete_me
-                 AFTER DELETE
-                 ON erg
-                 BEGIN
+        sql = '''CREATE OR REPLACE FUNCTION remove_workouts_without_pieces() RETURNS trigger AS
+                $$
+                BEGIN
                     DELETE FROM workout
                     WHERE workout.workout_id NOT IN (
                         SELECT erg.workout_id
                         FROM erg
                         GROUP BY erg.workout_id
                     );
-                 END;'''
+                END
+                $$
+                LANGUAGE plpgsql;
+              '''
+
         cur.execute(sql)
+
+        cur.execute("DROP TRIGGER IF EXISTS delete_workouts_without_pieces on erg;")
+
+        sql = '''CREATE TRIGGER delete_workouts_without_pieces
+                 AFTER DELETE
+                 ON erg
+                 EXECUTE PROCEDURE remove_workouts_without_pieces();'''
+
+        cur.execute(sql)
+
         self.conn.commit()
         cur.close()
 
@@ -183,19 +203,28 @@ class Database:
         :return: return the ID
         """
 
-        col_to_str = ', '.join(col_names)
-        params_tuple = tuple(col_params)
-        q_marks = ['?' for i in range(len(col_params))]
-        q_marks = ', '.join(q_marks)
-        sql = 'INSERT INTO %s (%s) VALUES (%s)' % (table_name, col_to_str, q_marks)
+        cols = SQL.SQL(', ').join(SQL.Identifier(n) for n in col_names)
+        params = SQL.SQL(', ').join(SQL.Literal(l) for l in col_params)
+        sql = SQL.SQL("INSERT INTO {0} ({1}) VALUES ({2})".format(SQL.Identifier(table_name), cols, params))
+        print(sql.as_string(self.conn))
+
+        q1 = SQL.SQL("insert into {} ({}) values ({}) returning {}").format(SQL.Identifier(table_name),
+                                                               SQL.SQL(', ').join(map(SQL.Identifier, col_names)),
+                                                               SQL.SQL(', ').join(SQL.Placeholder() * len(col_names)),
+                                                               SQL.Identifier('user_id'))
+        print(q1.as_string(self.conn))
 
         cur = self.conn.cursor()
 
-        row_id = cur.execute(sql, params_tuple).lastrowid
-        self.conn.commit()
-        cur.close()
+        cur.execute(q1, list(col_params))
 
-        log.info('Insert on %s' % table_name)
+        row_id = cur.fetchone()['user_id']
+
+        self.conn.commit()
+
+        log.info(cur.query)
+
+        cur.close()
 
         return row_id
 
@@ -490,7 +519,7 @@ class Database:
         return result
 
     def get_names(self):
-        self.conn.row_factory = array_factory
+        self.conn.cursor_factory = extras.DictCursor
 
         cur = self.conn.cursor()
 
@@ -500,8 +529,9 @@ class Database:
 
         cur.execute(sql)
         result = cur.fetchall()
+        print(result)
         cur.close()
 
-        self.conn.row_factory = dict_factory
+        self.conn.cursor_factory = extras.RealDictCursor
 
         return result
