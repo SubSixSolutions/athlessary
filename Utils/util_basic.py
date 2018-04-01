@@ -68,11 +68,11 @@ def create_workout(user_id, db, meters, minutes, seconds, by_distance):
 
     # create workout
     workout_id = db.insert('workout', ['user_id', 'time', 'by_distance', 'name'],
-                           [user_id, utc_date_stamp, by_distance, name])
+                           [user_id, utc_date_stamp, by_distance, name], 'workout_id')
 
     # create erg workout
     for meter, minute, second in zip(meters, minutes, seconds):
-        db.insert('erg', ['workout_id', 'distance', 'minutes', 'seconds'], [workout_id, meter, minute, second])
+        db.insert('erg', ['workout_id', 'distance', 'minutes', 'seconds'], [workout_id, meter, minute, second], 'erg_id')
 
 
 def build_graph_data(results, workout_name):

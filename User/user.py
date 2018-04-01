@@ -73,10 +73,10 @@ class User:
         col_vals = attr_dict.values()
         # col_names.append('x')
         # col_names.append('y')
-        user_id = cls.db.insert('users', col_names, col_vals)
+        user_id = cls.db.insert('users', col_names, col_vals, 'user_id')
 
         bio_string = 'Hi, my name is %s!' % form_data['first']
-        cls.db.insert('profile', ['bio', 'user_id'], [bio_string, user_id])
+        cls.db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
 
         return cls(user_id, None)
 

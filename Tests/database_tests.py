@@ -1,3 +1,4 @@
+import time
 import unittest
 
 from Utils.db import Database
@@ -12,16 +13,14 @@ def create_user(user_name):
     sample_col_names = ['username', 'first', 'last', 'password', 'address', 'num_seats']
     sample_data = [user_name, 'hello', 'bye', '123', '1 east green', 3]
     table = 'users'
-    row_id = db.insert(table, sample_col_names, sample_data)
+    user_id = db.insert(table, sample_col_names, sample_data, 'user_id')
 
     # add user profile
-    row = db.select('users', select_cols=['user_id'], where_cols=['username'], where_params=[user_name], operators=['='], fetchone=True)
-    user_id = row['user_id']
     sample_col_names = ['user_id', 'picture', 'bio']
     sample_data = [user_id, 'my pic', 'hello']
-    db.insert('profile', sample_col_names, sample_data)
+    db.insert('profile', sample_col_names, sample_data, 'user_id')
 
-    return row_id
+    return user_id
 
 
 def clean_up_table(table, pk):
@@ -65,7 +64,7 @@ class TestAutoDB(unittest.TestCase):
         sample_col_names = ['username', 'first', 'last', 'password', 'address', 'num_seats']
         sample_data = [cur_username, first_name, last_name, '123', '1 east green', 4]
         table = 'users'
-        row_id = db.insert(table, sample_col_names, sample_data)
+        row_id = db.insert(table, sample_col_names, sample_data, 'user_id')
 
         # select ALL by 1 parameter (ID)
         row = db.select(table, ['ALL'], ['user_id'], [row_id])
@@ -92,7 +91,7 @@ class TestAutoDB(unittest.TestCase):
         sample_col_names = ['username', 'first', 'last', 'password', 'address', 'num_seats']
         sample_data = [cur_username, first_name, last_name, '123', '1 east green', 3]
         table = 'users'
-        row_id = db.insert(table, sample_col_names, sample_data)
+        row_id = db.insert(table, sample_col_names, sample_data, 'user_id')
 
         # test fetch many without where clause
         rows = db.select(table, ['user_id'], fetchone=False)
@@ -185,6 +184,10 @@ class TestDBSpecific(unittest.TestCase):
         print(res)
         self.assertIsNotNone(res, 'result should not be none')
         self.assertEqual(res[0]['total_seconds'], 419.5, 'seconds are wrong')
+        self.assertEqual(res[0]['by_distance'], by_distance, 'by_distance is incorrect')
+
+        # Note:: this will fail if the machine is running slowly, change timedelta if so
+        self.assertTrue(res[0]['time'] - (time.time() // 1) < 10, 'time is incorrect')
 
         # add second workout
         meters = [2000, 2000]
@@ -275,6 +278,98 @@ class TestDBSpecific(unittest.TestCase):
         # clean up users
         clean_up_table('users', 'user_id')
         self.assertEqual(0, len(db.select('users', ['ALL'], fetchone=False)))
+
+    def test_get_names(self):
+        # returns the names of all the users in the database
+
+        create_user('jim')
+        create_user('bob')
+        create_user('jane')
+        create_user('sammy')
+
+        names = db.get_names()
+
+        self.assertEqual(type(names), type([]), 'names is not of type array')
+        self.assertTrue('jim' in names)
+        self.assertTrue('bob' in names)
+        self.assertTrue('jane' in names)
+        self.assertTrue('sammy' in names)
+        self.assertTrue('jill' not in names)
+
+        # clean up users
+        clean_up_table('users', 'user_id')
+        self.assertEqual(0, len(db.select('users', ['ALL'], fetchone=False)))
+
+    def test_get_user(self):
+        # make sure profile comes with user
+
+        user_id = create_user('tim')
+
+        user = db.get_user(user_id)
+
+        self.assertEqual(user['bio'], 'hello')
+        self.assertEqual(user['picture'], 'my pic')
+        self.assertEqual(user['user_id'], user_id)
+        self.assertEqual(user['username'], 'tim')
+
+    def test_get_workouts(self):
+
+        user_id = create_user('joe')
+
+        create_workout(user_id, db, [2000, 2000], [6, 6], [45, 42], True)
+
+        workouts = db.get_workouts(user_id)
+
+        self.assertEqual(len(workouts), 2, 'there are not 2 results')
+        self.assertTrue(workouts[0]['by_distance'], 'by_distance is incorrectly set')
+        self.assertEqual(workouts[0]['distance'], 2000)
+        self.assertEqual(workouts[1]['minutes'], 6)
+
+    def test_get_workout(self):
+        # should return a single workout of 1+ pieces
+
+        user_id = create_user('jane')
+
+        create_workout(user_id, db, [5373, 5927], [30, 30], [00, 00], False)
+
+        workout = db.get_workouts(user_id)
+
+        # should be 2 result (2 pieces)
+        self.assertEqual(len(workout), 2)
+
+        workout_id = workout[0]['workout_id']
+
+        my_workout = db.get_workouts_by_id(user_id, workout_id)
+
+        # found both pieces
+        self.assertEqual(len(my_workout), 2)
+        self.assertEqual(my_workout[0]['by_distance'], False)
+        self.assertEqual(my_workout[0]['minutes'], 30)
+        self.assertEqual(my_workout[0]['seconds'], 00)
+
+        # check order by clause; this one should be second
+        self.assertEqual(my_workout[1]['distance'], 5927)
+
+    def test_aggregate_workouts_by_id(self):
+        user_id = create_user('lisa')
+
+        create_workout(user_id, db, [5834, 5892], [30, 30], [00, 00], False)
+
+        # pause tests to differentiate between time stamps
+        time.sleep(1)
+
+        create_workout(user_id, db, [2000, 2000], [6, 6], [59, 53], True)
+
+        aggregates = db.get_aggregate_workouts_by_id(user_id)
+
+        self.assertEqual(len(aggregates), 2, 'there are currently 2 workouts')
+        self.assertEqual(aggregates[0]['distance'], 2000, '2k is the most recent workout')
+
+        self.assertEqual(format(((416 / 4) % 60), '.2f'), aggregates[0]['avg_sec'], 'average second')
+        self.assertEqual(int(416 / 4 / 60), aggregates[0]['avg_min'], 'average minute')
+
+
+class TestTriggers(unittest.TestCase):
 
     def test_trigger_delete_workout_after_all_pieces_are_deleted(self):
         """
