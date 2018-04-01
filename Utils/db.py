@@ -4,9 +4,13 @@ import psycopg2
 from psycopg2 import extras, sql as SQL
 
 from Utils.log import log
+from Utils.secret_config import db_credentials
 
-connect_str = "dbname='test' user='athlessary_admin' host='test-db.cwhz0vdyxldt.us-west-2.rds.amazonaws.com' " + \
-              "password='Athlessary18' port='5432'"
+connect_str = "dbname=\'{0}\' user=\'{1}\' host=\'{2}\' password=\'{3}\' port=\'{4}\'".format(
+    db_credentials['db_name'], db_credentials['username'],
+    db_credentials['host'], db_credentials['password'],
+    db_credentials['port']
+)
 
 
 def set_where_clause(cols, operators=None):
@@ -57,7 +61,7 @@ class Database:
                 state     VARCHAR(255),
                 zip       INTEGER,
                 num_seats INTEGER          DEFAULT (0),
-                phone     INTEGER,
+                phone     BIGINT,
                 team      VARCHAR(20),
                 y         REAL,
                 x         REAL
@@ -459,11 +463,13 @@ class Database:
         cur.close()
         import datetime
         for res in result:
+            res['total_seconds'] = float(res['total_seconds'])
+            res['distance'] = float(res['distance'])
             res['time'] = datetime.datetime.fromtimestamp(res['time']).strftime('%b %d %Y %p')
             # res['time'] = datetime.datetime.fromtimestamp(res['time']).strftime('%Y-%m-%d %H:%M:%S')
             splits = float(res['distance']) / float(500)
-            res['avg_sec'] = format(((float(res['total_seconds']) / splits) % 60), '.2f')
-            res['avg_min'] = int(float(res['total_seconds']) / splits / 60)
+            res['avg_sec'] = format(((res['total_seconds'] / splits) % 60), '.2f')
+            res['avg_min'] = int(res['total_seconds'] / splits / 60)
 
         return result
 

@@ -56,7 +56,7 @@ class User:
         self.x = location.latitude
         self.y = location.longitude
         self.db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
-                       where_cols=['id'], where_params=[self.user_id])
+                       where_cols=['user_id'], where_params=[self.user_id])
 
     @classmethod
     def user_from_form(cls, form_data, active=True):
