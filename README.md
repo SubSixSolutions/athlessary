@@ -28,4 +28,5 @@ Flask:
 - [Flask WTForms](https://flask-wtf.readthedocs.io/en/stable/)
 
 Database:
-- [SQLite3](https://docs.python.org/2/library/sqlite3.html)
+- [PostgreSQL for Python (psycopg2 module)](http://initd.org/psycopg/docs/usage.html)
+- [SQL Maker] (http://initd.org/psycopg/docs/sql.html)
