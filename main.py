@@ -11,6 +11,7 @@ from Utils import util_basic
 from Utils.config import db
 from Utils.driver_generation import generate_cars, modified_k_means
 from Utils.log import log
+from Utils.util_basic import bucket_name
 from Utils.util_basic import create_workout, build_graph_data
 
 application = Flask(__name__)
@@ -23,8 +24,6 @@ login_manager.init_app(application)
 
 # redirect unauthorized view to login page
 login_manager.login_view = 'new_signup'
-
-from Utils.util_basic import bucket_name
 
 
 def sign_certificate(resource_name):
@@ -91,7 +90,8 @@ def new_signup():
 
             login = False
 
-    return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login)
+    return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login,
+                           _url=sign_certificate('defaults/login_photo.jpg'))
 
 
 @application.route('/profile', methods=['GET', 'POST'])
