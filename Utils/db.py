@@ -1,15 +1,15 @@
+import os
 import sqlite3
 
 import psycopg2
 from psycopg2 import extras, sql as SQL
 
 from Utils.log import log
-from Utils.secret_config import db_credentials
 
 connect_str = "dbname=\'{0}\' user=\'{1}\' host=\'{2}\' password=\'{3}\' port=\'{4}\'".format(
-    db_credentials['db_name'], db_credentials['username'],
-    db_credentials['host'], db_credentials['password'],
-    db_credentials['port']
+    os.environ['RDS_DB_NAME'], os.environ['RDS_USERNAME'],
+    os.environ['RDS_HOST_NAME'], os.environ['RDS_PASSWORD'],
+    os.environ['RDS_PORT']
 )
 
 
