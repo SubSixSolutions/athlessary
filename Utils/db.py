@@ -112,7 +112,7 @@ class Database:
     def create_profile(self):
         cur = self.conn.cursor()
 
-        cur.execute("DROP TABLE IF EXISTS profile")
+        # cur.execute("DROP TABLE IF EXISTS profile")
 
         sql = '''CREATE TABLE IF NOT EXISTS profile (
                         user_id INTEGER      UNIQUE PRIMARY KEY NOT NULL,
