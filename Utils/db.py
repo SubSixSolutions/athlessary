@@ -124,7 +124,7 @@ class Database:
         sql = '''CREATE OR REPLACE FUNCTION remove_user() RETURNS trigger AS
                 $$
                 BEGIN
-                    DELETE FROM user
+                    DELETE FROM users
                     WHERE old.user_id = profile.user_id;
                     RETURN NEW;
                 END;
