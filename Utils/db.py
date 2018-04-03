@@ -134,7 +134,7 @@ class Database:
 
         cur.execute(sql)
 
-        cur.execute("DROP TRIGGER IF EXISTS delete_user on users;")
+        cur.execute("DROP TRIGGER IF EXISTS delete_user on profile;")
 
         sql = '''CREATE TRIGGER delete_user
                      AFTER DELETE
