@@ -252,7 +252,7 @@ def save_img():
     img = request.form.get('img')
 
     if img:
-        pic_location = util_basic.upload_profile_image(img, current_user.user_id)
+        pic_location = util_basic.upload_profile_image(img, current_user.user_id, current_user.picture)
 
         # update current user
         current_user.picture = pic_location

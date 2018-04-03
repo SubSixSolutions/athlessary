@@ -4,6 +4,7 @@ import json
 import os
 import time
 
+import boto3
 from werkzeug.utils import secure_filename
 
 from Forms import web_forms
@@ -185,11 +186,12 @@ def set_up_profile_form(user, profile):
     return form_obj
 
 
-def upload_profile_image(img, user_id):
+def upload_profile_image(img, user_id, pic_location):
     """
     save a new profile picture uploaded by the user
     :param img: byte string from web
     :param user_id: id fo the current user
+    :param pic_location: the location of the current user profile picture
     :return:
     """
 
@@ -207,6 +209,23 @@ def upload_profile_image(img, user_id):
 
     imgFile = open(directory + '/profile.png', 'wb')
     imgFile.write(data)
+
+    # create new picture location
+    mseconds = datetime.datetime.now().microsecond
+    new_location = 'users/{0}/profile-{1}.png'.format(user_id, mseconds)
+
+    # place photo in AWS S3 bucket
+    client = boto3.client('s3')
+
+    client.put_object(Body=data, Bucket='athlessary-images', Key=new_location)
+
+    # delete old image
+    if 'default' not in pic_location:
+        client = boto3.client('s3')
+        client.delete_object(
+            Bucket='athlessary-images',
+            Key=pic_location
+        )
 
     # update current user
     pic_location = 'images/%s/%s' % (user_id, 'profile.png')

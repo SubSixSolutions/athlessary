@@ -15,8 +15,8 @@ class User:
 
     def __init__(self, user_id, active=True):
 
-        # result = self.db.get_user(user_id)
-        result = self.db.select('users', ['ALL'], ['user_id'], [user_id])
+        result = self.db.get_user(user_id)
+        # result = self.db.select('users', ['ALL'], ['user_id'], [user_id])
         if not result:
             raise ValueError('Could Not Find User')
 
@@ -34,6 +34,7 @@ class User:
         self.num_seats = result['num_seats']
         self.team = result['team']
         self.phone = result['phone']
+        self.picture = result['picture']
         self.user_id = user_id
         self.active = active
         self.is_anonymous = False
