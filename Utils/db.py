@@ -61,7 +61,7 @@ class Database:
     def create_users(self):
         cur = self.conn.cursor()
 
-        cur.execute("DROP TABLE IF EXISTS users")
+        # cur.execute("DROP TABLE IF EXISTS users")
 
         sql = '''CREATE TABLE IF NOT EXISTS users (
                 password  VARCHAR(255),
@@ -111,6 +111,8 @@ class Database:
 
     def create_profile(self):
         cur = self.conn.cursor()
+
+        cur.execute("DROP TABLE IF EXISTS profile")
 
         sql = '''CREATE TABLE IF NOT EXISTS profile (
                         user_id INTEGER      UNIQUE PRIMARY KEY NOT NULL,
