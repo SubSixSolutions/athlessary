@@ -555,18 +555,16 @@ class Database:
         return result
 
     def get_names(self):
-        self.conn.cursor_factory = None
-
         cur = self.conn.cursor()
 
-        sql = SQL.SQL("SELECT username FROM users")
+        sql = SQL.SQL("SELECT ARRAY_AGG(username) as names FROM users")
 
         cur.execute(sql)
-        result = cur.fetchall()
+        result = cur.fetchone()
         log.info(cur.query)
         log.info(result)
         cur.close()
 
-        self.conn.cursor_factory = extras.RealDictCursor
-
-        return result
+        if result:
+            return result['names']
+        return None
