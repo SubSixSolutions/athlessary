@@ -23,7 +23,7 @@ def username_start_with_letter(form, field):
 
 def unique_user_name(form, field):
     names = db.get_names()
-    if field.data in names:
+    if names and field.data in names:
         raise ValidationError('Username \'%s\' is taken!' % field.data)
 
 

@@ -75,7 +75,7 @@ function demoUpload() {
       }).then(function (img) {
         $.post('/save_img', {img:img}, function(data, status){
           console.log(status);
-          $("#profile_img").src = data['img'];
+          $("#profile_img").attr("src", data['img_url']);
         });
       });
     }

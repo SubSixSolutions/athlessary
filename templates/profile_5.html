@@ -28,6 +28,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.1/croppie.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.1/croppie.min.js"></script>
 
+    <!-- AWS -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.219.1.min.js"></script>
+
+
     <!-- Custom styles for this template -->
     <style>
       html {
@@ -117,7 +121,7 @@
           <div class="col-sm-4 align-items-center mt-5" id="img_row">
             <div class="row">
               <div class="col-auto mx-auto">
-                <img style="width:auto;" id="profile_img" class="img-responsive center-block" src="{{url_for('static', filename=profile['picture'])}}" alt="">
+                <img style="width:auto;" id="profile_img" class="img-responsive center-block" src="{{ sign_certificate(profile.picture) }}" alt="Profile Photo">
               </div>
             </div>
             <div class="row">
