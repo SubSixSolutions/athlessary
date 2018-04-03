@@ -63,6 +63,8 @@ def new_signup():
 
                 result = db.select('users', ['password', 'user_id'], ['username'], [username])
 
+                log.info('here is result: {}'.format(result))
+
                 if result:
                     hash = result['password']
                     password_match = pbkdf2_sha256.verify(password, hash)
