@@ -120,6 +120,30 @@ class Database:
                         bio     VARCHAR(250) NOT NULL);'''
         cur.execute(sql)
         self.conn.commit()
+
+        sql = '''CREATE OR REPLACE FUNCTION remove_user() RETURNS trigger AS
+                $$
+                BEGIN
+                    DELETE FROM user
+                    WHERE old.user_id = profile.user_id;
+                    RETURN NEW;
+                END;
+                $$
+                LANGUAGE plpgsql;
+                '''
+
+        cur.execute(sql)
+
+        cur.execute("DROP TRIGGER IF EXISTS delete_user on users;")
+
+        sql = '''CREATE TRIGGER delete_user
+                     AFTER DELETE
+                     ON profile
+                     FOR EACH ROW
+                     EXECUTE PROCEDURE remove_user();'''
+
+        cur.execute(sql)
+        self.conn.commit()
         cur.close()
 
     def create_workouts(self):
