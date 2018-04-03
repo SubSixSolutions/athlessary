@@ -2,12 +2,23 @@ import base64
 import datetime
 import json
 import os
+import sys
 import time
 
 import boto3
 from werkzeug.utils import secure_filename
 
 from Forms import web_forms
+
+# get s3 bucket name
+try:
+    bucket_name = os.environ['S3_BUCKET']
+except KeyError:
+    try:
+        from Utils.secret_config import bucket_name
+    except ModuleNotFoundError:
+        sys.stderr.write('Could Not Establish Database Connection')
+        sys.exit(1)
 
 
 def save_photo(db, form, current_user):
@@ -200,34 +211,22 @@ def upload_profile_image(img, user_id, pic_location):
     data = img.encode()
     data = base64.b64decode(data)
 
-    # specify the directory
-    directory = os.getcwd() + '/static/images/%s' % user_id
-
-    # create directory if it does not exist
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    imgFile = open(directory + '/profile.png', 'wb')
-    imgFile.write(data)
-
     # create new picture location
     mseconds = datetime.datetime.now().microsecond
     new_location = 'users/{0}/profile-{1}.png'.format(user_id, mseconds)
 
-    # place photo in AWS S3 bucket
+    # open s3 client
     client = boto3.client('s3')
-
-    client.put_object(Body=data, Bucket='athlessary-images', Key=new_location)
 
     # delete old image
     if 'default' not in pic_location:
         client = boto3.client('s3')
         client.delete_object(
-            Bucket='athlessary-images',
+            Bucket=bucket_name,
             Key=pic_location
         )
 
-    # update current user
-    pic_location = 'images/%s/%s' % (user_id, 'profile.png')
+    # save new image
+    client.put_object(Body=data, Bucket=bucket_name, Key=new_location)
 
-    return pic_location
+    return new_location

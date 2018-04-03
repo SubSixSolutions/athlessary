@@ -61,7 +61,7 @@ class Database:
     def create_users(self):
         cur = self.conn.cursor()
 
-        # cur.execute("DROP TABLE IF EXISTS users")
+        cur.execute("DROP TABLE IF EXISTS users")
 
         sql = '''CREATE TABLE IF NOT EXISTS users (
                 password  VARCHAR(255),
@@ -111,9 +111,10 @@ class Database:
 
     def create_profile(self):
         cur = self.conn.cursor()
+
         sql = '''CREATE TABLE IF NOT EXISTS profile (
                         user_id INTEGER      UNIQUE PRIMARY KEY NOT NULL,
-                        picture VARCHAR(255) NOT NULL DEFAULT ('images/defaults/profile.jpg'),
+                        picture VARCHAR(255) NOT NULL DEFAULT ('defaults/profile.jpg'),
                         bio     VARCHAR(250) NOT NULL);'''
         cur.execute(sql)
         self.conn.commit()
