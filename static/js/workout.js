@@ -28,6 +28,18 @@ $(document).ready(function(){
     }, function(data, status){
       console.log(status);
       reset_form();
+      var workout_name = data['name'];
+      if (status == 'success'){
+        var alert_div = document.createElement('div');
+        alert_div.className = "alert alert-success alert-dismissible fade show mt-2";
+        alert_div.role = "alert";
+        alert_div.innerHTML =
+                "<strong>Success!</strong> Workout " + workout_name + " Saved." +
+                "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">" +
+                    "<span aria-hidden=\"true\">&times;</span>"
+                "</button>"
+        $("#info-div").append(alert_div)
+      }
     });
   });
 });
