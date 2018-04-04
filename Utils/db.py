@@ -1,24 +1,16 @@
 import sqlite3
-from os import getcwd
+
+import psycopg2
+from psycopg2 import extras, sql as SQL
 
 from Utils.log import log
+from Utils.secret_config import db_credentials
 
-
-def array_factory(cursor, row):
-    return row[0]
-
-
-def dict_factory(cursor, row):
-    """
-    sets up database cursor to return a dictionary instead of a tuple
-    :param cursor: sql database cursor object
-    :param row: rows of database
-    :return: a dictionary representation of the row(s)
-    """
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+connect_str = "dbname=\'{0}\' user=\'{1}\' host=\'{2}\' password=\'{3}\' port=\'{4}\'".format(
+    db_credentials['db_name'], db_credentials['username'],
+    db_credentials['host'], db_credentials['password'],
+    db_credentials['port']
+)
 
 
 def set_where_clause(cols, operators=None):
@@ -32,18 +24,15 @@ def set_where_clause(cols, operators=None):
     if operators is None:
         operators = ['=' for i in range(len(cols))]
 
-    base = '%s%s? ' % (cols[0], operators[0])
-    where_col_to_str = ['AND %s%s?' % (cols[i], operators[i]) for i in range(1, len(cols))]
-    return base + ' '.join(where_col_to_str)
+    base = SQL.SQL('{}{}{} ').format(SQL.Identifier(cols[0]), SQL.SQL(operators[0]), SQL.Placeholder())
+    where_col_to_str = [SQL.SQL('AND {}{}{}').format(SQL.Identifier(cols[i]), SQL.SQL(operators[i]), SQL.Placeholder()) for i in range(1, len(cols))]
+    return SQL.SQL("{} {}").format(base, SQL.SQL(" ").join(where_col_to_str))
 
 
 class Database:
-
-    def __init__(self, db_file, df=dict_factory):
-        abs_path = getcwd() + "/" + db_file
+    def __init__(self, db_file):
         try:
-            self.conn = sqlite3.connect(abs_path, check_same_thread=False)
-            self.conn.row_factory = df
+            self.conn = psycopg2.connect(connect_str, cursor_factory=extras.RealDictCursor)
             self.init_tables()
             log.info('Return NEW database object')
         except sqlite3.Error as e:
@@ -58,34 +47,49 @@ class Database:
     def create_users(self):
         cur = self.conn.cursor()
 
+        # cur.execute("DROP TABLE IF EXISTS users")
+
         sql = '''CREATE TABLE IF NOT EXISTS users (
-    password  STRING (1, 50),
-    user_id        INTEGER          PRIMARY KEY AUTOINCREMENT,
-    first     STRING (1, 20)   NOT NULL,
-    last      STRING (1, 20)   NOT NULL,
-    username  STRING (2, 20)   UNIQUE
-                               NOT NULL,
-    address   STRING (1, 50),
-    city      STRING,
-    state     STRING,
-    zip       INTEGER,
-    num_seats INTEGER          DEFAULT (0),
-    phone     INTEGER (10, 10),
-    team      STRING,
-    y         DOUBLE,
-    x         DOUBLE
-);'''
+                password  VARCHAR(255),
+                user_id   SERIAL           PRIMARY KEY,
+                first     VARCHAR(20)      NOT NULL,
+                last      VARCHAR(20)      NOT NULL,
+                username  VARCHAR(20)      UNIQUE
+                                           NOT NULL,
+                address   VARCHAR(150),
+                city      VARCHAR(255),
+                state     VARCHAR(255),
+                zip       INTEGER,
+                num_seats INTEGER          DEFAULT (0),
+                phone     BIGINT,
+                team      VARCHAR(20),
+                y         REAL,
+                x         REAL
+            );'''
 
         cur.execute(sql)
         self.conn.commit()
 
-        sql = '''CREATE TRIGGER IF NOT EXISTS delete_profile
-                 AFTER DELETE
-                 ON users
-                 BEGIN
+        sql = '''CREATE OR REPLACE FUNCTION remove_profile() RETURNS trigger AS
+                $$
+                BEGIN
                     DELETE FROM profile
                     WHERE profile.user_id = old.user_id;
-                 END;'''
+                    RETURN NEW;
+                END;
+                $$
+                LANGUAGE plpgsql;
+                '''
+
+        cur.execute(sql)
+
+        cur.execute("DROP TRIGGER IF EXISTS delete_profile on users;")
+
+        sql = '''CREATE TRIGGER delete_profile
+                 AFTER DELETE
+                 ON users
+                 FOR EACH ROW
+                 EXECUTE PROCEDURE remove_profile();'''
 
         cur.execute(sql)
         self.conn.commit()
@@ -94,12 +98,9 @@ class Database:
     def create_profile(self):
         cur = self.conn.cursor()
         sql = '''CREATE TABLE IF NOT EXISTS profile (
-                 user_id INTEGER         UNIQUE
-                            PRIMARY KEY
-                            NOT NULL,
-                 picture STRING          NOT NULL
-                            DEFAULT ('images/defaults/profile.jpg'),
-                 bio     STRING (0, 250) NOT NULL);'''
+                        user_id INTEGER      UNIQUE PRIMARY KEY NOT NULL,
+                        picture VARCHAR(255) NOT NULL DEFAULT ('images/defaults/profile.jpg'),
+                        bio     VARCHAR(250) NOT NULL);'''
         cur.execute(sql)
         self.conn.commit()
         cur.close()
@@ -108,27 +109,41 @@ class Database:
         cur = self.conn.cursor()
 
         sql = '''CREATE TABLE IF NOT EXISTS workout (
-                    workout_id  INTEGER        PRIMARY KEY AUTOINCREMENT,
+                    workout_id  SERIAL         PRIMARY KEY,
                     user_id     INTEGER        NOT NULL,
                     time        INTEGER        NOT NULL,
                     by_distance BOOLEAN        NOT NULL,
-                    name        STRING (2, 20) NOT NULL
+                    name        VARCHAR(25)    NOT NULL
                 );'''
 
         cur.execute(sql)
 
         # remove  pieces in workout if workout is deleted
-        sql = '''CREATE TRIGGER IF NOT EXISTS delete_all_pieces
-                 AFTER DELETE
-                 ON workout
-                 BEGIN
-                    DELETE FROM erg
+
+        sql = '''CREATE OR REPLACE FUNCTION remove_all_pieces() RETURNS trigger AS
+                $$
+                BEGIN
+                  DELETE FROM erg
                     WHERE erg.workout_id IN (
                         SELECT erg.workout_id
                         FROM erg
                         WHERE erg.workout_id = old.workout_id
                     );
-                 END;'''
+                    RETURN NEW;
+                END;
+                $$
+                LANGUAGE plpgsql;
+                '''
+
+        cur.execute(sql)
+
+        cur.execute("DROP TRIGGER IF EXISTS delete_all_pieces on workout;")
+
+        sql = '''CREATE TRIGGER delete_all_pieces
+                     AFTER DELETE
+                     ON workout
+                     FOR EACH ROW
+                     EXECUTE PROCEDURE remove_all_pieces();'''
 
         cur.execute(sql)
         self.conn.commit()
@@ -138,29 +153,41 @@ class Database:
         cur = self.conn.cursor()
 
         sql = '''CREATE TABLE IF NOT EXISTS erg (
-                    erg_id     INTEGER NOT NULL
-                    PRIMARY KEY AUTOINCREMENT,
+                    erg_id     SERIAL  NOT NULL PRIMARY KEY,
                     workout_id INTEGER NOT NULL,
                     distance   INTEGER NOT NULL,
                     minutes    INTEGER NOT NULL,
                     seconds    INTEGER NOT NULL
-                    );'''
+                );'''
 
         cur.execute(sql)
 
-        # remove workout after all pieces are deleted
-        sql = '''CREATE TRIGGER IF NOT EXISTS delete_me
-                 AFTER DELETE
-                 ON erg
-                 BEGIN
+        sql = '''CREATE OR REPLACE FUNCTION remove_workouts_without_pieces() RETURNS trigger AS
+                $$
+                BEGIN
                     DELETE FROM workout
                     WHERE workout.workout_id NOT IN (
                         SELECT erg.workout_id
                         FROM erg
                         GROUP BY erg.workout_id
                     );
-                 END;'''
+                    RETURN NEW;
+                END
+                $$
+                LANGUAGE plpgsql;
+              '''
+
         cur.execute(sql)
+
+        cur.execute("DROP TRIGGER IF EXISTS delete_workouts_without_pieces on erg;")
+
+        sql = '''CREATE TRIGGER delete_workouts_without_pieces
+                 AFTER DELETE
+                 ON erg
+                 EXECUTE PROCEDURE remove_workouts_without_pieces();'''
+
+        cur.execute(sql)
+
         self.conn.commit()
         cur.close()
 
@@ -175,27 +202,30 @@ class Database:
         self.create_erg()
         self.create_profile()
 
-    def insert(self, table_name, col_names, col_params):
+    def insert(self, table_name, col_names, col_params, pk):
         """
+        :param pk:
         :param table_name: name of hte table to insert into
         :param col_names: the names of the columns
         :param col_params: the data to insert
         :return: return the ID
         """
 
-        col_to_str = ', '.join(col_names)
-        params_tuple = tuple(col_params)
-        q_marks = ['?' for i in range(len(col_params))]
-        q_marks = ', '.join(q_marks)
-        sql = 'INSERT INTO %s (%s) VALUES (%s)' % (table_name, col_to_str, q_marks)
-
+        q1 = SQL.SQL("insert into {} ({}) values ({}) returning {}").format(SQL.Identifier(table_name),
+                                                               SQL.SQL(', ').join(map(SQL.Identifier, col_names)),
+                                                               SQL.SQL(', ').join(SQL.Placeholder() * len(col_names)),
+                                                               SQL.Identifier(pk))
         cur = self.conn.cursor()
 
-        row_id = cur.execute(sql, params_tuple).lastrowid
-        self.conn.commit()
-        cur.close()
+        cur.execute(q1, list(col_params))
 
-        log.info('Insert on %s' % table_name)
+        row_id = cur.fetchone()[pk]
+
+        self.conn.commit()
+
+        log.info(cur.query)
+
+        cur.close()
 
         return row_id
 
@@ -207,15 +237,15 @@ class Database:
         :return: nothing
         """
 
-        sql = 'DELETE FROM %s WHERE %s=?' % (table_name, id_col_name)
+        sql = SQL.SQL("DELETE FROM {} WHERE {}={}").format(SQL.Identifier(table_name), SQL.Identifier(id_col_name),
+                                                       SQL.Placeholder())
         params = (item_id,)
 
         cur = self.conn.cursor()
         cur.execute(sql, params)
+        log.info(cur.query)
         self.conn.commit()
         cur.close()
-
-        log.info('Delete on %s' % table_name)
 
     def select(self, table_name, select_cols, where_cols=None, where_params=None, operators=None, order_by=None,
                group_by=None, fetchone=True):
@@ -239,22 +269,22 @@ class Database:
 
         # set up ordering
         if order_by:
-            order = ' ORDER BY ' + ', '.join(order_by)
+            order = SQL.SQL(" ORDER BY {}").format(SQL.SQL(", ").join(map(SQL.Identifier, order_by)))
         else:
-            order = ''
+            order = SQL.SQL('')
 
         # determine select - All or individual attributes
         if select_cols == ['ALL']:
-            select_cols_to_str = '*'
+            select_cols_to_str = SQL.SQL('*')
         else:
-            select_cols_to_str = ', '.join(select_cols)
+            select_cols_to_str = SQL.SQL(', ').join(map(SQL.Identifier, select_cols))
 
         # select all rows in table if no where clause is specified
         if where_cols is None:
-            sql = 'SELECT %s FROM %s%s' % (select_cols_to_str, table_name, order)
-            print(sql)
-            cur.execute('SELECT %s FROM %s%s' % (select_cols_to_str, table_name, order))
+            sql = SQL.SQL("SELECT {} FROM {}{}").format(select_cols_to_str, SQL.Identifier(table_name), order)
+            cur.execute(sql)
             result = cur.fetchall()
+            log.info(cur.query)
             cur.close()
             return result
 
@@ -269,12 +299,10 @@ class Database:
             result = cur.fetchall()
             return result
         else:
-            sql = 'SELECT %s FROM %s WHERE %s' % (select_cols_to_str, table_name, where_col_to_str)
+            sql = SQL.SQL("SELECT {} FROM {} WHERE {}").format(select_cols_to_str, SQL.Identifier(table_name), where_col_to_str)
 
         if order_by:
-            sql += ' ORDER BY ' + ', '.join(order_by)
-
-        log.info('sql:%s and params:%s' % (sql, params_tuple))
+            sql += order
 
         # execute the query
         cur.execute(sql, params_tuple)
@@ -284,9 +312,10 @@ class Database:
             result = cur.fetchone()
         else:
             result = cur.fetchall()
-        cur.close()
 
-        log.info('Select on table %s' % table_name)
+        log.info(cur.query)
+
+        cur.close()
 
         return result
 
@@ -304,22 +333,22 @@ class Database:
 
         cur = self.conn.cursor()
 
-        set_str = [update_cols[i] + '=?' for i in range(len(update_cols))]
-        set_str = ', '.join(set_str)
+        set_str = [SQL.SQL("{}={}").format(SQL.Identifier(update_cols[i]), SQL.Placeholder()) for i in range(len(update_cols))]
+        set_str = SQL.SQL(", ").join(set_str)
 
         where_str = set_where_clause(where_cols, operators)
 
-        sql = 'UPDATE %s SET %s WHERE %s' % (table_name, set_str, where_str)
+        sql = SQL.SQL("UPDATE {} SET {} WHERE {}").format(SQL.Identifier(table_name), set_str, where_str)
 
         params = tuple(update_params) + tuple(where_params)
 
         cur.execute(sql, params)
 
+        log.info(cur.query)
+
         self.conn.commit()
 
         cur.close()
-
-        log.info('Update on table %s' % table_name)
 
     def get_workouts(self, user_id):
         """
@@ -329,13 +358,13 @@ class Database:
         """
         cur = self.conn.cursor()
 
-        sql = '''
-              SELECT *
-              FROM workout AS w
-              JOIN erg AS e
-              ON e.workout_id = w.workout_id
-              WHERE w.user_id=?
-              '''
+        sql = SQL.SQL(
+          "SELECT * \
+          FROM workout AS w \
+          JOIN erg AS e \
+          ON e.workout_id = w.workout_id \
+          WHERE w.user_id={}"
+        ).format(SQL.Placeholder())
 
         cur.execute(sql, (user_id,))
 
@@ -345,20 +374,22 @@ class Database:
 
     def get_workouts_by_id(self, user_id, workout_id):
         """
-        joins workouts and ergs and returns the result
+        joins workouts and ergs and returns the result of a single workout specified by the workout id
         :param user_id: the id of the current user
+        :param workout_id: the workout to get
         :return: array of dictionaries representing table rows
         """
         cur = self.conn.cursor()
 
-        sql = '''
-              SELECT *
-              FROM workout AS w
-              JOIN erg AS e
-              ON e.workout_id = w.workout_id
-              WHERE w.user_id=?
-              AND e.workout_id=?
-              '''
+        sql = SQL.SQL(
+             "SELECT * \
+              FROM workout AS w \
+              JOIN erg AS e \
+              ON e.workout_id = w.workout_id \
+              WHERE w.user_id={} \
+              AND e.workout_id={} \
+              ORDER BY e.erg_id"
+        ).format(SQL.Placeholder(), SQL.Placeholder())
 
         cur.execute(sql, (user_id, workout_id))
 
@@ -368,6 +399,7 @@ class Database:
 
     def get_aggregate_workouts_by_name(self, user_id, workout_name):
         """
+        ** gets all workouts for a specific user with a specific workout name
         for each workout of a specific type (for which there may be several pieces),
         take the average distance and time of all the pieces in the workout
         :param user_id:
@@ -377,17 +409,21 @@ class Database:
         """
         cur = self.conn.cursor()
 
-        sql = '''
-              SELECT w.by_distance, AVG(e.distance) AS distance,
-              AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time, w.workout_id
-              FROM workout AS w
-              JOIN erg AS e
-              ON e.workout_id = w.workout_id
-              WHERE w.user_id=?
-              AND w.name=?
-              GROUP BY e.workout_id
-              ORDER BY w.time
-              '''
+        sql = SQL.SQL(
+            "SELECT distance, total_seconds, w.workout_id, w.time, w.by_distance \
+             FROM workout AS w \
+             JOIN \
+                  (SELECT AVG(e.distance) AS distance, \
+                  AVG((e.minutes*60)+e.seconds) AS total_seconds, e.workout_id \
+                  FROM workout AS w \
+                  JOIN erg AS e \
+                  ON e.workout_id = w.workout_id \
+                  WHERE w.user_id={} \
+                  AND w.name={} \
+                  GROUP BY e.workout_id) AS agg_table \
+             ON w.workout_id = agg_table.workout_id \
+             ORDER BY w.time"
+        ).format(SQL.Placeholder(), SQL.Placeholder())
 
         cur.execute(sql, (user_id, workout_name))
 
@@ -397,26 +433,29 @@ class Database:
 
     def get_aggregate_workouts_by_id(self, user_id):
         """
-        for each workout of a specific type (for which there may be several pieces),
+        ** gets all workouts for a specific user
+        for each workout for a specific user (for which there may be several pieces),
         take the average distance and time of all the pieces in the workout
-        :param user_id:
-        :param workout_name:
+        :param user_id: the id of the user for which to gather all workouts
         :return: an array of dictionaries, each representing a workout with
         aggregated totals for distance and time
         """
         cur = self.conn.cursor()
 
-        sql = '''
-              SELECT w.by_distance, AVG(e.distance) AS distance,
-              AVG((e.minutes*60)+e.seconds) AS total_seconds, w.time,
-              w.name, w.workout_id
-              FROM workout AS w
-              JOIN erg AS e
-              ON e.workout_id = w.workout_id
-              WHERE w.user_id=?
-              GROUP BY e.workout_id
-              ORDER BY w.time DESC
-              '''
+        sql = SQL.SQL(
+            "SELECT distance, total_seconds, w.workout_id, w.time, w.by_distance, w.name \
+             FROM workout AS w \
+             JOIN \
+                  (SELECT AVG(e.distance) AS distance, \
+                  AVG((e.minutes*60)+e.seconds) AS total_seconds, e.workout_id \
+                  FROM workout AS w \
+                  JOIN erg AS e \
+                  ON e.workout_id = w.workout_id \
+                  WHERE w.user_id={} \
+                  GROUP BY e.workout_id) AS agg_table \
+             ON w.workout_id = agg_table.workout_id \
+             ORDER BY w.time DESC"
+        ).format(SQL.Placeholder(), SQL.Placeholder())
 
         cur.execute(sql, (user_id,))
 
@@ -424,9 +463,11 @@ class Database:
         cur.close()
         import datetime
         for res in result:
+            res['total_seconds'] = float(res['total_seconds'])
+            res['distance'] = float(res['distance'])
             res['time'] = datetime.datetime.fromtimestamp(res['time']).strftime('%b %d %Y %p')
             # res['time'] = datetime.datetime.fromtimestamp(res['time']).strftime('%Y-%m-%d %H:%M:%S')
-            splits = res['distance'] / float(500)
+            splits = float(res['distance']) / float(500)
             res['avg_sec'] = format(((res['total_seconds'] / splits) % 60), '.2f')
             res['avg_min'] = int(res['total_seconds'] / splits / 60)
 
@@ -442,16 +483,18 @@ class Database:
         """
         cur = self.conn.cursor()
         print(user_id)
-        sql = '''SELECT DISTINCT name
-                 FROM workout
-                 WHERE user_id=?
-                 GROUP BY name
-                 HAVING COUNT(workout_id) > 1 '''
+        sql = SQL.SQL(
+            "SELECT DISTINCT name \
+             FROM workout \
+             WHERE user_id={} \
+             GROUP BY name \
+             HAVING COUNT(workout_id) > 1"
+            ).format(SQL.Placeholder())
 
         cur.execute(sql, (user_id,))
 
         result = cur.fetchall()
-        print(result)
+        log.info(cur.query)
         cur.close()
         return result
 
@@ -462,46 +505,51 @@ class Database:
         :return: a integer; total meters rowed by individual
         """
         cur = self.conn.cursor()
-        sql = '''SELECT SUM(e.distance) AS total_meters
-                 FROM workout AS w
-                 JOIN erg AS e
-                 ON e.workout_id = w.workout_id
-                 WHERE w.user_id=?
-                 GROUP BY user_id'''
+        sql = SQL.SQL(
+            "SELECT SUM(e.distance) AS total_meters \
+             FROM workout AS w \
+             JOIN erg AS e \
+             ON e.workout_id = w.workout_id \
+             WHERE w.user_id={} \
+             GROUP BY user_id"
+        ).format(SQL.Placeholder())
+
         cur.execute(sql, (user_id,))
         result = cur.fetchone()
-        print(result)
+        log.info(cur.query)
         cur.close()
         return result
 
     def get_user(self, user_id):
         cur = self.conn.cursor()
 
-        sql = '''SELECT *
-                 FROM users as u
-                 JOIN profile as p
-                 ON u.user_id = p.user_id
-                 WHERE u.user_id=?
-              '''
+        sql = SQL.SQL(
+            "SELECT * \
+             FROM users as u \
+             JOIN profile as p \
+             ON u.user_id = p.user_id \
+             WHERE u.user_id={}"
+        ).format(SQL.Placeholder())
 
         cur.execute(sql, (user_id,))
         result = cur.fetchone()
+        log.info(cur.query)
         cur.close()
         return result
 
     def get_names(self):
-        self.conn.row_factory = array_factory
+        self.conn.cursor_factory = None
 
         cur = self.conn.cursor()
 
-        sql = '''SELECT username
-                 FROM users
-              '''
+        sql = SQL.SQL("SELECT username FROM users")
 
         cur.execute(sql)
         result = cur.fetchall()
+        log.info(cur.query)
+        log.info(result)
         cur.close()
 
-        self.conn.row_factory = dict_factory
+        self.conn.cursor_factory = extras.RealDictCursor
 
         return result

@@ -4,6 +4,9 @@ import json
 import os
 import time
 
+import boto3
+from werkzeug.utils import secure_filename
+
 from Forms import web_forms
 
 
@@ -25,11 +28,11 @@ def create_workout(user_id, db, meters, minutes, seconds, by_distance):
 
     # create workout
     workout_id = db.insert('workout', ['user_id', 'time', 'by_distance', 'name'],
-                           [user_id, utc_date_stamp, by_distance, name])
+                           [user_id, utc_date_stamp, by_distance, name], 'workout_id')
 
     # create erg workout
     for meter, minute, second in zip(meters, minutes, seconds):
-        db.insert('erg', ['workout_id', 'distance', 'minutes', 'seconds'], [workout_id, meter, minute, second])
+        db.insert('erg', ['workout_id', 'distance', 'minutes', 'seconds'], [workout_id, meter, minute, second], 'erg_id')
 
     return name
 
@@ -46,7 +49,7 @@ def build_graph_data(results, workout_name):
             data_arr.append(res['distance'])
             y_axis = 'Meters'
         else:
-            data_arr.append(res['total_seconds']/float(60))
+            data_arr.append(float(res['total_seconds'])/float(60))
             y_axis = 'Minutes'
         label_arr.append(datetime.datetime.fromtimestamp(res['time']).strftime('%b %d %Y %p'))
         _ids.append(res['workout_id'])
@@ -144,11 +147,12 @@ def set_up_profile_form(user, profile):
     return form_obj
 
 
-def upload_profile_image(img, user_id):
+def upload_profile_image(img, user_id, pic_location):
     """
     save a new profile picture uploaded by the user
     :param img: byte string from web
     :param user_id: id fo the current user
+    :param pic_location: the location of the current user profile picture
     :return:
     """
 
@@ -166,6 +170,23 @@ def upload_profile_image(img, user_id):
 
     imgFile = open(directory + '/profile.png', 'wb')
     imgFile.write(data)
+
+    # create new picture location
+    mseconds = datetime.datetime.now().microsecond
+    new_location = 'users/{0}/profile-{1}.png'.format(user_id, mseconds)
+
+    # place photo in AWS S3 bucket
+    client = boto3.client('s3')
+
+    client.put_object(Body=data, Bucket='athlessary-images', Key=new_location)
+
+    # delete old image
+    if 'default' not in pic_location:
+        client = boto3.client('s3')
+        client.delete_object(
+            Bucket='athlessary-images',
+            Key=pic_location
+        )
 
     # update current user
     pic_location = 'images/%s/%s' % (user_id, 'profile.png')

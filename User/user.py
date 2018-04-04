@@ -15,8 +15,8 @@ class User:
 
     def __init__(self, user_id, active=True):
 
-        # result = self.db.get_user(user_id)
-        result = self.db.select('users', ['ALL'], ['user_id'], [user_id])
+        result = self.db.get_user(user_id)
+        # result = self.db.select('users', ['ALL'], ['user_id'], [user_id])
         if not result:
             raise ValueError('Could Not Find User')
 
@@ -34,6 +34,7 @@ class User:
         self.num_seats = result['num_seats']
         self.team = result['team']
         self.phone = result['phone']
+        self.picture = result['picture']
         self.user_id = user_id
         self.active = active
         self.is_anonymous = False
@@ -56,7 +57,7 @@ class User:
         self.x = location.latitude
         self.y = location.longitude
         self.db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
-                       where_cols=['id'], where_params=[self.user_id])
+                       where_cols=['user_id'], where_params=[self.user_id])
 
     @classmethod
     def user_from_form(cls, form_data, active=True):
@@ -73,10 +74,10 @@ class User:
         col_vals = attr_dict.values()
         # col_names.append('x')
         # col_names.append('y')
-        user_id = cls.db.insert('users', col_names, col_vals)
+        user_id = cls.db.insert('users', col_names, col_vals, 'user_id')
 
         bio_string = 'Hi, my name is %s!' % form_data['first']
-        cls.db.insert('profile', ['bio', 'user_id'], [bio_string, user_id])
+        cls.db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
 
         return cls(user_id, None)
 

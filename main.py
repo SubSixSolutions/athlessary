@@ -7,7 +7,7 @@ from passlib.hash import pbkdf2_sha256
 import Forms.web_forms as web_forms
 from User.user import User
 from Utils import util_basic
-from Utils.db import Database
+from Utils.config import db
 from Utils.driver_generation import generate_cars, modified_k_means
 from Utils.log import log
 from Utils.util_basic import create_workout, build_graph_data
@@ -20,7 +20,7 @@ application.debug = True
 login_manager = LoginManager()
 login_manager.init_app(application)
 
-db = Database("athlessary-database.db")
+# db = Database("athlessary-database.db")
 
 # redirect unauthorized view to login page
 login_manager.login_view = 'new_signup'
@@ -252,7 +252,7 @@ def save_img():
     img = request.form.get('img')
 
     if img:
-        pic_location = util_basic.upload_profile_image(img, current_user.user_id)
+        pic_location = util_basic.upload_profile_image(img, current_user.user_id, current_user.picture)
 
         # update current user
         current_user.picture = pic_location
