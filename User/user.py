@@ -54,10 +54,13 @@ class User:
             'postalcode': str(self.zip)
         }
         location = geolocator.geocode(query)
-        self.x = location.latitude
-        self.y = location.longitude
-        self.db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
-                       where_cols=['user_id'], where_params=[self.user_id])
+        if location:
+            self.x = location.latitude
+            self.y = location.longitude
+            self.db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
+                           where_cols=['user_id'], where_params=[self.user_id])
+        else:
+            self.db.update('users', ['address'], ['Invalid Address'], ['user_id'], [self.user_id])
 
     @classmethod
     def user_from_form(cls, form_data, active=True):

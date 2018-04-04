@@ -282,6 +282,8 @@ class TestDBSpecific(unittest.TestCase):
     def test_get_names(self):
         # returns the names of all the users in the database
 
+        clean_up_table('users', 'user_id')
+
         create_user('jim')
         create_user('bob')
         create_user('jane')

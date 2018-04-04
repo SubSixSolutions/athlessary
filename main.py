@@ -1,5 +1,6 @@
 from urllib.parse import urlparse, urljoin
 
+import boto3
 from flask import Flask, render_template, request, redirect, url_for, Response, json, abort
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from passlib.hash import pbkdf2_sha256
@@ -10,6 +11,7 @@ from Utils import util_basic
 from Utils.config import db
 from Utils.driver_generation import generate_cars, modified_k_means
 from Utils.log import log
+from Utils.util_basic import bucket_name
 from Utils.util_basic import create_workout, build_graph_data
 
 application = Flask(__name__)
@@ -20,10 +22,15 @@ application.debug = True
 login_manager = LoginManager()
 login_manager.init_app(application)
 
-# db = Database("athlessary-database.db")
-
 # redirect unauthorized view to login page
 login_manager.login_view = 'new_signup'
+
+
+def sign_certificate(resource_name):
+    client = boto3.client('s3')
+    url = client.generate_presigned_url('get_object', Params={'Bucket': bucket_name,
+                                                              'Key': resource_name}, ExpiresIn=60)
+    return url
 
 
 def is_safe_url(target):
@@ -56,6 +63,8 @@ def new_signup():
 
                 result = db.select('users', ['password', 'user_id'], ['username'], [username])
 
+                log.info('here is result: {}'.format(result))
+
                 if result:
                     hash = result['password']
                     password_match = pbkdf2_sha256.verify(password, hash)
@@ -83,7 +92,8 @@ def new_signup():
 
             login = False
 
-    return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login)
+    return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login,
+                           _url=sign_certificate('defaults/login_photo.jpg'))
 
 
 @application.route('/profile', methods=['GET', 'POST'])
@@ -129,7 +139,7 @@ def profile():
     form.num_seats.data = current_user.num_seats
     form.bio.data = user_profile['bio']
 
-    return render_template('profile_5.html', form=form, profile=user_profile)
+    return render_template('profile_5.html', form=form, profile=user_profile, sign_certificate=sign_certificate)
 
 
 @application.route('/userlist')
@@ -260,7 +270,10 @@ def save_img():
         # update the database
         db.update('profile', ['picture'], [pic_location], ['user_id'], [current_user.user_id])
 
-        return Response(json.dumps({img: pic_location}), status=201, mimetype='application/json')
+        # sign certificate
+        signed_url = sign_certificate(pic_location)
+
+        return Response(json.dumps({'img_url': signed_url}), status=201, mimetype='application/json')
 
     return Response(json.dumps({}), status=400, mimetype='application/json')
 

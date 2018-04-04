@@ -1,16 +1,30 @@
+import os
 import sqlite3
+import sys
 
 import psycopg2
 from psycopg2 import extras, sql as SQL
 
 from Utils.log import log
-from Utils.secret_config import db_credentials
 
-connect_str = "dbname=\'{0}\' user=\'{1}\' host=\'{2}\' password=\'{3}\' port=\'{4}\'".format(
-    db_credentials['db_name'], db_credentials['username'],
-    db_credentials['host'], db_credentials['password'],
-    db_credentials['port']
-)
+try:
+    connect_str = "dbname=\'{0}\' user=\'{1}\' host=\'{2}\' password=\'{3}\' port=\'{4}\'".format(
+        os.environ['RDS_DB_NAME'], os.environ['RDS_USERNAME'],
+        os.environ['RDS_HOST_NAME'], os.environ['RDS_PASSWORD'],
+        os.environ['RDS_PORT']
+    )
+except KeyError:
+    try:
+        from Utils.secret_config import db_credentials
+
+        connect_str = "dbname=\'{0}\' user=\'{1}\' host=\'{2}\' password=\'{3}\' port=\'{4}\'".format(
+            db_credentials['db_name'], db_credentials['username'],
+            db_credentials['host'], db_credentials['password'],
+            db_credentials['port']
+        )
+    except ModuleNotFoundError:
+        sys.stderr.write('Could Not Establish Database Connection')
+        sys.exit(1)
 
 
 def set_where_clause(cols, operators=None):
@@ -97,10 +111,37 @@ class Database:
 
     def create_profile(self):
         cur = self.conn.cursor()
+
+        # cur.execute("DROP TABLE IF EXISTS profile")
+
         sql = '''CREATE TABLE IF NOT EXISTS profile (
                         user_id INTEGER      UNIQUE PRIMARY KEY NOT NULL,
-                        picture VARCHAR(255) NOT NULL DEFAULT ('images/defaults/profile.jpg'),
+                        picture VARCHAR(255) NOT NULL DEFAULT ('defaults/profile.jpg'),
                         bio     VARCHAR(250) NOT NULL);'''
+        cur.execute(sql)
+        self.conn.commit()
+
+        sql = '''CREATE OR REPLACE FUNCTION remove_user() RETURNS trigger AS
+                $$
+                BEGIN
+                    DELETE FROM users
+                    WHERE old.user_id = profile.user_id;
+                    RETURN NEW;
+                END;
+                $$
+                LANGUAGE plpgsql;
+                '''
+
+        cur.execute(sql)
+
+        cur.execute("DROP TRIGGER IF EXISTS delete_user on profile;")
+
+        sql = '''CREATE TRIGGER delete_user
+                     AFTER DELETE
+                     ON profile
+                     FOR EACH ROW
+                     EXECUTE PROCEDURE remove_user();'''
+
         cur.execute(sql)
         self.conn.commit()
         cur.close()
@@ -538,18 +579,16 @@ class Database:
         return result
 
     def get_names(self):
-        self.conn.cursor_factory = None
-
         cur = self.conn.cursor()
 
-        sql = SQL.SQL("SELECT username FROM users")
+        sql = SQL.SQL("SELECT ARRAY_AGG(username) as names FROM users")
 
         cur.execute(sql)
-        result = cur.fetchall()
+        result = cur.fetchone()
         log.info(cur.query)
         log.info(result)
         cur.close()
 
-        self.conn.cursor_factory = extras.RealDictCursor
-
-        return result
+        if result:
+            return result['names']
+        return None
