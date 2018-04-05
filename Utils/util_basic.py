@@ -46,6 +46,7 @@ def create_workout(user_id, db, meters, minutes, seconds, by_distance):
 
     # create erg workout
     for meter, minute, second in zip(meters, minutes, seconds):
+        print(meter, minute, second)
         db.insert('erg', ['workout_id', 'distance', 'minutes', 'seconds'], [workout_id, meter, minute, second], 'erg_id')
 
     return name
