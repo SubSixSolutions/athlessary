@@ -94,7 +94,7 @@ class Database:
             log.error(sql_statement)
             log.error('roll back required')
 
-def create_users(self):
+    def create_users(self):
         # cur.execute("DROP TABLE IF EXISTS users")
 
         sql = '''CREATE TABLE IF NOT EXISTS users (
