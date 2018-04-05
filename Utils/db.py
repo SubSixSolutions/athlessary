@@ -47,7 +47,7 @@ class Database:
     def __init__(self, db_file):
         try:
             self.conn = psycopg2.connect(connect_str, cursor_factory=extras.RealDictCursor)
-            # self.init_tables()
+            self.init_tables()
             log.info('Return NEW database object')
         except sqlite3.Error as e:
             log.error(e, exc_info=True)
