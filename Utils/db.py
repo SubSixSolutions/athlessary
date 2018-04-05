@@ -13,6 +13,7 @@ try:
         os.environ['RDS_HOST_NAME'], os.environ['RDS_PASSWORD'],
         os.environ['RDS_PORT']
     )
+    log.info('DB generation from environ success')
 except KeyError:
     try:
         from Utils.secret_config import db_credentials
@@ -22,6 +23,7 @@ except KeyError:
             db_credentials['host'], db_credentials['password'],
             db_credentials['port']
         )
+        log.info('DB Generated from db credentials')
     except ModuleNotFoundError:
         sys.stderr.write('Could Not Establish Database Connection')
         sys.exit(1)
@@ -77,6 +79,7 @@ class Database:
             log.error(e)
             log.error(sql_statement)
             log.error(params)
+            log.error('roll back required')
             return None
 
     def safe_execute_sql_only(self, sql_statement, params=None):
@@ -89,8 +92,9 @@ class Database:
             self.conn.rollback()
             log.error(e)
             log.error(sql_statement)
+            log.error('roll back required')
 
-    def create_users(self):
+def create_users(self):
         # cur.execute("DROP TABLE IF EXISTS users")
 
         sql = '''CREATE TABLE IF NOT EXISTS users (

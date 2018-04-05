@@ -15,7 +15,7 @@ except KeyError:
     try:
         from Utils.secret_config import bucket_name
     except ModuleNotFoundError:
-        sys.stderr.write('Could Not Establish Database Connection')
+        sys.stderr.write('Could Not Establish Bucket Connection')
         sys.exit(1)
 
 
