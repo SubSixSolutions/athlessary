@@ -3,10 +3,8 @@ import datetime
 import json
 import os
 import sys
-import time
 
 import boto3
-from werkzeug.utils import secure_filename
 
 from Forms import web_forms
 
@@ -25,7 +23,12 @@ def create_workout(user_id, db, meters, minutes, seconds, by_distance):
     # TODO should this be a part of user??
 
     # get time stamp without seconds
-    utc_date_stamp = time.time() // 1
+    date_stamp = datetime.datetime.utcnow()
+    stamp = "{}-{}-{} {}:{}:{}".format(date_stamp.year, date_stamp.month, date_stamp.day, date_stamp.hour,
+                                           date_stamp.minute, date_stamp.second)
+    # stamp = '0000-00-00 00:00:00'
+    print(stamp)
+    # utc_date_stamp = time.time() // 1
 
     # name the piece
     name = str(len(meters)) + 'x'
@@ -39,7 +42,7 @@ def create_workout(user_id, db, meters, minutes, seconds, by_distance):
 
     # create workout
     workout_id = db.insert('workout', ['user_id', 'time', 'by_distance', 'name'],
-                           [user_id, utc_date_stamp, by_distance, name], 'workout_id')
+                           [user_id, stamp, by_distance, name], 'workout_id')
 
     # create erg workout
     for meter, minute, second in zip(meters, minutes, seconds):
@@ -62,7 +65,7 @@ def build_graph_data(results, workout_name):
         else:
             data_arr.append(float(res['total_seconds'])/float(60))
             y_axis = 'Minutes'
-        label_arr.append(datetime.datetime.fromtimestamp(res['time']).strftime('%b %d %Y %p'))
+        label_arr.append(res['time'].strftime('%Y-%m-%d %H:%M'))
         _ids.append(res['workout_id'])
 
     data = {
@@ -75,31 +78,6 @@ def build_graph_data(results, workout_name):
     js = json.dumps(data)
 
     return js
-
-
-def edit_time_stamp(new_date, new_time, old_stamp):
-    """
-    takes a new TIME, new DATE, and a time stamp
-    :param new_date: date in format yyyy-mm-dd
-    :param new_time: time in form hh:mm
-    :param old_stamp: time stamp in seconds since epoch
-    :return:
-    """
-
-    # convert old stamp into a date
-    old_date = datetime.datetime.fromtimestamp(float(old_stamp))
-
-    # break up date and time strings
-    new_date_arr = new_date.split('-')
-    new_time_arr = new_time.split(':')
-
-    # create new date time object from strings
-    new_date_obj = datetime.datetime(int(new_date_arr[0]), int(new_date_arr[1]), int(new_date_arr[2]), int(new_time_arr[0]), int(new_time_arr[1]), old_date.second)
-
-    # format new time stamp
-    new_stamp = time.mktime(new_date_obj.timetuple())
-
-    return new_stamp
 
 
 def edit_erg_workout(request, db):
@@ -117,15 +95,11 @@ def edit_erg_workout(request, db):
         for i in range(len(erg_ids)):
             db.update('erg', ['minutes', 'seconds'], [int(minutes[i]), int(seconds[i])], ['erg_id'], [erg_ids[i]])
 
-    new_date = request.form.get('new_date')
-    new_time = request.form.get('time')
-    old_stamp = float(request.form.get('old_date'))
-
-    new_stamp = edit_time_stamp(new_date, new_time, old_stamp)
-
-    if old_stamp != new_stamp:
-        workout_id = request.form.get('workout_id')
-        db.update('workout', ['time'], [int(new_stamp)], ['workout_id'], [workout_id])
+    workout_id = request.form.get('workout_id')
+    if workout_id:
+        new_date = request.form.get('new_date') + ":00"
+        print(new_date)
+        db.update('workout', ['time'], [new_date], ['workout_id'], [workout_id])
 
 
 def set_up_profile_form(user, profile):
