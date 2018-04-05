@@ -47,7 +47,7 @@ class Database:
     def __init__(self, db_file):
         try:
             self.conn = psycopg2.connect(connect_str, cursor_factory=extras.RealDictCursor)
-            self.init_tables()
+            # self.init_tables()
             log.info('Return NEW database object')
         except sqlite3.Error as e:
             log.error(e, exc_info=True)
@@ -149,10 +149,12 @@ class Database:
     def create_workouts(self):
         cur = self.conn.cursor()
 
+        # cur.execute("DROP TABLE IF EXISTS workout")
+
         sql = '''CREATE TABLE IF NOT EXISTS workout (
                     workout_id  SERIAL         PRIMARY KEY,
                     user_id     INTEGER        NOT NULL,
-                    time        INTEGER        NOT NULL,
+                    time        TIMESTAMP      NOT NULL,
                     by_distance BOOLEAN        NOT NULL,
                     name        VARCHAR(25)    NOT NULL
                 );'''
@@ -257,7 +259,7 @@ class Database:
                                                                SQL.SQL(', ').join(SQL.Placeholder() * len(col_names)),
                                                                SQL.Identifier(pk))
         cur = self.conn.cursor()
-
+        print(list(col_params))
         cur.execute(q1, list(col_params))
 
         row_id = cur.fetchone()[pk]
@@ -423,7 +425,7 @@ class Database:
         cur = self.conn.cursor()
 
         sql = SQL.SQL(
-             "SELECT * \
+             "SELECT *, to_char(time, 'yyyy-mm-dd hh24:mi:ss') as time \
               FROM workout AS w \
               JOIN erg AS e \
               ON e.workout_id = w.workout_id \
@@ -435,6 +437,7 @@ class Database:
         cur.execute(sql, (user_id, workout_id))
 
         result = cur.fetchall()
+        print(result)
         cur.close()
         return result
 
@@ -502,12 +505,11 @@ class Database:
 
         result = cur.fetchall()
         cur.close()
-        import datetime
+
         for res in result:
             res['total_seconds'] = float(res['total_seconds'])
             res['distance'] = float(res['distance'])
-            res['time'] = datetime.datetime.fromtimestamp(res['time']).strftime('%b %d %Y %p')
-            # res['time'] = datetime.datetime.fromtimestamp(res['time']).strftime('%Y-%m-%d %H:%M:%S')
+            res['time'] = res['time'].strftime('%Y-%m-%d %H:%M')
             splits = float(res['distance']) / float(500)
             res['avg_sec'] = format(((res['total_seconds'] / splits) % 60), '.2f')
             res['avg_min'] = int(res['total_seconds'] / splits / 60)

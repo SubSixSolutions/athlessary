@@ -170,9 +170,9 @@ def workouts():
                 by_distance = True
 
             # add workout to database
-            create_workout(current_user.user_id, db, meters, minutes, seconds, by_distance)
+            workout_name = create_workout(current_user.user_id, db, meters, minutes, seconds, by_distance)
 
-            return Response(json.dumps({}), status=201, mimetype='application/json')
+            return Response(json.dumps({'name': workout_name}), status=201, mimetype='application/json')
 
     return render_template('workout.html')
 

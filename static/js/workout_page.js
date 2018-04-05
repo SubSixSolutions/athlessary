@@ -27,29 +27,15 @@ function reset_text(txt){
   $('#myInput').attr("placeholder", 'Search ' + txt);
 }
 
-function create_date(utc_time, delimiter){
-  var fullDate = new Date(0);
-  fullDate.setUTCSeconds(utc_time);
-  var twoDigitMonth = (fullDate.getMonth()+1)+"";
-  if(twoDigitMonth.length==1){
-    twoDigitMonth="0" +twoDigitMonth;
-  }
-  var twoDigitDate = fullDate.getDate()+"";
-  if(twoDigitDate.length==1){
-    twoDigitDate="0" +twoDigitDate;
-  }
-  return twoDigitMonth + delimiter + twoDigitDate + delimiter + fullDate.getFullYear();
-}
-
 function get_workout_by_id(_id, _url){
   $.post(_url,
       {workout_id: _id}, function (data, status) {
         $("#side_table > tbody").empty();
 
-        var currentDate = create_date(data[0]['time'], "/");
+        var currentDate = format_date_and_time(data[0]['time']);
 
         $("#cap").text(data[0]['name']);
-        $("#_date").text(currentDate);
+        $("#_date").text(currentDate['date']);
 
         for (var i = 0; i < data.length; i++) {
           var newRow = $("<tr>");
@@ -214,20 +200,6 @@ function populate_chart(_url, chart_instance) {
     return 0;
 }
 
-function get_date_and_time(utc_time){
-  var fullDate = new Date(0);fullDate.setUTCSeconds(utc_time);
-  var twoDigitMonth = (fullDate.getMonth()+1)+"";if(twoDigitMonth.length==1)	twoDigitMonth="0" +twoDigitMonth;
-  var twoDigitDate = fullDate.getDate()+"";if(twoDigitDate.length==1)	twoDigitDate="0" +twoDigitDate;
-  var currentDate = fullDate.getFullYear() + "-" + twoDigitMonth + "-" + twoDigitDate;
-  var twoDigitHour = fullDate.getHours()+"";if(twoDigitHour.length==1)	twoDigitHour="0" +twoDigitHour;
-  var twoDigitMin = fullDate.getMinutes()+"";if(twoDigitMin.length==1)	twoDigitMin="0" +twoDigitMin;
-  var currentTime = twoDigitHour + ":" + twoDigitMin;
-  return {
-    date: currentDate,
-    time: currentTime
-  };
-}
-
 function modal_edit(_id, _url){
   var a_model = document.getElementById('a_modal');
   if (a_model){
@@ -238,6 +210,7 @@ function modal_edit(_id, _url){
           $("#modal_table > tbody").empty();
 
           for (var i = 0; i < data.length; i++) {
+
             var newRow = $("<tr>");
             var cols = "";
 
@@ -258,7 +231,7 @@ function modal_edit(_id, _url){
           }
           $("#modal_table > thead").append('<th>' + 'Piece' + '</th>');
 
-          var date_time =  get_date_and_time(data[0]['time']);
+          var date_time = format_date_and_time(data[0]['time']);
 
           $("#time").val(date_time['time']);
           $("#date").val(date_time['date']);
@@ -278,6 +251,38 @@ function modal_edit(_id, _url){
   }
 }
 
+function parse_utc_date_object(fullDate){
+  var twoDigitMonth = (fullDate.getUTCMonth()+1)+"";if(twoDigitMonth.length==1)	twoDigitMonth="0" +twoDigitMonth;
+  var twoDigitDate = fullDate.getUTCDate()+"";if(twoDigitDate.length==1)	twoDigitDate="0" +twoDigitDate;
+  var currentDate = fullDate.getUTCFullYear() + "-" + twoDigitMonth + "-" + twoDigitDate;
+  var twoDigitHour = fullDate.getUTCHours()+"";if(twoDigitHour.length==1)	twoDigitHour="0" +twoDigitHour;
+  var twoDigitMin = fullDate.getUTCMinutes()+"";if(twoDigitMin.length==1)	twoDigitMin="0" +twoDigitMin;
+  var currentTime = twoDigitHour + ":" + twoDigitMin;
+  return {
+    date: currentDate,
+    time: currentTime
+  };
+}
+
+function parse_date_object(fullDate){
+  var twoDigitMonth = (fullDate.getMonth()+1)+"";if(twoDigitMonth.length==1)	twoDigitMonth="0" +twoDigitMonth;
+  var twoDigitDate = fullDate.getDate()+"";if(twoDigitDate.length==1)	twoDigitDate="0" +twoDigitDate;
+  var currentDate = fullDate.getFullYear() + "-" + twoDigitMonth + "-" + twoDigitDate;
+  var twoDigitHour = fullDate.getHours()+"";if(twoDigitHour.length==1)	twoDigitHour="0" +twoDigitHour;
+  var twoDigitMin = fullDate.getMinutes()+"";if(twoDigitMin.length==1)	twoDigitMin="0" +twoDigitMin;
+  var currentTime = twoDigitHour + ":" + twoDigitMin;
+  return {
+    date: currentDate,
+    time: currentTime
+  };
+}
+
+function format_date_and_time(time_stamp){
+  console.log(time_stamp);
+  var utc_date = new Date(time_stamp + ' GMT');
+  return parse_date_object(utc_date);
+}
+
 function update_workout_table(){
   var table = document.getElementById('myTable');
   if (table){
@@ -290,7 +295,9 @@ function update_workout_table(){
           var newRow = $("<tr>");
           var cols = "";
 
-          cols += '<td>' + data[i]['time'] + '</td>';
+          curr_date = format_date_and_time(data[i]['time'])['date'];
+
+          cols += '<td>' + curr_date + '</td>';
           cols += '<td>' + data[i]['name'] + '</td>';
           cols += '<td>' + data[i]['avg_min'] + ':' + data[i]['avg_sec'] + '</td>';
           cols += '<td><button type=\"button\" onclick=\"modal_edit(\'' + data[i]['workout_id'] + '\', \'get_a_workout\')\" class=\"btn btn-outline-warning btn-sm\">Edit</button></td>';
@@ -327,7 +334,7 @@ function edit_a_workout(_id){
             return obj;
         }, {});
 
-        var orig_date_time = get_date_and_time(data[0]['time']);
+        var orig_date_time = format_date_and_time(data[0]['time']);
         var orig_time = orig_date_time['time'];
         var orig_date = orig_date_time['date'];
 
@@ -372,18 +379,23 @@ function edit_a_workout(_id){
           }
           by_dist = 0;
         }
-        if (_ids.length > 0 || new_date != orig_date || time != orig_time){
-          $.post('/edit_workout',
-              {   minutes: mins,
-                  seconds: secs,
-                  by_distance: by_dist,
-                  erg_ids: _ids,
-                  meters: meters,
-                  new_date: new_date,
-                  old_date: old_date,
-                  workout_id: w_id,
-                  time: time,
-              }, function (data, status) {
+
+        converted_date = new Date(new_date + " " + time);
+        new_utc_date = parse_utc_date_object(new Date(converted_date));
+
+        if (_ids.length > 0 || new_utc_date['date'] != orig_date || new_utc_date['time'] != orig_time){
+          var data_packet =
+            {   minutes: mins,
+                seconds: secs,
+                by_distance: by_dist,
+                erg_ids: _ids,
+                meters: meters
+            };
+          if (new_utc_date['date'] != orig_date || new_utc_date['time'] != orig_time){
+            data_packet['new_date'] = new_utc_date['date'] + " " + new_utc_date['time'];
+            data_packet['workout_id'] = w_id;
+          }
+          $.post('/edit_workout', data_packet, function (data, status) {
                 update_workout_table();
           });
         }
