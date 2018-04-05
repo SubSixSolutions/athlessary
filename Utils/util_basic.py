@@ -2,7 +2,10 @@ import base64
 import datetime
 import json
 import os
+import time
 import sys
+
+import boto3
 
 import boto3
 
@@ -84,6 +87,31 @@ def build_graph_data(results, workout_name):
     return js
 
 
+def edit_time_stamp(new_date, new_time, old_stamp):
+    """
+    takes a new TIME, new DATE, and a time stamp
+    :param new_date: date in format yyyy-mm-dd
+    :param new_time: time in form hh:mm
+    :param old_stamp: time stamp in seconds since epoch
+    :return:
+    """
+
+    # convert old stamp into a date
+    old_date = datetime.datetime.fromtimestamp(float(old_stamp))
+
+    # break up date and time strings
+    new_date_arr = new_date.split('-')
+    new_time_arr = new_time.split(':')
+
+    # create new date time object from strings
+    new_date_obj = datetime.datetime(int(new_date_arr[0]), int(new_date_arr[1]), int(new_date_arr[2]), int(new_time_arr[0]), int(new_time_arr[1]), old_date.second)
+
+    # format new time stamp
+    new_stamp = time.mktime(new_date_obj.timetuple())
+
+    return new_stamp
+
+
 def edit_erg_workout(request, db):
     by_distance = int(request.form.get('by_distance'))
     erg_ids = request.form.getlist('erg_ids[]')
@@ -141,7 +169,6 @@ def upload_profile_image(img, user_id, pic_location):
     save a new profile picture uploaded by the user
     :param img: byte string from web
     :param user_id: id fo the current user
-    :param pic_location: the location of the current user profile picture
     :return:
     """
 
