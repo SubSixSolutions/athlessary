@@ -27,20 +27,6 @@ function reset_text(txt){
   $('#myInput').attr("placeholder", 'Search ' + txt);
 }
 
-function create_date(utc_time, delimiter){
-  var fullDate = new Date(0);
-  fullDate.setUTCSeconds(utc_time);
-  var twoDigitMonth = (fullDate.getMonth()+1)+"";
-  if(twoDigitMonth.length==1){
-    twoDigitMonth="0" +twoDigitMonth;
-  }
-  var twoDigitDate = fullDate.getDate()+"";
-  if(twoDigitDate.length==1){
-    twoDigitDate="0" +twoDigitDate;
-  }
-  return twoDigitMonth + delimiter + twoDigitDate + delimiter + fullDate.getFullYear();
-}
-
 function get_workout_by_id(_id, _url){
   $.post(_url,
       {workout_id: _id}, function (data, status) {
@@ -214,20 +200,6 @@ function populate_chart(_url, chart_instance) {
     return 0;
 }
 
-function get_date_and_time(utc_time){
-  var fullDate = new Date(0);fullDate.setUTCSeconds(utc_time);
-  var twoDigitMonth = (fullDate.getMonth()+1)+"";if(twoDigitMonth.length==1)	twoDigitMonth="0" +twoDigitMonth;
-  var twoDigitDate = fullDate.getDate()+"";if(twoDigitDate.length==1)	twoDigitDate="0" +twoDigitDate;
-  var currentDate = fullDate.getFullYear() + "-" + twoDigitMonth + "-" + twoDigitDate;
-  var twoDigitHour = fullDate.getHours()+"";if(twoDigitHour.length==1)	twoDigitHour="0" +twoDigitHour;
-  var twoDigitMin = fullDate.getMinutes()+"";if(twoDigitMin.length==1)	twoDigitMin="0" +twoDigitMin;
-  var currentTime = twoDigitHour + ":" + twoDigitMin;
-  return {
-    date: currentDate,
-    time: currentTime
-  };
-}
-
 function modal_edit(_id, _url){
   var a_model = document.getElementById('a_modal');
   if (a_model){
@@ -308,8 +280,6 @@ function parse_date_object(fullDate){
 function format_date_and_time(time_stamp){
   console.log(time_stamp);
   var utc_date = new Date(time_stamp + ' GMT');
-  time_str = utc_date.toString();
-  var local_date = new Date(utc_date.toString());
   return parse_date_object(utc_date);
 }
 
