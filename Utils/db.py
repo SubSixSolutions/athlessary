@@ -1,4 +1,5 @@
 import os
+import re
 import sqlite3
 import sys
 
@@ -49,7 +50,7 @@ class Database:
     def __init__(self, db_file):
         try:
             self.conn = psycopg2.connect(connect_str, cursor_factory=extras.RealDictCursor)
-            self.init_tables()
+            # self.init_tables()
             log.info('Return NEW database object')
         except sqlite3.Error as e:
             log.error(e, exc_info=True)
@@ -69,7 +70,7 @@ class Database:
         try:
             with self.conn.cursor() as cur:
                 cur.execute(sql_statement, params)
-                log.info(cur.query)
+                log.info((re.sub('[\s]{2,}', '', str(cur.query))).replace('\\n', ''))
                 if fetchone:
                     return cur.fetchone()
                 return cur.fetchall()
@@ -86,7 +87,7 @@ class Database:
         try:
             with self.conn.cursor() as cur:
                 cur.execute(sql_statement, params)
-                log.info(cur.query)
+                log.info((re.sub('[\s]{2,}', '', str(cur.query))).replace('\\n', ''))
 
         except psycopg2.InternalError as e:
             self.conn.rollback()
@@ -392,11 +393,11 @@ class Database:
         """
 
         sql = SQL.SQL(
-          "SELECT * \
-          FROM workout AS w \
-          JOIN erg AS e \
-          ON e.workout_id = w.workout_id \
-          WHERE w.user_id={}"
+          '''SELECT *
+          FROM workout AS w
+          JOIN erg AS e
+          ON e.workout_id = w.workout_id
+          WHERE w.user_id={}'''
         ).format(SQL.Literal(user_id))
 
         result = self.safe_execute(sql, params=None, fetchone=False)
@@ -412,13 +413,13 @@ class Database:
         """
 
         sql = SQL.SQL(
-             "SELECT *, to_char(time, 'yyyy-mm-dd hh24:mi:ss') as time \
-              FROM workout AS w \
-              JOIN erg AS e \
-              ON e.workout_id = w.workout_id \
-              WHERE w.user_id={} \
-              AND e.workout_id={} \
-              ORDER BY e.erg_id"
+             '''SELECT *, to_char(time, 'yyyy-mm-ddThh24:mi:ss.000Z') as time
+              FROM workout AS w
+              JOIN erg AS e
+              ON e.workout_id = w.workout_id
+              WHERE w.user_id={}
+              AND e.workout_id={}
+              ORDER BY e.erg_id'''
         ).format(SQL.Placeholder(), SQL.Placeholder())
 
         result = self.safe_execute(sql, (user_id, workout_id), fetchone=False)
@@ -438,19 +439,19 @@ class Database:
         """
 
         sql = SQL.SQL(
-            "SELECT distance, total_seconds, w.workout_id, w.time, w.by_distance \
-             FROM workout AS w \
-             JOIN \
-                  (SELECT AVG(e.distance) AS distance, \
-                  AVG((e.minutes*60)+e.seconds) AS total_seconds, e.workout_id \
-                  FROM workout AS w \
-                  JOIN erg AS e \
-                  ON e.workout_id = w.workout_id \
-                  WHERE w.user_id={} \
-                  AND w.name={} \
-                  GROUP BY e.workout_id) AS agg_table \
-             ON w.workout_id = agg_table.workout_id \
-             ORDER BY w.time"
+            '''SELECT distance, total_seconds, w.workout_id, w.time, w.by_distance
+             FROM workout AS w
+             JOIN
+                  (SELECT AVG(e.distance) AS distance,
+                  AVG((e.minutes*60)+e.seconds) AS total_seconds, e.workout_id
+                  FROM workout AS w
+                  JOIN erg AS e
+                  ON e.workout_id = w.workout_id
+                  WHERE w.user_id={}
+                  AND w.name={}
+                  GROUP BY e.workout_id) AS agg_table
+             ON w.workout_id = agg_table.workout_id
+             ORDER BY w.time'''
         ).format(SQL.Placeholder(), SQL.Placeholder())
 
         result = self.safe_execute(sql, (user_id, workout_name), fetchone=False)
@@ -467,26 +468,26 @@ class Database:
         aggregated totals for distance and time
         """
         sql = SQL.SQL(
-            "SELECT distance, total_seconds, w.workout_id, w.time, w.by_distance, w.name \
-             FROM workout AS w \
-             JOIN \
-                  (SELECT AVG(e.distance) AS distance, \
-                  AVG((e.minutes*60)+e.seconds) AS total_seconds, e.workout_id \
-                  FROM workout AS w \
-                  JOIN erg AS e \
-                  ON e.workout_id = w.workout_id \
-                  WHERE w.user_id={} \
-                  GROUP BY e.workout_id) AS agg_table \
-             ON w.workout_id = agg_table.workout_id \
-             ORDER BY w.time DESC"
-        ).format(SQL.Placeholder(), SQL.Placeholder())
+            '''SELECT distance, total_seconds, w.workout_id, w.time, w.by_distance, w.name
+             FROM workout AS w
+             JOIN
+                  (SELECT AVG(e.distance) AS distance,
+                  AVG((e.minutes*60)+e.seconds) AS total_seconds, e.workout_id
+                  FROM workout AS w
+                  JOIN erg AS e
+                  ON e.workout_id = w.workout_id
+                  WHERE w.user_id={}
+                  GROUP BY e.workout_id) AS agg_table
+             ON w.workout_id = agg_table.workout_id
+             ORDER BY w.time DESC'''
+        ).format(SQL.Placeholder())
 
         result = self.safe_execute(sql, (user_id,), fetchone=False)
 
         for res in result:
             res['total_seconds'] = float(res['total_seconds'])
             res['distance'] = float(res['distance'])
-            res['time'] = res['time'].strftime('%Y-%m-%d %H:%M')
+            res['time'] = res['time'].strftime('%Y-%m-%dT%H:%M:00.000Z')
             splits = float(res['distance']) / float(500)
             res['avg_sec'] = format(((res['total_seconds'] / splits) % 60), '.2f')
             res['avg_min'] = int(res['total_seconds'] / splits / 60)
@@ -503,11 +504,11 @@ class Database:
         """
         print(user_id)
         sql = SQL.SQL(
-            "SELECT DISTINCT name \
-             FROM workout \
-             WHERE user_id={} \
-             GROUP BY name \
-             HAVING COUNT(workout_id) > 1"
+            '''SELECT DISTINCT name
+             FROM workout
+             WHERE user_id={}
+             GROUP BY name
+             HAVING COUNT(workout_id) > 1'''
             ).format(SQL.Placeholder())
 
         result = self.safe_execute(sql, (user_id,), fetchone=False)
@@ -521,12 +522,12 @@ class Database:
         :return: a integer; total meters rowed by individual
         """
         sql = SQL.SQL(
-            "SELECT SUM(e.distance) AS total_meters \
-             FROM workout AS w \
-             JOIN erg AS e \
-             ON e.workout_id = w.workout_id \
-             WHERE w.user_id={} \
-             GROUP BY user_id"
+            '''SELECT SUM(e.distance) AS total_meters
+             FROM workout AS w
+             JOIN erg AS e
+             ON e.workout_id = w.workout_id
+             WHERE w.user_id={}
+             GROUP BY user_id'''
         ).format(SQL.Placeholder())
 
         result = self.safe_execute(sql, (user_id,), fetchone=True)
@@ -534,11 +535,11 @@ class Database:
 
     def get_user(self, user_id):
         sql = SQL.SQL(
-            "SELECT * \
-             FROM users as u \
-             JOIN profile as p \
-             ON u.user_id = p.user_id \
-             WHERE u.user_id={}"
+            '''SELECT *
+             FROM users as u
+             JOIN profile as p
+             ON u.user_id = p.user_id
+             WHERE u.user_id={}'''
         ).format(SQL.Placeholder())
 
         result = self.safe_execute(sql, (user_id,), fetchone=True)

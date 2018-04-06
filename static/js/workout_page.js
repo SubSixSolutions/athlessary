@@ -279,7 +279,8 @@ function parse_date_object(fullDate){
 
 function format_date_and_time(time_stamp){
   console.log(time_stamp);
-  var utc_date = new Date(time_stamp + ' GMT');
+  var utc_date = new Date(time_stamp);
+  console.log(utc_date);
   return parse_date_object(utc_date);
 }
 
