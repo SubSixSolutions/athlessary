@@ -19,6 +19,31 @@ $(document).ready(function(){
           by_distance = item.value;
         }
     });
+    var elements = $(this).elements;
+    console.log(document.getElementById("add_workout_form").elements);
+    elements = document.getElementById("add_workout_form").elements;
+    var dont_post = false;
+    for (var i = 0, element; element = elements[i++];) {
+        console.log(element.value);
+        if (element.name === "minutes" || element.name === "seconds" || element.name === "meters"){
+            var p = element.parentElement.parentElement.querySelector('small[name="error"]');
+            if (element.value == ""){
+              element.classList.add("border-danger");
+              p.className = "text-danger";
+              p.innerHTML = "Input Required.";
+              dont_post = true;
+            }
+            else if ((element.name == 'minutes' || element.name == 'seconds') && element.value > 59) {
+              element.classList.add("border-danger");
+              p.className = "text-danger";
+              p.innerHTML = "Value must be less than 60.";
+              dont_post = true;
+            }
+        }
+    }
+    if (dont_post){
+      return false;
+    }
     console.log(meters, minutes, seconds, by_distance);
     $.post(_url, {
       workout_type: by_distance,
@@ -113,25 +138,19 @@ function generate_form(){
   //   <input type="number" min="1" class="form-control mb-2" id="num_pieces" placeholder="Number of Peices">
   // </div>
 
-  content_div = "<div class=\"col-4 form-group\">";
+  content_div = "<div class=\"col-auto form-group\">";
   small_class = "<small class=\"form-text text-muted\">";
   end_small = "</small>";
-  input = "<input type=\"number\" min=\"0\" class=\"form-control mb-2\"";
-  end_input = ">";
-  end_content_div = "</div>";
-  label = "<div class=\"col-sm-2\"><label class=\"row-form-label\">"
-  end_label = "</label></div>"
+  input = "<div class=\"input-group\"><input type=\"number\" min=\"0\" class=\"form-control mb-2\"";
+  end_input = "></div>";
+  end_content_div = "<small name=\"error\"></small></div>";
+  label = "<label class=\"col-form-label col-auto\">"
+  end_label = "</label>"
 
   for (var i = 0; i < num_pieces; i++) {
       var main_div = document.createElement('div');
-      main_div.className = 'form-row col align-items-center';
-      main_div.innerHTML = label + 'Peice ' + (i+1) + end_label;
-
-      var col_10_div = document.createElement('div');
-      col_10_div.className = 'col-sm-10';
-
-      inner_div = document.createElement('div');
-      inner_div.className = 'form-row';
+      main_div.className = 'form-row align-items-top px-2';
+      var part1 = "<div class=\"form-group col-auto align-items-center\">" + small_class + "Piece" + end_small + label + (i+1) + end_label + "</div>";
 
       var input1 = ""; var input2 = ""; var input3 = "";
       if (w_type == 'Length'){
@@ -147,10 +166,8 @@ function generate_form(){
           input2 = content_div + small_class + "Minutes" + end_small + input + "name=\"minutes\"" + end_input + end_content_div;
           input3 = content_div + small_class + "Seconds" + end_small + input + "name=\"seconds\"" + end_input + end_content_div;
       }
-      inner_div.innerHTML = input1 + input2 + input3;
-      col_10_div.appendChild(inner_div);
 
-      main_div.appendChild(col_10_div);
+      main_div.innerHTML = part1 + input1 + input2 + input3;
 
       document.getElementById('add_workout_form').appendChild(main_div);
   }
