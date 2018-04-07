@@ -252,6 +252,7 @@ function modal_edit(_id, _url){
 }
 
 function parse_utc_date_object(fullDate){
+  // takes a date with a time zone and transforms it to UTC
   var twoDigitMonth = (fullDate.getUTCMonth()+1)+"";if(twoDigitMonth.length==1)	twoDigitMonth="0" +twoDigitMonth;
   var twoDigitDate = fullDate.getUTCDate()+"";if(twoDigitDate.length==1)	twoDigitDate="0" +twoDigitDate;
   var currentDate = fullDate.getUTCFullYear() + "-" + twoDigitMonth + "-" + twoDigitDate;
@@ -265,6 +266,7 @@ function parse_utc_date_object(fullDate){
 }
 
 function parse_date_object(fullDate){
+  // takes a date stamp in UTC and transforms it to local
   var twoDigitMonth = (fullDate.getMonth()+1)+"";if(twoDigitMonth.length==1)	twoDigitMonth="0" +twoDigitMonth;
   var twoDigitDate = fullDate.getDate()+"";if(twoDigitDate.length==1)	twoDigitDate="0" +twoDigitDate;
   var currentDate = fullDate.getFullYear() + "-" + twoDigitMonth + "-" + twoDigitDate;
@@ -278,9 +280,9 @@ function parse_date_object(fullDate){
 }
 
 function format_date_and_time(time_stamp){
-  console.log(time_stamp);
+  // console.log(time_stamp);
   var utc_date = new Date(time_stamp);
-  console.log(utc_date);
+  // console.log(utc_date);
   return parse_date_object(utc_date);
 }
 
@@ -339,6 +341,8 @@ function edit_a_workout(_id){
         var orig_time = orig_date_time['time'];
         var orig_date = orig_date_time['date'];
 
+        console.log(orig_date_time);
+
         var _ids = [];
         var meters = [];
         var mins = [];
@@ -380,9 +384,11 @@ function edit_a_workout(_id){
           }
           by_dist = 0;
         }
-
-        converted_date = new Date(new_date + " " + time);
-        new_utc_date = parse_utc_date_object(new Date(converted_date));
+        date_arr = new_date.split('-');
+        time_arr = time.split(':');
+        converted_date = new Date(parseInt(date_arr[0]), parseInt(date_arr[1]), parseInt(date_arr[2]),
+          parseInt(time_arr[0]), parseInt(time_arr[1]));
+        new_utc_date = parse_utc_date_object(converted_date);
 
         if (_ids.length > 0 || new_utc_date['date'] != orig_date || new_utc_date['time'] != orig_time){
           var data_packet =

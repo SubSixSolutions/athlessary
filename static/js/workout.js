@@ -6,6 +6,7 @@ $(document).ready(function(){
     var meters = []; var minutes = []; var seconds = []; var by_distance = "";
     var arr = $(this).serializeArray()
     $.each(arr, function(obj, item) {
+        window.alert(obj);
         if (item.name == 'meters'){
           meters.push(item.value);
         }
@@ -125,7 +126,7 @@ function generate_form(){
   for (var i = 0; i < num_pieces; i++) {
       var main_div = document.createElement('div');
       main_div.className = 'form-row col align-items-center';
-      main_div.innerHTML = label + 'Peice ' + (i+1) + end_label;
+      main_div.innerHTML = label + 'Piece ' + (i+1) + end_label;
 
       var col_10_div = document.createElement('div');
       col_10_div.className = 'col-sm-10';
