@@ -253,7 +253,7 @@ function modal_edit(_id, _url){
 
 function parse_utc_date_object(fullDate){
   // takes a date with a time zone and transforms it to UTC
-  var twoDigitMonth = (fullDate.getUTCMonth()+1)+"";if(twoDigitMonth.length==1)	twoDigitMonth="0" +twoDigitMonth;
+  var twoDigitMonth = (fullDate.getUTCMonth())+"";if(twoDigitMonth.length==1)	twoDigitMonth="0" +twoDigitMonth;
   var twoDigitDate = fullDate.getUTCDate()+"";if(twoDigitDate.length==1)	twoDigitDate="0" +twoDigitDate;
   var currentDate = fullDate.getUTCFullYear() + "-" + twoDigitMonth + "-" + twoDigitDate;
   var twoDigitHour = fullDate.getUTCHours()+"";if(twoDigitHour.length==1)	twoDigitHour="0" +twoDigitHour;
