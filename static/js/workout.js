@@ -107,7 +107,7 @@ function show_incomplete(bad_elem){
 function reset_form(){
     // clear html content
     // document.getElementById("add_workout_form").innerHTML = '';
-    $("#add_workout_form > div:not(:first)").empty();
+    $("#add_workout_form > div:not(:first)").remove();
 
     // reset radio buttons
     document.getElementById('minute_bttn').disabled = false;
