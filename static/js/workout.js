@@ -82,6 +82,7 @@ function switch_input(){
   console.log(is_visible);
   if (is_visible == false){
     min_meter_txt.innerHTML = "Number of Meters";
+    document.getElementById('min_meter_input').setAttribute('value','2000');
     input.hidden = true;
   }
   else {
@@ -143,7 +144,7 @@ function generate_form(){
   //   <input type="number" min="1" class="form-control mb-2" id="num_pieces" placeholder="Number of Peices">
   // </div>
 
-  content_div = "<div class=\"col-auto form-group\">";
+  content_div = "<div class=\"col-md-4 form-group\">";
   small_class = "<small class=\"form-text text-muted\">";
   end_small = "</small>";
   input = "<div class=\"input-group\"><input type=\"number\" min=\"0\" class=\"form-control mb-2\"";
@@ -156,6 +157,7 @@ function generate_form(){
       var main_div = document.createElement('div');
       main_div.className = 'form-row align-items-top px-2';
       var part1 = "<div class=\"form-group col-auto align-items-center\">" + small_class + "Piece" + end_small + label + (i+1) + end_label + "</div>";
+      var part11 = "<div class=\"row justify-content-center mt-2\">" + "<h5>" + "Piece " + (i+1) + "</h5>" + "</div>";
 
       var input1 = ""; var input2 = ""; var input3 = "";
       if (w_type == 'Length'){
@@ -172,8 +174,12 @@ function generate_form(){
           input3 = content_div + small_class + "Seconds" + end_small + input + "name=\"seconds\"" + end_input + end_content_div;
       }
 
-      main_div.innerHTML = part1 + input1 + input2 + input3;
+      var header_div = document.createElement('div');
+      header_div.innerHTML = part11;
 
+      main_div.innerHTML = input1 + input2 + input3;
+
+      document.getElementById('add_workout_form').appendChild(header_div);
       document.getElementById('add_workout_form').appendChild(main_div);
   }
 

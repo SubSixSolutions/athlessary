@@ -66,7 +66,7 @@ def build_graph_data(results, workout_name):
         else:
             data_arr.append(float(res['total_seconds'])/float(60))
             y_axis = 'Minutes'
-        label_arr.append(res['time'].strftime('%Y-%m-%d %H:%M'))
+        label_arr.append(res['time'].strftime('%m-%d-%y'))
         _ids.append(res['workout_id'])
 
     data = {
