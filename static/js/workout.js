@@ -33,11 +33,16 @@ $(document).ready(function(){
               p.innerHTML = "Input Required.";
               dont_post = true;
             }
-            else if ((element.name == 'minutes' || element.name == 'seconds') && element.value > 59) {
+            else if ((element.name == 'seconds') && element.value > 59) {
               element.classList.add("border-danger");
               p.className = "text-danger";
               p.innerHTML = "Value must be less than 60.";
               dont_post = true;
+            }
+            else {
+              p.innerHTML = "";
+              p.className = "";
+              element.classList.remove("border-danger");
             }
         }
     }
