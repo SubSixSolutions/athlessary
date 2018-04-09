@@ -78,15 +78,24 @@ function switch_input(){
   var input = document.getElementById('second_input_div');
   is_visible = input.hidden;
   var min_meter_txt = document.getElementById('min_meter_txt');
+  var min_meter_input = document.getElementById('min_meter_input');
   console.log(is_visible);
   if (is_visible == false){
     min_meter_txt.innerHTML = "Number of Meters";
-    document.getElementById('min_meter_input').setAttribute('value','2000');
+    min_meter_input.setAttribute('value','2000');
+    document.getElementById('submit_bttn_div').classList.remove("col-12");
+    document.getElementById('submit_bttn_div').classList.add("col-6");
+    // document.getElementById('num_pieces_parent').classList.remove("col-4");
+    // document.getElementById('num_pieces_parent').classList.add("col-6");
     input.hidden = true;
   }
   else {
     min_meter_txt.innerHTML = "Number of Minutes";
-    document.getElementById('min_meter_input').setAttribute('value','30');
+    min_meter_input.setAttribute('value','30');
+    document.getElementById('submit_bttn_div').classList.remove("col-6");
+    document.getElementById('submit_bttn_div').classList.add("col-12");
+    // document.getElementById('num_pieces_parent').classList.remove("col-6");
+    // document.getElementById('num_pieces_parent').classList.add("col-6");
     input.hidden = false;
   }
 }
@@ -126,6 +135,10 @@ function reset_form(){
 
     // check meters selector
     document.getElementById('units').value = 'meters';
+
+    // resize submit button
+    document.getElementById('submit_bttn_div').classList.remove("col-12");
+    document.getElementById('submit_bttn_div').classList.add("col-6");
 }
 
 function generate_form(){
@@ -142,8 +155,8 @@ function generate_form(){
   //   <input type="number" min="1" class="form-control mb-2" id="num_pieces" placeholder="Number of Peices">
   // </div>
 
-  content_div = "<div class=\"col-md-4 form-group\">";
-  small_class = "<small class=\"form-text text-muted\">";
+  content_div = "<div class=\"col-md-4 form-group ";
+  small_class = "\"><small class=\"form-text text-muted\">";
   end_small = "</small>";
   input = "<div class=\"input-group\"><input type=\"number\" min=\"0\" class=\"form-control mb-2\"";
   end_input = "></div>";
@@ -163,13 +176,13 @@ function generate_form(){
       if (w_type == 'minutes'){
           var d_value_1 = document.getElementById('second_input').value;
           input1 = content_div + small_class + "Meters" + end_small + input + "name=\"meters\"" + end_input + end_content_div;
-          input2 = content_div + small_class + "Minutes" + end_small + input + "name=\"minutes\" value=\"" + meter_minutes + "\"" + end_input + end_content_div;
-          input3 = content_div + small_class + "Seconds" + end_small + input + "name=\"seconds\" value=\"" + d_value_1 + "\"" + end_input + end_content_div;
+          input2 = content_div + "col-6" + small_class + "Minutes" + end_small + input + "name=\"minutes\" value=\"" + meter_minutes + "\"" + end_input + end_content_div;
+          input3 = content_div + "col-6" + small_class + "Seconds" + end_small + input + "name=\"seconds\" value=\"" + d_value_1 + "\"" + end_input + end_content_div;
       }
       else {
           input1 = content_div + small_class + "Meters" + end_small + input + "name=\"meters\" value=\"" + meter_minutes + "\"" + end_input + end_content_div;
-          input2 = content_div + small_class + "Minutes" + end_small + input + "name=\"minutes\"" + end_input + end_content_div;
-          input3 = content_div + small_class + "Seconds" + end_small + input + "name=\"seconds\"" + end_input + end_content_div;
+          input2 = content_div + "col-6" + small_class + "Minutes" + end_small + input + "name=\"minutes\"" + end_input + end_content_div;
+          input3 = content_div + "col-6" + small_class + "Seconds" + end_small + input + "name=\"seconds\"" + end_input + end_content_div;
       }
 
       var header_div = document.createElement('div');

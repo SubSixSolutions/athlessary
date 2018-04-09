@@ -117,33 +117,19 @@
                     <!-- <div class="align-items-center justify-content-center" style="border: 1px solid black; padding:1em; background-color: #f8f9fa;"> -->
                     <div class="align-items-center justify-content-center">
                       <div class="col">
-                        <div class="" id="info-div">
-
-                        </div>
-                        <form class="my-3" action="{{url_for('workouts')}}" id="add_workout_form" style="border: 1px solid black; padding-top:0.5em; background-color: #f8f9fa;">
-                          <div class="row form-row align-items-center mx-2 mt-2">
-                            <div class="col-auto form-group">
-                              <small class="form-text text-muted" for="num_pieces">Number of Peices</small>
-                              <input type="number" min="1" class="form-control mb-2" id="num_pieces" value="1">
-                            </div>
-                            <div class="col-auto">
-                              <div class="input-group-prepend">
-                                <div class="input-group-text">X</div>
-                              </div>
-                            </div>
-                            <div class="col-auto form-group">
-                              <small id="min_meter_txt" class="form-text text-muted" for="min_meter_input">Number of Meters</small>
+                        <div class="" id="info-div"> <!-- Alerts go here! --> </div>
+                        <form class="my-3 py-2 border border-dark" action="{{url_for('workouts')}}" id="add_workout_form" style="background-color: #f8f9fa;">
+                          <div class="row form-row align-items-end mx-2 mt-2 d-md-flex flex-lg-nowrap flex-md-wrap">
+                            <div class="col-lg-auto col-6" id="num_pieces_parent">
+                              <small class="form-text text-muted" for="num_pieces">Number of Pieces</small>
                               <div class="input-group mb-2">
-                                <input type="number" class="form-control" id="min_meter_input" value="2000">
+                                <input type="number" min="1" class="form-control" id="num_pieces" value="1">
+                                <!-- <div class="input-group-append">
+                                  <div class="input-group-text">X</div>
+                                </div> -->
                               </div>
                             </div>
-                            <div class="col-auto form-group" hidden id="second_input_div">
-                              <small class="form-text text-muted" for="second_input">Number of Seconds</small>
-                              <div class="input-group mb-2">
-                                <input type="number" class="form-control" id="second_input" value="00">
-                              </div>
-                            </div>
-                            <div class="col-auto form-group">
+                            <div class="col-lg-auto col-6">
                               <small class="form-text text-muted">Units</small>
                               <div class="input-group mb-2">
                                 <select class="form-control custom-select" name="units" id="units" onchange="switch_input();">
@@ -151,17 +137,31 @@
                                   <option value="minutes" name="units">Minutes</option>
                                 </select>
                               </div>
-                              <!-- <div class="form-check check form-check-inline mb-2">
-                                <input name="workout_type" class="form-check-input" type="radio" value="Distance" checked onclick="switch_input();" id="meter_bttn">
-                                <label class="form-check-label" for="meter_bttn">Meters</label>
-                              </div>
-                              <div class="form-check check form-check-inline mb-2">
-                                <input name="workout_type" class="form-check-input" type="radio" value="Length" id="minute_bttn" onclick="switch_input();">
-                                <label class="form-check-label" for="minute_bttn">Minutes</label>
-                              </div> -->
                             </div>
-                            <div class="col-auto">
-                              <button id="submit_bttn" type="button" class="btn btn-primary mb-2" onclick="generate_form();">Submit</button>
+                            <div class="col-lg-auto col-6" id="min_meter_parent">
+                              <small class="form-text text-muted" id="min_meter_txt" for="min_meter_input">Number of Meters</small>
+                              <div class="input-group mb-2">
+                                <input type="number" class="form-control" id="min_meter_input" value="2000">
+                                <!-- <div class="input-group-append input-group-prepend">
+                                  <div class="input-group-text mx-0 mp-0">:</div>
+                                </div> -->
+                                <!-- <div class="input-group-append"> -->
+                                  <!-- <div class="input-group"> -->
+                                    <!-- <input type="number" class="form-control col-5" id="second_input" value="00"> -->
+                                  <!-- </div> -->
+                                <!-- </div> -->
+                              </div>
+                            </div>
+                            <div class="col-lg-auto col-6" hidden id="second_input_div">
+                              <small class="form-text text-muted" for="second_input">Number of Seconds</small>
+                              <div class="input-group mb-2">
+                                <input type="number" class="form-control" id="second_input" value="00">
+                              </div>
+                            </div>
+                            <div class="col-lg-2 col-6" id="submit_bttn_div">
+                              <div class="mb-2 align-items-center">
+                                <button id="submit_bttn" type="button" class="btn btn-primary w-100" onclick="generate_form();">Submit</button>
+                              </div>
                             </div>
                           </div>
                         </form>

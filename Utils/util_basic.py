@@ -64,7 +64,7 @@ def build_graph_data(results, workout_name):
 
     for res in results:
         if res['by_distance'] == 0:
-            data_arr.append(res['distance'])
+            data_arr.append(float(res['distance']))
             y_axis = 'Meters'
         else:
             data_arr.append(float(res['total_seconds'])/float(60))
