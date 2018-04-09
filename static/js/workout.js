@@ -6,6 +6,7 @@ $(document).ready(function(){
     var meters = []; var minutes = []; var seconds = []; var by_distance = "";
     var arr = $(this).serializeArray()
     $.each(arr, function(obj, item) {
+        console.log(item.name);
         if (item.name == 'meters'){
           meters.push(item.value);
         }
@@ -15,10 +16,8 @@ $(document).ready(function(){
         else if (item.name == 'seconds'){
           seconds.push(item.value);
         }
-        else if (item.name = 'workout_type'){
-          by_distance = item.value;
-        }
     });
+    by_distance = document.getElementById("units").value;
     var elements = $(this).elements;
     console.log(document.getElementById("add_workout_form").elements);
     elements = document.getElementById("add_workout_form").elements;
@@ -110,9 +109,8 @@ function reset_form(){
     // document.getElementById("add_workout_form").innerHTML = '';
     $("#add_workout_form > div:not(:first)").remove();
 
-    // reset radio buttons
-    document.getElementById('minute_bttn').disabled = false;
-    document.getElementById('meter_bttn').disabled = false;
+    // reset selector
+    document.getElementById('units').disabled = false;
 
     // hide seconds input
     document.getElementById('second_input_div').hidden = true;
@@ -126,8 +124,8 @@ function reset_form(){
     // display submit button
     document.getElementById('submit_bttn').style.display = 'block';
 
-    // check meters button
-    $("#meter_bttn").prop('checked', true);
+    // check meters selector
+    document.getElementById('units').value = 'meters';
 }
 
 function generate_form(){
@@ -136,7 +134,7 @@ function generate_form(){
   document.getElementById('submit_bttn').style.display = 'none';
 
   var num_pieces = document.getElementById("num_pieces").value;
-  var w_type = document.querySelector("input[name=workout_type]:checked").value;
+  var w_type = document.getElementById("units").value;
   var meter_minutes = document.getElementById("min_meter_input").value;
 
   // <div class="col-auto form-group">
@@ -159,16 +157,16 @@ function generate_form(){
       var part1 = "<div class=\"form-group col-auto align-items-center\">" + small_class + "Piece" + end_small + label + (i+1) + end_label + "</div>";
       var part11 = "<div class=\"row justify-content-center mt-2\">" + "<h5>" + "Piece " + (i+1) + "</h5>" + "</div>";
 
+      document.getElementById('units').disabled = true;
+
       var input1 = ""; var input2 = ""; var input3 = "";
-      if (w_type == 'Length'){
-          document.getElementById('meter_bttn').disabled = true;
+      if (w_type == 'minutes'){
           var d_value_1 = document.getElementById('second_input').value;
           input1 = content_div + small_class + "Meters" + end_small + input + "name=\"meters\"" + end_input + end_content_div;
           input2 = content_div + small_class + "Minutes" + end_small + input + "name=\"minutes\" value=\"" + meter_minutes + "\"" + end_input + end_content_div;
           input3 = content_div + small_class + "Seconds" + end_small + input + "name=\"seconds\" value=\"" + d_value_1 + "\"" + end_input + end_content_div;
       }
       else {
-          document.getElementById('minute_bttn').disabled = true;
           input1 = content_div + small_class + "Meters" + end_small + input + "name=\"meters\" value=\"" + meter_minutes + "\"" + end_input + end_content_div;
           input2 = content_div + small_class + "Minutes" + end_small + input + "name=\"minutes\"" + end_input + end_content_div;
           input3 = content_div + small_class + "Seconds" + end_small + input + "name=\"seconds\"" + end_input + end_content_div;

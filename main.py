@@ -156,6 +156,8 @@ def workouts():
     if request.method == 'POST':
 
         # TODO implement other workouts
+        print('hello it\'s me')
+        print(request.form)
 
         # get the parameters from the form
         meters = request.form.getlist('meters[]')
@@ -166,7 +168,7 @@ def workouts():
 
             # is workout by distance or by time?
             by_distance = False
-            if request.form.get('workout_type') == 'Distance':
+            if request.form.get('workout_type') == 'meters':
                 by_distance = True
 
             # add workout to database

@@ -324,7 +324,7 @@ function delete_workout(workout_id, idx){
 
         // ask server for data
         update_workout_table();
-        populate_chart();
+        // populate_chart();
   });
 }
 

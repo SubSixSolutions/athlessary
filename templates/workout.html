@@ -143,15 +143,22 @@
                                 <input type="number" class="form-control" id="second_input" value="00">
                               </div>
                             </div>
-                            <div class="col-auto">
-                              <div class="form-check check form-check-inline mb-2">
+                            <div class="col-auto form-group">
+                              <small class="form-text text-muted">Units</small>
+                              <div class="input-group mb-2">
+                                <select class="form-control custom-select" name="units" id="units" onchange="switch_input();">
+                                  <option value="meters" name="units">Meters</option>
+                                  <option value="minutes" name="units">Minutes</option>
+                                </select>
+                              </div>
+                              <!-- <div class="form-check check form-check-inline mb-2">
                                 <input name="workout_type" class="form-check-input" type="radio" value="Distance" checked onclick="switch_input();" id="meter_bttn">
                                 <label class="form-check-label" for="meter_bttn">Meters</label>
                               </div>
                               <div class="form-check check form-check-inline mb-2">
                                 <input name="workout_type" class="form-check-input" type="radio" value="Length" id="minute_bttn" onclick="switch_input();">
                                 <label class="form-check-label" for="minute_bttn">Minutes</label>
-                              </div>
+                              </div> -->
                             </div>
                             <div class="col-auto">
                               <button id="submit_bttn" type="button" class="btn btn-primary mb-2" onclick="generate_form();">Submit</button>
