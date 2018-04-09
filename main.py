@@ -93,7 +93,7 @@ def new_signup():
             login = False
 
     return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login,
-                           _url=sign_certificate('defaults/login_photo.jpg'))
+                           _url="https://s3-us-west-2.amazonaws.com/athlessary-images/defaults/login_photo.jpg")
 
 
 @application.route('/profile', methods=['GET', 'POST'])
