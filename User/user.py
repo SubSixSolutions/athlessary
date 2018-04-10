@@ -84,6 +84,24 @@ class User:
 
         return cls(user_id, None)
 
+    @classmethod
+    def user_from_csv_row(cls, csv_data, active=True):
+        col_names = csv_data.keys()
+        col_vals = csv_data.values()
+        import psycopg2
+        try:
+            user_id = cls.db.insert('users', col_names, col_vals, 'user_id')
+        except psycopg2.IntegrityError:
+            result = cls.db.select('users', ['password', 'user_id'], ['username'], [csv_data['username']])
+            user_id = result['user_id']
+
+            log.warn('csv_data {} already exists'.format(csv_data))
+
+        bio_string = 'Hi, my name is %s!' % csv_data['first']
+        cls.db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
+
+        pass
+
     def __repr__(self):
         return '<User %s>' % self.username
 
