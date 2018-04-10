@@ -89,6 +89,7 @@ class User:
         col_names = csv_data.keys()
         col_vals = csv_data.values()
         import psycopg2
+        # TODO change to select instead of insert
         try:
             user_id = cls.db.insert('users', col_names, col_vals, 'user_id')
         except psycopg2.IntegrityError:
