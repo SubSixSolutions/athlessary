@@ -92,7 +92,7 @@ def new_signup():
 
             login = False
 
-    return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login,
+    return render_template('signup.html', sign_up=signup_form, sign_in=signin_form, login=login,
                            _url="https://s3-us-west-2.amazonaws.com/athlessary-images/defaults/login_photo.jpg")
 
 
@@ -139,7 +139,7 @@ def profile():
     form.num_seats.data = current_user.num_seats
     form.bio.data = user_profile['bio']
 
-    return render_template('profile_5.html', form=form, profile=user_profile, sign_certificate=sign_certificate)
+    return render_template('profile.html', form=form, profile=user_profile, sign_certificate=sign_certificate)
 
 
 @application.route('/userlist')
