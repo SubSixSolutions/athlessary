@@ -12,3 +12,7 @@ log
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+client_id\.json
+
+Utils/secret_config\.py
