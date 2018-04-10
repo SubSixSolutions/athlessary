@@ -7,13 +7,16 @@ import sys
 import boto3
 
 from Forms import web_forms
+from Utils.log import log
 
 # get s3 bucket name
 try:
     bucket_name = os.environ['S3_BUCKET']
+    log.info('bucket {} found from environment'.format(bucket_name))
 except KeyError:
     try:
         from Utils.secret_config import bucket_name
+        log.info('bucket {} found from config file'.format(bucket_name))
     except ModuleNotFoundError:
         sys.stderr.write('Could Not Establish Bucket Connection')
         sys.exit(1)
@@ -61,12 +64,12 @@ def build_graph_data(results, workout_name):
 
     for res in results:
         if res['by_distance'] == 0:
-            data_arr.append(res['distance'])
+            data_arr.append(float(res['distance']))
             y_axis = 'Meters'
         else:
             data_arr.append(float(res['total_seconds'])/float(60))
             y_axis = 'Minutes'
-        label_arr.append(res['time'].strftime('%Y-%m-%d %H:%M'))
+        label_arr.append(res['time'].strftime('%m-%d-%y'))
         _ids.append(res['workout_id'])
 
     data = {

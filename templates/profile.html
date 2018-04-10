@@ -151,7 +151,7 @@
                 <div class="col-md-8 form-group">
                   <small class="form-text text-muted" for="address">Street Address</small>
                   <div class="input-group mb-1">
-                    {{form.address(class_="form-control", placeholder="10 East Washington Street", autocomplete="street-address")}}
+                    {{form.address(class_="form-control", placeholder="123 East Main Street", autocomplete="street-address")}}
                   </div>
                   <small>
                     {% for err in form.address.errors %}
@@ -162,7 +162,7 @@
                 <div class="col-md-4 form-group">
                   <small class="form-text text-muted" for="city">City</small>
                   <div class="input-group mb-1">
-                    {{form.city(class_="form-control", placeholder="Champaign", autocomplete="address-level2")}}
+                    {{form.city(class_="form-control", placeholder="City", autocomplete="address-level2")}}
                   </div>
                   <small>
                     {% for err in form.city.errors %}
@@ -172,7 +172,7 @@
                 </div>
               </div>
               <div class="row form-row">
-                <div class="col-md-3 form-group">
+                <div class="col-md-3 col-6 form-group">
                   <small class="form-text text-muted" for="addr-1">State</small>
                   <div class="input-group mb-1">
                     {{form.state(class_="form-control custom-select", placeholder="Illinois", autocomplete="address-level1")}}
@@ -183,10 +183,10 @@
                     {% endfor %}
                   </small>
                 </div>
-                <div class="col-md-3 form-group">
+                <div class="col-md-3 col-6 form-group">
                   <small class="form-text text-muted" for="addr-2">Zip</small>
                   <div class="input-group mb-1">
-                    {{form.zip(class_="form-control", placeholder="61820", autocomplete="postal-code")}}
+                    {{form.zip(class_="form-control", placeholder="12345", autocomplete="postal-code")}}
                   </div>
                   <small>
                     {% for err in form.zip.errors %}
@@ -207,7 +207,7 @@
                 </div>
               </div>
               <div class="row form-row">
-                <div class="col-md-6 form-group">
+                <div class="col-md-6 col-7 form-group">
                   <small class="form-text text-muted" for="team">Team</small>
                   <div class="input-group mb-1">
                     {{form.team(class_="form-control custom-select")}}
@@ -218,7 +218,7 @@
                     {% endfor %}
                   </small>
                 </div>
-                <div class="col-md-6 form-group">
+                <div class="col-md-6 col-5 form-group">
                   <small class="form-text text-muted" for="num_seats">Number of Seats</small>
                   <div class="input-group mb-1">
                     {{form.num_seats(class_="form-control custom-select", id="num_seats", onchange="reveal_driver_elem()")}}
@@ -263,7 +263,7 @@
                 <div class="demo-wrap upload-demo">
                   <div class="container">
                      <div class="upload-msg">
-                         Upload a file to start cropping
+                         <p>Upload a file to start cropping</p>
                      </div>
                      <div class="upload-demo-wrap">
                          <div id="upload-demo"></div>
@@ -271,14 +271,22 @@
                    </div>
                 </div>
               </div>
-              <div class="modal-footer col-md-12">
-                <div class="custom-file col-md-6">
-                  <input type="file" class="custom-file-input" id="upload" accept="/image/*">
-                  <label class="custom-file-label" for="customFile">Choose File</label>
+              <div class="modal-footer">
+                <div class="form-row align-items-center">
+                  <div class="col-md-auto col-12 mb-1" id="load_file">
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="upload" accept="/image/*">
+                      <label class="custom-file-label" for="customFile">Choose File</label>
+                    </div>
+                  </div>
+                  <div class="col-md-auto col-4 mb-1">
+                    <button type="button" hidden class="btn btn-outline-primary w-100" id="rotate" data-deg="90" name="button">Rotate</button>
+                  </div>
+                  <div class="col-md-auto col-12 mb-1">
+                    <button type="button" hidden class="btn btn-primary w-100 disabled" name="button" id="save_profile_img" data-dismiss="modal">Save</button>
+                  </div>
                 </div>
-                <button type="button" class="btn btn-outline-primary col-auto" id="rotate" data-deg="90" name="button">Rotate</button>
-                <button type="button" class="btn btn-primary col-auto disabled" name="button" id="save_profile_img" data-dismiss="modal">Save</button>
-                <button type="button" class="btn btn-secondary col-auto" data-dismiss="modal" name="button">Close</button>
+                <!-- <button type="button" class="btn btn-secondary col-auto" data-dismiss="modal" name="button">Close</button> -->
               </div>
             </div>
           </div>

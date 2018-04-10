@@ -92,8 +92,8 @@ def new_signup():
 
             login = False
 
-    return render_template('new_signup.html', sign_up=signup_form, sign_in=signin_form, login=login,
-                           _url=sign_certificate('defaults/login_photo.jpg'))
+    return render_template('signup.html', sign_up=signup_form, sign_in=signin_form, login=login,
+                           _url="https://s3-us-west-2.amazonaws.com/athlessary-images/defaults/login_photo.jpg")
 
 
 @application.route('/profile', methods=['GET', 'POST'])
@@ -139,7 +139,7 @@ def profile():
     form.num_seats.data = current_user.num_seats
     form.bio.data = user_profile['bio']
 
-    return render_template('profile_5.html', form=form, profile=user_profile, sign_certificate=sign_certificate)
+    return render_template('profile.html', form=form, profile=user_profile, sign_certificate=sign_certificate)
 
 
 @application.route('/userlist')
@@ -156,6 +156,8 @@ def workouts():
     if request.method == 'POST':
 
         # TODO implement other workouts
+        print('hello it\'s me')
+        print(request.form)
 
         # get the parameters from the form
         meters = request.form.getlist('meters[]')
@@ -166,7 +168,7 @@ def workouts():
 
             # is workout by distance or by time?
             by_distance = False
-            if request.form.get('workout_type') == 'Distance':
+            if request.form.get('workout_type') == 'meters':
                 by_distance = True
 
             # add workout to database

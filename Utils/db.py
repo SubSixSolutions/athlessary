@@ -62,10 +62,12 @@ class Database:
         return False
 
     def safe_execute(self, sql_statement, params=None, fetchone=True):
-        '''
+        """
 
         :return:
-        '''
+        """
+
+        log.info("Is valid connection? -- {}".format(self.valid_connection()))
 
         try:
             with self.conn.cursor() as cur:
@@ -75,13 +77,14 @@ class Database:
                     return cur.fetchone()
                 return cur.fetchall()
 
-        except psycopg2.InternalError as e:
+        except psycopg2.InternalError or psycopg2.OperationalError as e:
             self.conn.rollback()
             log.error(e)
             log.error(sql_statement)
             log.error(params)
             log.error('roll back required')
             return None
+
 
     def safe_execute_sql_only(self, sql_statement, params=None):
         try:
