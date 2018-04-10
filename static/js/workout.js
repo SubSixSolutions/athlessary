@@ -83,19 +83,19 @@ function switch_input(){
   if (is_visible == false){
     min_meter_txt.innerHTML = "Number of Meters";
     min_meter_input.setAttribute('value','2000');
-    document.getElementById('submit_bttn_div').classList.remove("col-12");
-    document.getElementById('submit_bttn_div').classList.add("col-6");
-    // document.getElementById('num_pieces_parent').classList.remove("col-4");
-    // document.getElementById('num_pieces_parent').classList.add("col-6");
+    // document.getElementById('submit_bttn_div').classList.remove("col-12");
+    // document.getElementById('submit_bttn_div').classList.add("col-6");
+    document.getElementById('min_meter_parent').classList.remove("col-6");
+    document.getElementById('min_meter_parent').classList.add("col-12");
     input.hidden = true;
   }
   else {
     min_meter_txt.innerHTML = "Number of Minutes";
     min_meter_input.setAttribute('value','30');
-    document.getElementById('submit_bttn_div').classList.remove("col-6");
-    document.getElementById('submit_bttn_div').classList.add("col-12");
-    // document.getElementById('num_pieces_parent').classList.remove("col-6");
-    // document.getElementById('num_pieces_parent').classList.add("col-6");
+    // document.getElementById('submit_bttn_div').classList.remove("col-6");
+    // document.getElementById('submit_bttn_div').classList.add("col-12");
+    document.getElementById('min_meter_parent').classList.remove("col-12");
+    document.getElementById('min_meter_parent').classList.add("col-6");
     input.hidden = false;
   }
 }
@@ -136,9 +136,9 @@ function reset_form(){
     // check meters selector
     document.getElementById('units').value = 'meters';
 
-    // resize submit button
-    document.getElementById('submit_bttn_div').classList.remove("col-12");
-    document.getElementById('submit_bttn_div').classList.add("col-6");
+    // resize meter input
+    document.getElementById('min_meter_parent').classList.remove("col-6");
+    document.getElementById('min_meter_parent').classList.add("col-12");
 }
 
 function generate_form(){

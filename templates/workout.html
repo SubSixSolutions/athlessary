@@ -130,15 +130,15 @@
                               </div>
                             </div>
                             <div class="col-lg-auto col-6">
-                              <small class="form-text text-muted">Units</small>
+                              <small class="form-text text-muted">Interval Type</small>
                               <div class="input-group mb-2">
                                 <select class="form-control custom-select" name="units" id="units" onchange="switch_input();">
-                                  <option value="meters" name="units">Meters</option>
-                                  <option value="minutes" name="units">Minutes</option>
+                                  <option value="meters" name="units">Distance</option>
+                                  <option value="minutes" name="units">Time</option>
                                 </select>
                               </div>
                             </div>
-                            <div class="col-lg-auto col-6" id="min_meter_parent">
+                            <div class="col-lg-auto col-12" id="min_meter_parent">
                               <small class="form-text text-muted" id="min_meter_txt" for="min_meter_input">Number of Meters</small>
                               <div class="input-group mb-2">
                                 <input type="number" class="form-control" id="min_meter_input" value="2000">
@@ -158,7 +158,7 @@
                                 <input type="number" class="form-control" id="second_input" value="00">
                               </div>
                             </div>
-                            <div class="col-lg-auto col-6" id="submit_bttn_div">
+                            <div class="col-lg-auto col-12" id="submit_bttn_div">
                               <div class="mb-2 align-items-center">
                                 <button id="submit_bttn" type="button" class="btn btn-primary w-100" onclick="generate_form();">Submit</button>
                               </div>
