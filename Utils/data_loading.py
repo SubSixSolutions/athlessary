@@ -1,3 +1,4 @@
+    with open(path_to_csv_file) as file:
 import csv
 
 from User.user import User
