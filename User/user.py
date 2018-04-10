@@ -90,16 +90,16 @@ class User:
 
         try:
             user_id = cls.db.insert('users', col_names, col_vals, 'user_id')
-            bio_string = 'Hi, my name is %s!' % csv_data['first']
-            cls.db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
-            log.info('Inserted new user {}'.format(user_id))
-        except psycopg2.IntegrityError:
-            result = cls.db.select('users', ['password', 'user_id'], ['username'], [csv_data['username']])
+        except psycopg2.IntegrityError as integrity_error:
+            log.warning(integrity_error)
+            result = cls.db.select(table_name='users', select_cols=['user_id'], where_cols=['username'], where_params=[csv_data['username']])
             user_id = result['user_id']
             cls.db.update('users', col_names, col_vals, where_cols=['user_id'], where_params=[user_id], operators=['='])
             log.warning('Updated {}'.format(user_id))
-
-
+        else:
+            bio_string = 'Hi, my name is %s!' % csv_data['first']
+            cls.db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
+            log.info('Inserted new user {}'.format(user_id))
 
     def __repr__(self):
         return '<User %s>' % self.username
