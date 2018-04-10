@@ -40,6 +40,7 @@ class TestUserLoading(unittest.TestCase):
         self.assertEqual(valid_pn_int, validate_phone_number(valid_pn_string))
 
     def test_easy_csv(self):
+        clean_up_table('users', 'user_id')
         path = 'TestResources/easy_test_roster.csv'
         csv_to_db(path)
         result = db.select('users', ['username'], where_cols=['username'], where_params=['wklock'], operators=['='], fetchone=False)
@@ -47,6 +48,7 @@ class TestUserLoading(unittest.TestCase):
         clean_up_table('users', 'user_id')
 
     def test_duplicate_entry(self):
+        clean_up_table('users', 'user_id')
         path = 'TestResources/easy_test_roster.csv'
         csv_to_db(path)
         csv_to_db(path)
