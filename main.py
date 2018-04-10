@@ -179,6 +179,12 @@ def workouts():
     return render_template('workout.html')
 
 
+@application.route('/team')
+@login_required
+def team():
+    return render_template('team.html')
+
+
 @application.route('/logout')
 @login_required
 def logout():
