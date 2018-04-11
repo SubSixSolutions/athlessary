@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Workouts</title>
+    <title>Team</title>
 
     <!-- Bootstrap core CSS -->
     <!-- Hard Links -->
@@ -64,7 +64,7 @@
           <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
               <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('new_profile') }}">Home
+                <a class="nav-link" href="{{ url_for('profile') }}">Home
                   <span class="sr-only">(current)</span>
                 </a>
               </li>
@@ -83,12 +83,23 @@
       </nav>
 
       <!-- Your Content Here -->
-      <div class="row">
-        <div class="col-12">
-          <br>
-          <h1 style="text-align:center;">YOUR CONTENT HERE</h1>
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="alert alert-warning alert-dismissible fade show mt-2" role="alert">
+            <div class="">
+              <strong>Warning!</strong>
+              <p>This site is under construction. Pleae check again later for further developments.</p>
+            </div>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="col-12">
+            <h1 style="text-align:center;">YOUR CONTENT HERE</h1>
+          </div>
         </div>
       </div>
+      <!-- end content div -->
     </div>
     <!-- Footer -->
     <footer class="footer_style" style="padding:0em; margin:0em;">

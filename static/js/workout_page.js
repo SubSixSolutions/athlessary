@@ -329,6 +329,38 @@ function delete_workout(workout_id, idx){
 }
 
 function edit_a_workout(_id){
+  elements = document.getElementById("edit_form").elements;
+  var dont_post = false;
+  for (var i = 0, element; element = elements[i++];) {
+      console.log(element.value);
+      if (true){
+          // var p = element.parentElement.parentElement.querySelector('small[name="error"]');
+          if (element.value == ""){
+            element.classList.add("border-danger");
+            // p.className = "text-danger";
+            // p.innerHTML = "Input Required.";
+            dont_post = true;
+          }
+          else if ((element.name == 'seconds') && element.value > 59) {
+            element.classList.add("border-danger");
+            // p.className = "text-danger";
+            // p.innerHTML = "Value must be less than 60.";
+            dont_post = true;
+          }
+          else {
+            // p.innerHTML = "";
+            // p.className = "";
+            element.classList.remove("border-danger");
+          }
+      }
+  }
+  if (dont_post){
+    return false;
+  }
+
+  // relase user and close modal
+  $('#a_modal').modal('hide');
+
   $.post('/get_a_workout',
       {workout_id: _id}, function (data, status) {
         console.log(data);

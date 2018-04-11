@@ -24,7 +24,7 @@ $(document).ready(function(){
     var dont_post = false;
     for (var i = 0, element; element = elements[i++];) {
         console.log(element.value);
-        if (element.name === "minutes" || element.name === "seconds" || element.name === "meters"){
+        if (element.name == "minutes" || element.name == "seconds" || element.name == "meters"){
             var p = element.parentElement.parentElement.querySelector('small[name="error"]');
             if (element.value == ""){
               element.classList.add("border-danger");
@@ -186,7 +186,7 @@ function generate_form(){
       }
 
       var header_div = document.createElement('div');
-      header_div.innerHTML = part11;
+      header_div.innerHTML = "<hr>" +part11;
 
       main_div.innerHTML = input1 + input2 + input3;
 
