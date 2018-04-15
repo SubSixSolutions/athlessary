@@ -11,7 +11,7 @@ from Utils.log import log
 
 class User:
 
-    db = Database("athlessary-database.db")
+    db = Database()
 
     def __init__(self, user_id, active=True):
 

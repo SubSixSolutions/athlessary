@@ -8,26 +8,37 @@ from psycopg2 import extras, sql as SQL
 
 from Utils.log import log
 
-try:
-    connect_str = "dbname=\'{0}\' user=\'{1}\' host=\'{2}\' password=\'{3}\' port=\'{4}\'".format(
-        os.environ['RDS_DB_NAME'], os.environ['RDS_USERNAME'],
-        os.environ['RDS_HOST_NAME'], os.environ['RDS_PASSWORD'],
-        os.environ['RDS_PORT']
-    )
-    log.info('DB generation from environ success')
-except KeyError:
-    try:
-        from Utils.secret_config import db_credentials
 
+def generate_connection_string(unit_test=False):
+    try:
         connect_str = "dbname=\'{0}\' user=\'{1}\' host=\'{2}\' password=\'{3}\' port=\'{4}\'".format(
-            db_credentials['db_name'], db_credentials['username'],
-            db_credentials['host'], db_credentials['password'],
-            db_credentials['port']
+            os.environ['RDS_DB_NAME'], os.environ['RDS_USERNAME'],
+            os.environ['RDS_HOST_NAME'], os.environ['RDS_PASSWORD'],
+            os.environ['RDS_PORT']
         )
-        log.info('DB Generated from db credentials')
-    except ModuleNotFoundError:
-        sys.stderr.write('Could Not Establish Database Connection')
-        sys.exit(1)
+        log.info('DB generation from environ success')
+        return connect_str
+    except KeyError:
+        try:
+            from Utils.secret_config import db_credentials
+
+            if unit_test:
+                from Utils.secret_config import unit_test_db_name
+                db_name = unit_test_db_name
+            else:
+                from Utils.secret_config import test_db_name
+                db_name = test_db_name
+
+            connect_str = "dbname=\'{0}\' user=\'{1}\' host=\'{2}\' password=\'{3}\' port=\'{4}\'".format(
+                db_name, db_credentials['username'],
+                db_credentials['host'], db_credentials['password'],
+                db_credentials['port']
+            )
+            log.info('DB Generated from db credentials')
+            return connect_str
+        except ModuleNotFoundError:
+            sys.stderr.write('Could Not Establish Database Connection')
+            sys.exit(1)
 
 
 def set_where_clause(cols, operators=None):
@@ -47,8 +58,13 @@ def set_where_clause(cols, operators=None):
 
 
 class Database:
-    def __init__(self, db_file):
+    def __init__(self, unit_test=False):
+        """
+
+        :param unit_test: a boolean; true if a connection to the unit test db should be opened
+        """
         try:
+            connect_str = generate_connection_string(unit_test)
             self.conn = psycopg2.connect(connect_str, cursor_factory=extras.RealDictCursor)
             # self.init_tables()
             log.info('Return NEW database object')

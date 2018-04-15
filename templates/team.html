@@ -84,67 +84,97 @@
 
       <!-- Your Content Here -->
       <div class="container">
-        <div class="row justify-content-center">
-          <div class="row mt-2 w-100">
-            <div class="alert alert-warning alert-dismissible fade show w-100" role="alert">
+        <div class="">
+          <div class="row mt-2 w-100 justify-content-center">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
               <div class="">
-                <strong>Warning!</strong>
-                <p>This site is under construction. Pleae check again later for further developments.</p>
+                <strong>Attention!</strong>
+                <p>This site is under construction. Please continue to come again for further developments.</p>
               </div>
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
               </button>
             </div>
           </div>
+          <div class="row justify-content-center">
+            <h1 class="display-4">Team Competition</h1>
+          </div>
+          <div class="row justify-content-center">
+            <p class="lead text-center">
+              <!-- The leader board is updated as new workouts are logged. -->
+              The board resets every Sunday night at 11:59PM CST.
+            </p>
+          </div>
           <div class="row mt-3">
             <div class="col-lg-4">
               <div class="jumbotron">
                 <h2 class="display-4">Most Meters</h2>
-                <p class="lead">Most meters logged this week.</p>
+                <p class="lead">Most meters logged.</p>
                 <hr class="my-4">
                 <ul class="list-group">
-                  <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
-                    Athlete 1
-                    <span class="badge badge-primary badge-pill">194563 m</span>
-                  </li>
-                  <li class="list-group-item">Athlete 2</li>
-                  <li class="list-group-item">Athlete 3</li>
-                  <li class="list-group-item">Athlete 4</li>
-                  <li class="list-group-item">Athlete 5</li>
+                  {% for ranked in meters_ranking %}
+                    {% if ranked == "%s %s"|format(current_user.first, current_user.last) %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-info text-white">
+                        You
+                        <span class="badge badge-primary badge-pill">194563 m</span>
+                      </li>
+                    {% elif loop.first %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
+                        {{ ranked }}
+                        <span class="badge badge-primary badge-pill">194563 m</span>
+                      </li>
+                    {% else %}
+                      <li class="list-group-item">{{ ranked }}</li>
+                    {% endif %}
+                  {% endfor %}
                 </ul>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="jumbotron">
                 <h2 class="display-4">Longest Week</h2>
-                <p class="lead">Most time spent on an erg this week.</p>
+                <p class="lead">Most time spent on an erg.</p>
                 <hr class="my-4">
                 <ul class="list-group">
-                  <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
-                    Athlete 1
-                    <span class="badge badge-primary badge-pill">305 min</span>
-                  </li>
-                  <li class="list-group-item">Athlete 2</li>
-                  <li class="list-group-item">Athlete 3</li>
-                  <li class="list-group-item">Athlete 4</li>
-                  <li class="list-group-item">Athlete 5</li>
+                  {% for ranked in most_minutes %}
+                    {% if ranked == "%s %s"|format(current_user.first, current_user.last) %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-info text-white">
+                        You
+                        <span class="badge badge-primary badge-pill">305 min</span>
+                      </li>
+                    {% elif loop.first %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
+                        {{ ranked }}
+                        <span class="badge badge-primary badge-pill">305 min</span>
+                      </li>
+                    {% else %}
+                      <li class="list-group-item">{{ ranked }}</li>
+                    {% endif %}
+                  {% endfor %}
                 </ul>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="jumbotron">
                 <h2 class="display-4">Lowest Split</h2>
-                <p class="lead">Lowest split across all workouts this week.</p>
+                <p class="lead">Lowest split across all workouts.</p>
                 <hr class="my-4">
                 <ul class="list-group">
-                  <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
-                    Athlete 1
-                    <span class="badge badge-primary badge-pill">2:05 avg/500</span>
-                  </li>
-                  <li class="list-group-item">Athlete 2</li>
-                  <li class="list-group-item">Athlete 3</li>
-                  <li class="list-group-item">Athlete 4</li>
-                  <li class="list-group-item">Athlete 5</li>
+                  {% for ranked in best_split %}
+                    {% if ranked == "%s %s"|format(current_user.first, current_user.last) %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-info text-white">
+                        You
+                        <span class="badge badge-primary badge-pill">0:00</span>
+                      </li>
+                    {% elif loop.first %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
+                        {{ ranked }}
+                        <span class="badge badge-primary badge-pill">0:00</span>
+                      </li>
+                    {% else %}
+                      <li class="list-group-item">{{ ranked }}</li>
+                    {% endif %}
+                  {% endfor %}
                 </ul>
               </div>
             </div>

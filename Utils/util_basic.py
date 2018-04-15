@@ -169,3 +169,10 @@ def upload_profile_image(img, user_id, pic_location):
     client.put_object(Body=data, Bucket=bucket_name, Key=new_location)
 
     return new_location
+
+
+def generate_leader_board(first, last):
+    arr = ['{} {}'.format(first, last), 'Unclaimed', 'Unclaimed', 'Unclaimed', 'Unclaimed', 'Unclaimed']
+    arr1 = ['Unclaimed', 'Unclaimed', 'Unclaimed', '{} {}'.format(first, last), 'Unclaimed', 'Unclaimed']
+    arr2 = ['Unclaimed', 'Unclaimed', 'Unclaimed', 'Unclaimed', 'Unclaimed', '{} {}'.format(first, last)]
+    return arr, arr1, arr2, [5, 5, 5]
