@@ -179,6 +179,14 @@ def workouts():
     return render_template('workout.html')
 
 
+@application.route('/team')
+@login_required
+def team():
+    meters_ranking, most_minutes, best_split, user_rank = util_basic.generate_leader_board(current_user.first, current_user.last)
+    return render_template('team.html', meters_ranking=meters_ranking, most_minutes=most_minutes,
+                           best_split=best_split, user_rank=user_rank)
+
+
 @application.route('/logout')
 @login_required
 def logout():

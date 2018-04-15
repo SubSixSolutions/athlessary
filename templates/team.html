@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Team</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- Hard Links -->
+    <!-- <link rel="stylesheet" href="/Users/Max/PycharmProjects/athlessary/static/css/bootstrap.min.css"> -->
+    <!-- <script src="/Users/Max/PycharmProjects/athlessary/static/js/workout.js" type="text/javascript"></script> -->
+
+    <!-- Flask Links -->
+    <link href="{{ url_for( 'static', filename='css/bootstrap.min.css' ) }}" rel="stylesheet">
+
+    <!-- Link versions of bootstrap and JavaScript -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <!-- Custom styles for this template -->
+    <style>
+      html {
+        height: 100%;
+      }
+      body {
+        height: 100vh;
+        padding-top: 54px;
+        display: flex;
+        flex-direction: column;
+      }
+      @media (min-width: 992px) {
+        body {
+          padding-top: 56px;
+        }
+      }
+      .content-div {
+        flex: 1 0 auto;
+      }
+      .footer_style {
+        flex-shrink: 0;
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <div class="content-div">
+      <!-- Navigation -->
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="#">Athlessary</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="{{ url_for('profile') }}">Home
+                  <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Workouts</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Services</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Contact</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Your Content Here -->
+      <div class="container">
+        <div class="">
+          <div class="row mt-2 w-100 justify-content-center">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+              <div class="">
+                <strong>Attention!</strong>
+                <p>This site is under construction. Please continue to come again for further developments.</p>
+              </div>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <h1 class="display-4">Team Competition</h1>
+          </div>
+          <div class="row justify-content-center">
+            <p class="lead text-center">
+              <!-- The leader board is updated as new workouts are logged. -->
+              The board resets every Sunday night at 11:59PM CST.
+            </p>
+          </div>
+          <div class="row mt-3">
+            <div class="col-lg-4">
+              <div class="jumbotron">
+                <h2 class="display-4">Most Meters</h2>
+                <p class="lead">Most meters logged.</p>
+                <hr class="my-4">
+                <ul class="list-group">
+                  {% for ranked in meters_ranking %}
+                    {% if ranked == "%s %s"|format(current_user.first, current_user.last) %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-info text-white">
+                        You
+                        <span class="badge badge-primary badge-pill">194563 m</span>
+                      </li>
+                    {% elif loop.first %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
+                        {{ ranked }}
+                        <span class="badge badge-primary badge-pill">194563 m</span>
+                      </li>
+                    {% else %}
+                      <li class="list-group-item">{{ ranked }}</li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="jumbotron">
+                <h2 class="display-4">Longest Week</h2>
+                <p class="lead">Most time spent on an erg.</p>
+                <hr class="my-4">
+                <ul class="list-group">
+                  {% for ranked in most_minutes %}
+                    {% if ranked == "%s %s"|format(current_user.first, current_user.last) %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-info text-white">
+                        You
+                        <span class="badge badge-primary badge-pill">305 min</span>
+                      </li>
+                    {% elif loop.first %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
+                        {{ ranked }}
+                        <span class="badge badge-primary badge-pill">305 min</span>
+                      </li>
+                    {% else %}
+                      <li class="list-group-item">{{ ranked }}</li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="jumbotron">
+                <h2 class="display-4">Lowest Split</h2>
+                <p class="lead">Lowest split across all workouts.</p>
+                <hr class="my-4">
+                <ul class="list-group">
+                  {% for ranked in best_split %}
+                    {% if ranked == "%s %s"|format(current_user.first, current_user.last) %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-info text-white">
+                        You
+                        <span class="badge badge-primary badge-pill">0:00</span>
+                      </li>
+                    {% elif loop.first %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
+                        {{ ranked }}
+                        <span class="badge badge-primary badge-pill">0:00</span>
+                      </li>
+                    {% else %}
+                      <li class="list-group-item">{{ ranked }}</li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end content div -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer_style" style="padding:0em; margin:0em;">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
+      <!-- <nav class="navbar navbar-expand-lg"> -->
+        <div class="container">
+          <div class="navbar-brand">
+            <p style="margin:0em;">This is Athlessary</p>
+          </div>
+        </div>
+      </nav>
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- <script src="/Users/Max/PycharmProjects/athlessary/static/js/bootstrap.min.js"></script> -->
+    <!-- <script src="{{ url_for( 'static', filename='js/bootstrap.min.js' ) }}"></script> -->
+
+  </body>
+
+</html>

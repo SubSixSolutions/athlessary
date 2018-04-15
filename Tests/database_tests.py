@@ -4,8 +4,7 @@ import unittest
 from Utils.db import Database
 from Utils.util_basic import create_workout
 
-# It's okay that this doesn't exist because the database initializer ensures it's setup properly
-db = Database("test-database.db")
+db = Database(True)
 
 
 def create_user(user_name):
@@ -23,7 +22,7 @@ def create_user(user_name):
     return user_id
 
 
-def clean_up_table(table, pk):
+def clean_up_table(table, pk,):
     # empty users
     rows = db.select(table, [pk], fetchone=False)
     for _id in rows:

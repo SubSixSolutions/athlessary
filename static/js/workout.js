@@ -18,34 +18,33 @@ $(document).ready(function(){
         }
     });
     by_distance = document.getElementById("units").value;
-    var elements = $(this).elements;
     console.log(document.getElementById("add_workout_form").elements);
-    elements = document.getElementById("add_workout_form").elements;
-    var dont_post = false;
-    for (var i = 0, element; element = elements[i++];) {
-        console.log(element.value);
-        if (element.name === "minutes" || element.name === "seconds" || element.name === "meters"){
-            var p = element.parentElement.parentElement.querySelector('small[name="error"]');
-            if (element.value == ""){
-              element.classList.add("border-danger");
-              p.className = "text-danger";
-              p.innerHTML = "Input Required.";
-              dont_post = true;
-            }
-            else if ((element.name == 'seconds') && element.value > 59) {
-              element.classList.add("border-danger");
-              p.className = "text-danger";
-              p.innerHTML = "Value must be less than 60.";
-              dont_post = true;
-            }
-            else {
-              p.innerHTML = "";
-              p.className = "";
-              element.classList.remove("border-danger");
-            }
-        }
-    }
-    if (dont_post){
+    var elements = document.getElementById("add_workout_form").elements;
+    var post = validate_workout_form(elements);
+    // for (var i = 0, element; element = elements[i++];) {
+    //     console.log(element.value);
+    //     if (element.name == "minutes" || element.name == "seconds" || element.name == "meters"){
+    //         var p = element.parentElement.parentElement.querySelector('small[name="error"]');
+    //         if (element.value == ""){
+    //           element.classList.add("border-danger");
+    //           p.className = "text-danger";
+    //           p.innerHTML = "Input Required.";
+    //           dont_post = true;
+    //         }
+    //         else if ((element.name == 'seconds') && element.value > 59) {
+    //           element.classList.add("border-danger");
+    //           p.className = "text-danger";
+    //           p.innerHTML = "Value must be less than 60.";
+    //           dont_post = true;
+    //         }
+    //         else {
+    //           p.innerHTML = "";
+    //           p.className = "";
+    //           element.classList.remove("border-danger");
+    //         }
+    //     }
+    // }
+    if (post == false){
       return false;
     }
     console.log(meters, minutes, seconds, by_distance);
@@ -118,8 +117,11 @@ function reset_form(){
     // document.getElementById("add_workout_form").innerHTML = '';
     $("#add_workout_form > div:not(:first)").remove();
 
-    // reset selector
+    // reset form items
     document.getElementById('units').disabled = false;
+    document.getElementById('num_pieces').disabled = false;
+    document.getElementById('min_meter_input').disabled = false;
+    document.getElementById('second_input').disabled = false;
 
     // hide seconds input
     document.getElementById('second_input_div').hidden = true;
@@ -142,6 +144,14 @@ function reset_form(){
 }
 
 function generate_form(){
+
+  // validate form
+  var elements = document.getElementById("add_workout_form").elements;
+  var post = validate_workout_form(elements);
+
+  if (post == false){
+    return false;
+  }
 
   // hide submit button
   document.getElementById('submit_bttn').style.display = 'none';
@@ -171,6 +181,9 @@ function generate_form(){
       var part11 = "<div class=\"row justify-content-center mt-2\">" + "<h5>" + "Piece " + (i+1) + "</h5>" + "</div>";
 
       document.getElementById('units').disabled = true;
+      document.getElementById('num_pieces').disabled = true;
+      document.getElementById('min_meter_input').disabled = true;
+      document.getElementById('second_input').disabled = true;
 
       var input1 = ""; var input2 = ""; var input3 = "";
       if (w_type == 'minutes'){
@@ -186,7 +199,7 @@ function generate_form(){
       }
 
       var header_div = document.createElement('div');
-      header_div.innerHTML = part11;
+      header_div.innerHTML = "<hr>" +part11;
 
       main_div.innerHTML = input1 + input2 + input3;
 

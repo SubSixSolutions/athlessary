@@ -219,11 +219,11 @@ function modal_edit(_id, _url){
             cols += '<td class=\"align-middle"\">' + (i+1) + '</td>';
 
             if (data[i]['by_distance'] == 0){
-              cols += '<td><input class=\"form-control\" type=\"number\" name=\"meters' + data[i]['erg_id'] + '\" value=\'' + data[i]['distance'] + '\'></td>';
+              cols += '<td><div><input class=\"form-control\" type=\"number\" name=\"meters' + data[i]['erg_id'] + '\" value=\'' + data[i]['distance'] + '\'></div><small name=\"error\"></small></td>';
             }
             else {
-              cols += '<td><input class=\"form-control\" type=number name=\"minutes' + data[i]['erg_id'] + '\" value=\'' + data[i]['minutes'] + '\'></td>';
-              cols += '<td><input class=\"form-control\" type=number name=\"seconds' + data[i]['erg_id'] + '\" value=\'' + data[i]['seconds'] + '\'></td>';
+              cols += '<td><div><input class=\"form-control\" type=number name=\"minutes' + data[i]['erg_id'] + '\" value=\'' + data[i]['minutes'] + '\'></div><small name=\"error\"></small></td>';
+              cols += '<td><div><input class=\"form-control\" type=number name=\"seconds' + data[i]['erg_id'] + '\" value=\'' + data[i]['seconds'] + '\'></div><small name=\"error\"></small></td>';
             }
 
             newRow.append(cols);
@@ -329,6 +329,16 @@ function delete_workout(workout_id, idx){
 }
 
 function edit_a_workout(_id){
+  // validate the form
+  elements = document.getElementById("edit_form").elements;
+  var post = validate_workout_form(elements);
+  if (post == false){
+    return false;
+  }
+
+  // relase user and close modal
+  $('#a_modal').modal('hide');
+
   $.post('/get_a_workout',
       {workout_id: _id}, function (data, status) {
         console.log(data);
