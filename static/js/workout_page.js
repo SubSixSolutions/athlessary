@@ -219,11 +219,11 @@ function modal_edit(_id, _url){
             cols += '<td class=\"align-middle"\">' + (i+1) + '</td>';
 
             if (data[i]['by_distance'] == 0){
-              cols += '<td><input class=\"form-control\" type=\"number\" name=\"meters' + data[i]['erg_id'] + '\" value=\'' + data[i]['distance'] + '\'></td>';
+              cols += '<td><div><input class=\"form-control\" type=\"number\" name=\"meters' + data[i]['erg_id'] + '\" value=\'' + data[i]['distance'] + '\'></div><small name=\"error\"></small></td>';
             }
             else {
-              cols += '<td><input class=\"form-control\" type=number name=\"minutes' + data[i]['erg_id'] + '\" value=\'' + data[i]['minutes'] + '\'></td>';
-              cols += '<td><input class=\"form-control\" type=number name=\"seconds' + data[i]['erg_id'] + '\" value=\'' + data[i]['seconds'] + '\'></td>';
+              cols += '<td><div><input class=\"form-control\" type=number name=\"minutes' + data[i]['erg_id'] + '\" value=\'' + data[i]['minutes'] + '\'></div><small name=\"error\"></small></td>';
+              cols += '<td><div><input class=\"form-control\" type=number name=\"seconds' + data[i]['erg_id'] + '\" value=\'' + data[i]['seconds'] + '\'></div><small name=\"error\"></small></td>';
             }
 
             newRow.append(cols);
@@ -329,32 +329,10 @@ function delete_workout(workout_id, idx){
 }
 
 function edit_a_workout(_id){
+  // validate the form
   elements = document.getElementById("edit_form").elements;
-  var dont_post = false;
-  for (var i = 0, element; element = elements[i++];) {
-      console.log(element.value);
-      if (true){
-          // var p = element.parentElement.parentElement.querySelector('small[name="error"]');
-          if (element.value == ""){
-            element.classList.add("border-danger");
-            // p.className = "text-danger";
-            // p.innerHTML = "Input Required.";
-            dont_post = true;
-          }
-          else if ((element.name == 'seconds') && element.value > 59) {
-            element.classList.add("border-danger");
-            // p.className = "text-danger";
-            // p.innerHTML = "Value must be less than 60.";
-            dont_post = true;
-          }
-          else {
-            // p.innerHTML = "";
-            // p.className = "";
-            element.classList.remove("border-danger");
-          }
-      }
-  }
-  if (dont_post){
+  var post = validate_workout_form(elements);
+  if (post == false){
     return false;
   }
 

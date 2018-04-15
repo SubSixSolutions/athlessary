@@ -119,49 +119,47 @@
                       <div class="col">
                         <div class="" id="info-div"> <!-- Alerts go here! --> </div>
                         <form class="my-3 py-2 border border-dark" action="{{url_for('workouts')}}" id="add_workout_form" style="background-color: #f8f9fa;">
-                          <div class="row form-row align-items-end mx-2 mt-2 d-md-flex flex-lg-nowrap flex-md-wrap">
-                            <div class="col-lg-auto col-6" id="num_pieces_parent">
+                          <div class="row align-items form-row inline-flex align-items-middle mx-2 mt-2 d-md-flex flex-lg-nowrap flex-md-wrap">
+                            <div class="col-lg-auto col-6 mb-2" id="num_pieces_parent">
                               <small class="form-text text-muted" for="num_pieces">Number of Pieces</small>
-                              <div class="input-group mb-2">
+                              <div class="input-group">
                                 <input type="number" min="1" class="form-control" id="num_pieces" value="1">
-                                <!-- <div class="input-group-append">
-                                  <div class="input-group-text">X</div>
-                                </div> -->
                               </div>
+                              <small name="error"></small>
                             </div>
-                            <div class="col-lg-auto col-6">
+                            <div class="col-lg-auto col-6 mb-2">
                               <small class="form-text text-muted">Interval Type</small>
-                              <div class="input-group mb-2">
+                              <div class="input-group">
                                 <select class="form-control custom-select" name="units" id="units" onchange="switch_input();">
                                   <option value="meters" name="units">Distance</option>
                                   <option value="minutes" name="units">Time</option>
                                 </select>
                               </div>
+                              <small name="error"></small>
                             </div>
-                            <div class="col-lg-auto col-12" id="min_meter_parent">
+                            <div class="col-lg-auto col-12 mb-2" id="min_meter_parent">
                               <small class="form-text text-muted" id="min_meter_txt" for="min_meter_input">Number of Meters</small>
-                              <div class="input-group mb-2">
+                              <div class="input-group">
                                 <input type="number" class="form-control" id="min_meter_input" value="2000">
-                                <!-- <div class="input-group-append input-group-prepend">
-                                  <div class="input-group-text mx-0 mp-0">:</div>
-                                </div> -->
-                                <!-- <div class="input-group-append"> -->
-                                  <!-- <div class="input-group"> -->
-                                    <!-- <input type="number" class="form-control col-5" id="second_input" value="00"> -->
-                                  <!-- </div> -->
-                                <!-- </div> -->
                               </div>
+                              <small name="error"></small>
                             </div>
-                            <div class="col-lg-auto col-6" hidden id="second_input_div">
+                            <div class="col-lg-auto col-6 mb-2" hidden id="second_input_div">
                               <small class="form-text text-muted" for="second_input">Number of Seconds</small>
-                              <div class="input-group mb-2">
+                              <div class="input-group">
                                 <input type="number" class="form-control" id="second_input" value="00">
                               </div>
+                              <small name="error"></small>
                             </div>
-                            <div class="col-lg-auto col-12" id="submit_bttn_div">
-                              <div class="mb-2 align-items-center">
-                                <button id="submit_bttn" type="button" class="btn btn-primary w-100" onclick="generate_form();">Submit</button>
+                            <div class="col-lg-auto col-12 mb-2 d-lg-flex align-items-lg-center" id="submit_bttn_div">
+                              <small></small>
+                              <div class="input-group">
+                                <!-- <button id="submit_bttn" type="button" class="btn btn-primary w-100" onclick="generate_form();">Submit</button> -->
+                                <small class="d-none d-lg-block form-text">Go!</small>
+                                <input value="Submit" id="submit_bttn" type="button" class="btn btn-primary w-100" onclick="generate_form();">
+                                <!-- <input type="text" class="form-control" name="" value=""> -->
                               </div>
+                              <small></small>
                             </div>
                           </div>
                         </form>
@@ -267,18 +265,20 @@
                                 </div>
                                 <form class="align-middle" method="POST" id='edit_form'>
                                   <div class="modal-body" id='m_body' style="max-height:50vh; overflow-y:scroll;">
-                                    <div class="row form-row align-items-center justify-content-center">
+                                    <div class="row form-row align-items-top justify-content-center mb-2">
                                       <div class="col-6 form-group">
                                         <small class="form-text text-muted" for="date">Date</small>
-                                        <div class="input-group mb-2">
-                                          <input class="form-control mb-2" type="date" name="date" value="" id="date">
+                                        <div class="input-group">
+                                          <input class="form-control" type="date" name="date" value="" id="date">
                                         </div>
+                                        <small name="error"></small>
                                       </div>
                                       <div class="col-6 form-group">
                                         <small class="form-text text-muted" for="time">Time</small>
-                                        <div class="input-group mb-2">
-                                          <input class="form-control mb-2" type="time" name="time" value="" id="time">
+                                        <div class="input-group">
+                                          <input class="form-control" type="time" name="time" value="" id="time">
                                         </div>
+                                        <small name="error"></small>
                                       </div>
                                     </div>
                                     <table id='modal_table' class="table table-striped justify-content-center align-items-center align-middle">
@@ -330,6 +330,7 @@
 
   <!-- workout javascript -->
   <script src="{{ url_for('static', filename='js/Chart.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/validate.js') }}"></script>
   <script src="{{ url_for('static', filename='js/workout_page.js') }}"></script>
   <script src="{{ url_for('static', filename='js/workout.js') }}"></script>
 
