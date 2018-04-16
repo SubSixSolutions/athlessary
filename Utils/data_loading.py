@@ -37,7 +37,7 @@ def csv_to_db(path_to_csv_file):
                 csv_row_data['team'] = row['m/w'] + row['v/n']
             else:
                 csv_row_data['team'] = None
-
+            log.debug('creating new user: {}'.format(csv_row_data))
             User.user_from_csv_row(csv_row_data)
 
 

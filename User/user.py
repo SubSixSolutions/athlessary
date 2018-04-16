@@ -6,18 +6,16 @@ from geopy.geocoders import Nominatim
 from werkzeug.utils import secure_filename
 
 from Utils import hashes
-from Utils.db import Database
+from Utils.config import db
 from Utils.log import log
 
 
 class User:
 
-    db = Database()
-
     def __init__(self, user_id, active=True):
 
-        result = self.db.get_user(user_id)
-        # result = self.db.select('users', ['ALL'], ['user_id'], [user_id])
+        result = db.get_user(user_id)
+        # result = db.select('users', ['ALL'], ['user_id'], [user_id])
         if not result:
             raise ValueError('Could Not Find User')
 
@@ -58,10 +56,10 @@ class User:
         if location:
             self.x = location.latitude
             self.y = location.longitude
-            self.db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
+            db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
                            where_cols=['user_id'], where_params=[self.user_id])
         else:
-            self.db.update('users', ['address'], ['Invalid Address'], ['user_id'], [self.user_id])
+            db.update('users', ['address'], ['Invalid Address'], ['user_id'], [self.user_id])
 
     @classmethod
     def user_from_form(cls, form_data, active=True):
@@ -76,29 +74,28 @@ class User:
         col_vals = attr_dict.values()
         # col_names.append('x')
         # col_names.append('y')
-        user_id = cls.db.insert('users', col_names, col_vals, 'user_id')
+        user_id = db.insert('users', col_names, col_vals, 'user_id')
 
         bio_string = 'Hi, my name is %s!' % form_data['first']
-        cls.db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
+        db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
 
         return cls(user_id, None)
 
     @classmethod
     def user_from_csv_row(cls, csv_data, active=True):
-        col_names = csv_data.keys()
-        col_vals = csv_data.values()
+        col_names = list(csv_data.keys())
+        col_values = list(csv_data.values())
 
-        try:
-            user_id = cls.db.insert('users', col_names, col_vals, 'user_id')
-        except psycopg2.IntegrityError as integrity_error:
-            log.warning(integrity_error)
-            result = cls.db.select(table_name='users', select_cols=['user_id'], where_cols=['username'], where_params=[csv_data['username']])
-            user_id = result['user_id']
-            cls.db.update('users', col_names, col_vals, where_cols=['user_id'], where_params=[user_id], operators=['='])
-            log.warning('Updated {}'.format(user_id))
+        username_select = db.select(table_name='users', select_cols=['user_id'], where_cols=['username'],
+                                where_params=[csv_data['username']])
+        if username_select is not None:
+            user_id = username_select['user_id']
+            db.update('users', col_names, col_values, where_cols=['user_id'], where_params=[user_id], operators=['='])
+            log.info('Updated {}'.format(user_id))
         else:
+            user_id = db.insert('users', col_names, col_values, 'user_id')
             bio_string = 'Hi, my name is %s!' % csv_data['first']
-            cls.db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
+            db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
             log.info('Inserted new user {}'.format(user_id))
 
     def __repr__(self):
@@ -151,7 +148,7 @@ class User:
         self.picture = pic_location
 
         # update the database
-        self.db.update('users', ['picture'], [pic_location], ['user_id'], [self.user_id])
+        db.update('users', ['picture'], [pic_location], ['user_id'], [self.user_id])
 
         # return location to update the current user
         return pic_location

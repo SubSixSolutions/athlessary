@@ -5,7 +5,7 @@ from Utils.db import Database
 from Utils.log import log
 from main import validate_filename
 
-db = Database('')
+db = Database(True)
 
 
 def clean_up_table(table, pk):
@@ -43,15 +43,16 @@ class TestUserLoading(unittest.TestCase):
         clean_up_table('users', 'user_id')
         path = 'TestResources/easy_test_roster.csv'
         csv_to_db(path)
-        result = db.select('users', ['username'], where_cols=['username'], where_params=['wklock'], operators=['='], fetchone=False)
-        self.assertEqual([{'username': 'wklock'}], result)
+        log.debug('{}'.format(db.select('users', ['ALL'])))
+        result = db.select('users', ['username'], where_cols=['username'], where_params=['jdoe'], operators=['='], fetchone=False)
+        self.assertEqual([{'username': 'jdoe'}], result)
         clean_up_table('users', 'user_id')
 
     def test_duplicate_entry(self):
         clean_up_table('users', 'user_id')
-        path = 'TestResources/easy_test_roster.csv'
+        path = 'TestResources/easy_test_roster_w_pn.csv'
         csv_to_db(path)
         csv_to_db(path)
-        result = db.select('users', ['phone'], where_cols=['username'], where_params=['wklock'], operators=['='], fetchone=False)
-        self.assertEqual([{'phone': 7086022087}], result)
+        result = db.select('users', ['phone'], where_cols=['username'], where_params=['jdoe'], operators=['='], fetchone=False)
+        self.assertEqual([{'phone': 5555555555}], result)
         clean_up_table('users', 'user_id')
