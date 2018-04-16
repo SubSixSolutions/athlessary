@@ -34,7 +34,7 @@ def generate_connection_string(unit_test=False):
                 db_credentials['host'], db_credentials['password'],
                 db_credentials['port']
             )
-            log.info('DB Generated from db credentials')
+            log.info('DB {} Generated from db credentials'.format(db_name))
             return connect_str
         except ModuleNotFoundError:
             sys.stderr.write('Could Not Establish Database Connection')
@@ -572,3 +572,26 @@ class Database:
         if result:
             return result['names']
         return None
+
+    def get_leader_board_meters(self, date):
+
+        q = SQL.SQL(
+            '''
+            SELECT SUM(tbl.distance) AS total_meters,  u.username
+            FROM (
+                SELECT distance, user_id, minutes, seconds
+                FROM workout AS w
+                JOIN erg AS e 
+                ON w.workout_id = e.workout_id
+                WHERE w.time>{}
+                ) AS tbl
+            JOIN users AS u
+            ON u.user_id = tbl.user_id
+            GROUP BY u.username
+            ORDER BY total_meters DESC
+            '''
+        ).format(SQL.Placeholder())
+
+        result = self.safe_execute(q, (date,), fetchone=False)
+        return result
+
