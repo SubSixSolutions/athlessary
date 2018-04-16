@@ -1,4 +1,5 @@
 import csv
+import usaddress
 
 from User.user import User
 from Utils.log import log
@@ -14,7 +15,7 @@ def csv_to_db(path_to_csv_file):
             row = dict((k.lower().replace(' ', '_'), v) for k, v in row.items())
             keys = row.keys()
 
-            if 'first_name' not in keys or 'last_name' not in keys:
+            if not row['first_name'] or not row['last_name']:
                 continue
 
             first = row['first_name']
@@ -26,10 +27,23 @@ def csv_to_db(path_to_csv_file):
             bonus_keys = ['address', 'num_seats', 'phone']
             for key in bonus_keys:
                 if key in keys:
+
                     if key == 'phone':
                         csv_row_data[key] = validate_phone_number(row[key])
                     else:
                         csv_row_data[key] = row[key]
+
+                    if key == 'address':
+                        address_dict = validate_address(row[key])
+                        if address_dict is not None:
+                            # merge the address_dict into csv_row_data
+                            csv_row_data = {**csv_row_data, **address_dict}
+
+                    if key == 'num_seats':
+                        if len(row[key]) > 0:
+                            csv_row_data[key] = int(row[key])
+                        else:
+                            csv_row_data[key] = 0
                 else:
                     csv_row_data[key] = None
 
@@ -37,7 +51,9 @@ def csv_to_db(path_to_csv_file):
                 csv_row_data['team'] = row['m/w'] + row['v/n']
             else:
                 csv_row_data['team'] = None
-            log.debug('creating new user: {}'.format(csv_row_data))
+
+            log.debug('creating new user with data: {}'.format(csv_row_data))
+
             User.user_from_csv_row(csv_row_data)
 
 
@@ -50,3 +66,47 @@ def validate_phone_number(phone_number_str):
         return None
     else:
         return int(phone_number_str)
+
+
+def validate_address(address_str):
+    parsed_address = usaddress.tag(address_str)
+    address_dict = None
+    tagged_address = dict(parsed_address[0])
+    log.debug('tagged_address: {}'.format(tagged_address))
+    if not parsed_address[1] == 'Street Address':
+        log.warn('{} is not a valid address'.format(address_str))
+    else:
+
+        address_number_seq = (
+            tagged_address.get('AddressNumberPrefix', ''),
+            tagged_address.get('AddressNumber', ''),
+            tagged_address.get('AddressNumberSuffix', '')
+        )
+
+        address_number = ' '.join(address_number_seq)
+        # Remove extra internal whitespace
+        address_number = ' '.join(address_number.strip().split())
+
+        street_name_seq = (
+            tagged_address.get('StreetNamePreDirectional', ''),
+            tagged_address.get('StreetNamePreModifier', ''),
+            tagged_address.get('StreetNamePreType', ''),
+            tagged_address.get('StreetName', ''),
+            tagged_address.get('StreetNamePostDirectional', ''),
+            tagged_address.get('StreetNamePostModifier', ''),
+            tagged_address.get('StreetNamePostType', '')
+        )
+
+        street_name = ' '.join(street_name_seq)
+        street_name = ' '.join(street_name.strip().split())
+
+        street_address = ' '.join((address_number, street_name))
+
+        address_dict = {'address': street_address,
+                        'city': tagged_address.get('PlaceName', ''),
+                        'state': tagged_address.get('StateName', ''),
+                        'zip': int(tagged_address.get('ZipCode', ''))}
+
+        log.info('Successfully parsed {} into {}'.format(address_str, address_dict))
+
+    return address_dict
