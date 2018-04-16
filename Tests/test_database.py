@@ -1,10 +1,11 @@
+import os
 import time
 import unittest
 
 from Utils.db import Database
 from Utils.util_basic import create_workout
 
-db = Database(True)
+from Utils.config import db
 
 
 def create_user(user_name):

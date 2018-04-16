@@ -12,3 +12,5 @@ log
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+Utils/secret_config\.py

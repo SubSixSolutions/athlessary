@@ -1,4 +1,7 @@
+import os
 
 from Utils.db import Database
 
-db = Database()
+TESTING = bool(os.environ.get('TESTING'))
+
+db = Database(TESTING)
