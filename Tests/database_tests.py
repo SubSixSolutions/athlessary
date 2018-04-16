@@ -448,3 +448,15 @@ class TestTriggers(unittest.TestCase):
         # clean up users
         clean_up_table('users', 'user_id')
         self.assertEqual(0, len(db.select('users', ['ALL'], fetchone=False)))
+
+
+class TestLeaderBoardQueries():
+
+    def test_get_aggregate_meters(self):
+        """
+        test that all workouts since
+        :return:
+        """
+
+        # last_sun = today - datetime.timedelta(today.isoweekday())
+        # datetime.datetime(last_sun.year, last_sun.month, last_sun.day, 23, 59, 59)
