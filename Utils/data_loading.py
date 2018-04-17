@@ -1,5 +1,6 @@
 import csv
 import usaddress
+from geopy import Nominatim
 
 from User.user import User
 from Utils.log import log
@@ -36,6 +37,9 @@ def csv_to_db(path_to_csv_file):
                     if key == 'address':
                         address_dict = validate_address(row[key])
                         if address_dict is not None:
+                            coord_dict = get_coordinates_from_address(address_dict)
+                            if coord_dict is not None:
+                                address_dict = {**address_dict, **coord_dict}
                             # merge the address_dict into csv_row_data
                             csv_row_data = {**csv_row_data, **address_dict}
 
@@ -110,3 +114,22 @@ def validate_address(address_str):
         log.info('Successfully parsed {} into {}'.format(address_str, address_dict))
 
     return address_dict
+
+
+def get_coordinates_from_address(address_dict):
+    geolocator = Nominatim(user_agent="__name__", scheme="http")
+
+    query = {
+        'street': address_dict['address'],
+        'city': address_dict['city'],
+        'state': address_dict['state'],
+        'postalcode': str(address_dict['zip'])
+    }
+    location = geolocator.geocode(query)
+
+    if location:
+        x = location.latitude
+        y = location.longitude
+        return {'x': x, 'y': y}
+    else:
+        return None

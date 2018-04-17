@@ -83,6 +83,7 @@ class User:
 
     @classmethod
     def user_from_csv_row(cls, csv_data, active=True):
+        csv_data = {k: v for k, v in csv_data.items() if v is not None}
         col_names = list(csv_data.keys())
         col_values = list(csv_data.values())
 

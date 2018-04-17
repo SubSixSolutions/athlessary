@@ -364,8 +364,8 @@ class Database:
 
         params_tuple = tuple(where_params)
         if type(params_tuple[0]) == list:
-            litty_list = tuple(map(int, params_tuple[0]))
-            sql = 'SELECT %s FROM %s WHERE %s IN %s;' % (select_cols_to_str, table_name, where_cols[0], litty_list)
+            user_id_list = SQL.SQL(', ').join(map(SQL.Literal, params_tuple[0]))
+            sql = SQL.SQL("SELECT {} FROM {} WHERE {} IN ({});").format(select_cols_to_str, SQL.Identifier(table_name), SQL.Identifier(where_cols[0]), user_id_list)
             result = self.safe_execute(sql, params=None, fetchone=False)
             return result
         else:
