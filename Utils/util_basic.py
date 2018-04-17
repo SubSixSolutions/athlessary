@@ -171,6 +171,12 @@ def upload_profile_image(img, user_id, pic_location):
     return new_location
 
 
+def get_last_sunday(curr_date):
+    last_sunday = curr_date - datetime.timedelta(curr_date.isoweekday())
+    last_sunday_stamp = datetime.datetime(last_sunday.year, last_sunday.month, last_sunday.day, 23, 59, 59)
+    return last_sunday_stamp
+
+
 def generate_leader_board(first, last):
     arr = ['{} {}'.format(first, last), 'Unclaimed', 'Unclaimed', 'Unclaimed', 'Unclaimed', 'Unclaimed']
     arr1 = ['Unclaimed', 'Unclaimed', 'Unclaimed', '{} {}'.format(first, last), 'Unclaimed', 'Unclaimed']
