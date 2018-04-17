@@ -138,7 +138,8 @@ def assign_to_cars(drivers, athletes, data):
                 furthest_athlete_idx = np.argmax(curr_driver['athletes'], axis=0)[1]
                 furthest_athlete_id = curr_driver['athletes'][furthest_athlete_idx][0]
                 # put furthest athlete back on queue
-                athletes.append(seen_athletes[furthest_athlete_id])
+                if seen_athletes.get(furthest_athlete_id):
+                    athletes.append(seen_athletes[furthest_athlete_id])
 
                 # update the driver by replacing an athlete
                 curr_driver['athletes'][furthest_athlete_idx] = [athlete['id'], smallest_dist]

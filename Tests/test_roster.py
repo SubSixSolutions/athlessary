@@ -28,5 +28,6 @@ class TestRosterPage(unittest.TestCase):
     def test_home_title(self):
         driver = webdriver.Firefox()
         driver.get("http://127.0.0.1:5000/")
-        title = driver.title()
+        title = driver.title
         self.assertEqual("Athlessary", title)
+        driver.close()

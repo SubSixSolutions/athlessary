@@ -1,27 +1,27 @@
-Last Name,First Name,Address,num_seats, role
-Penny  ,Sebrina  ,"202 East Green Street , Champaign, IL 61820",4
-Doug  ,Roseann  ,"601 West Oregon, Urbana, IL 61801",4
-Hannelore  ,Alyse  ,"204 East Peabody Drive, Champaign, IL 61820",
-Venetta  ,Ta  ,"706 South Mathews, Urbana, IL 61801",
-Mckenzie  ,Lamont  ,"510 Stoughton, Champaign, IL 61820",
-Leo  ,Marjorie  ,"507 South Busey, Urbana, IL 61801",4
-Alda  ,Rasheeda  ,"901 West Western Ave, Champaign, IL 61820",5
-Maude  ,Marguerite  ,"711 West Elm Street , Urbana, IL 61801",
-Loraine  ,Rene  ,"29 East Green, Champaign, IL 61820",4
-Charolette  ,Robin  ,"901 West Pennsylvania Ave, Urbana, IL 61801",
-Ronni  ,Eusebia  ,"57 East Chalmers Street , Champaign, IL 61820",
-Lisha  ,Natasha  ,"1005 South Lincoln Avenue, Urbana IL 61801",
-Cassi  ,Esta  ,"204 East Peabody Drive, Champaign, IL 61820",
-Iris  ,Chad  ,"1007 South First Street , Champaign, IL 61820",
-Travis  ,Agnus  ,"207 South Fifth Street , Champaign, IL 61820",
-Kasandra  ,Chaya  ,"57 East John, Champaign, IL 61820",4
-Madelyn  ,Ilana  ,"207 South Fifth Street , Champaign, IL 61820",
-Many  ,Glen  ,"1208 South First Street, Champaign, IL 61820",
-Ginger  ,Mason  ,"1202 South 1st Street , Champaign, IL 61820",
-Bo  ,Carlton  ,"411 East Healey Street, Champaign, IL 61820",
-Ramonita  ,Francene  ,"306 N Harvey Street, Urbana, IL, 61801",3
-Rena  ,Cyrus  ,"75 Armory, Champaign, IL 61820",
-Sharita  ,Akilah  ,"75 Armory, Champaign, IL 61820",4
-Mack  ,Victor  ,"202 East Green Street , Champaign, IL 61820",4
-Linette  ,Teofila  ,"904 West Green Street , Urbana, IL 61801",
-Jesse  ,Maple  ,"608 West Illinois Street , Urbana, IL 61801",4
+Last Name,First Name,Address,num_seats, user_id
+Penny  ,Sebrina  ,"202 East Green Street , Champaign, IL 61820",4,1
+Doug  ,Roseann  ,"601 West Oregon, Urbana, IL 61801",4,2
+Hannelore  ,Alyse  ,"204 East Peabody Drive, Champaign, IL 61820",,3
+Venetta  ,Ta  ,"706 South Mathews, Urbana, IL 61801",,4
+Mckenzie  ,Lamont  ,"510 Stoughton, Champaign, IL 61820",,5
+Leo  ,Marjorie  ,"507 South Busey, Urbana, IL 61801",4,6
+Alda  ,Rasheeda  ,"901 West Western Ave, Champaign, IL 61820",5,7
+Maude  ,Marguerite  ,"711 West Elm Street , Urbana, IL 61801",,8
+Loraine  ,Rene  ,"29 East Green, Champaign, IL 61820",4,9
+Charolette  ,Robin  ,"901 West Pennsylvania Ave, Urbana, IL 61801",,10
+Ronni  ,Eusebia  ,"57 East Chalmers Street , Champaign, IL 61820",,11
+Lisha  ,Natasha  ,"1005 South Lincoln Avenue, Urbana IL 61801",,12
+Cassi  ,Esta  ,"204 East Peabody Drive, Champaign, IL 61820",,13
+Iris  ,Chad  ,"1007 South First Street , Champaign, IL 61820",,14
+Travis  ,Agnus  ,"207 South Fifth Street , Champaign, IL 61820",,15
+Kasandra  ,Chaya  ,"57 East John, Champaign, IL 61820",4,16
+Madelyn  ,Ilana  ,"207 South Fifth Street , Champaign, IL 61820",,17
+Many  ,Glen  ,"1208 South First Street, Champaign, IL 61820",,18
+Ginger  ,Mason  ,"1202 South 1st Street , Champaign, IL 61820",,19
+Bo  ,Carlton  ,"411 East Healey Street, Champaign, IL 61820",,20
+Ramonita  ,Francene  ,"306 N Harvey Street, Urbana, IL, 61801",3,21
+Rena  ,Cyrus  ,"75 Armory, Champaign, IL 61820",,22
+Sharita  ,Akilah  ,"75 Armory, Champaign, IL 61820",4,23
+Mack  ,Victor  ,"202 East Green Street , Champaign, IL 61820",4,24
+Linette  ,Teofila  ,"904 West Green Street , Urbana, IL 61801",,25
+Jesse  ,Maple  ,"608 West Illinois Street , Urbana, IL 61801",4,26

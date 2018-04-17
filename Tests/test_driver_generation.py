@@ -69,8 +69,15 @@ class TestDriverGeneration(unittest.TestCase):
             curr_driver_athletes = driver['athletes']
             if len(curr_driver_athletes) > 0:
                 curr_driver_athletes = np.array(curr_driver_athletes)
-                curr_driver_athletes = curr_driver_athletes[:, 0]
-                assignments[driver_id] = list(curr_driver_athletes)
+                curr_driver_athletes = curr_driver_athletes[:, 0] - driver_id
+                assignments[driver_id] = set(curr_driver_athletes)
 
         log.debug(assignments)
-        # self.assertAlmostEqual(assignments, expected_assignments)
+        expected_assignments = [{16.0, 19.0, 4.0, 14.0},
+                                {17.0},
+                                {4.0, 7.0, 11.0, 13.0, 15.0},
+                                {9.0, -6.0, -5.0, 4.0},
+                                {-8.0, 9.0, -6.0, -4.0}]
+        
+        for key in list(assignments.keys()):
+            self.assertTrue(assignments[key] in expected_assignments)
