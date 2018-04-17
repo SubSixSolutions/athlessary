@@ -127,29 +127,22 @@
                               </div>
                               <small name="error"></small>
                             </div>
-                            <div class="col-lg-auto col-6 mb-2">
-                              <small class="form-text text-muted">Interval Type</small>
-                              <div class="input-group">
-                                <select class="form-control custom-select" name="units" id="units" onchange="switch_input();">
-                                  <option value="meters" name="units">Distance</option>
-                                  <option value="minutes" name="units">Time</option>
-                                </select>
+                            <div class="col-auto">
+                              <div class="input-group-prepend">
+                                <div class="input-group-text">X</div>
                               </div>
-                              <small name="error"></small>
                             </div>
-                            <div class="col-lg-auto col-12 mb-2" id="min_meter_parent">
-                              <small class="form-text text-muted" id="min_meter_txt" for="min_meter_input">Number of Meters</small>
-                              <div class="input-group">
+                            <div class="col-auto form-group">
+                              <small id="min_meter_txt" class="form-text text-muted" for="min_meter_input">Number of Meters</small>
+                              <div class="input-group mb-2">
                                 <input type="number" class="form-control" id="min_meter_input" value="2000">
                               </div>
-                              <small name="error"></small>
                             </div>
-                            <div class="col-lg-auto col-6 mb-2" hidden id="second_input_div">
+                            <div class="col-auto form-group" hidden id="second_input_div">
                               <small class="form-text text-muted" for="second_input">Number of Seconds</small>
-                              <div class="input-group">
+                              <div class="input-group mb-2">
                                 <input type="number" class="form-control" id="second_input" value="00">
                               </div>
-                              <small name="error"></small>
                             </div>
                             <div class="col-lg-auto col-12 mb-2" id="submit_bttn_div">
                               <div class="input-group">
@@ -233,7 +226,7 @@
                                 </div>
                               </form>
                             </div>
-                            <div class="row table-responsive-md">
+                            <div class="row">
                               <table class="table table-striped" id="myTable">
                                 <thead>
                                   <tr>
@@ -261,20 +254,18 @@
                                 </div>
                                 <form class="align-middle" method="POST" id='edit_form'>
                                   <div class="modal-body" id='m_body' style="max-height:50vh; overflow-y:scroll;">
-                                    <div class="row form-row align-items-top justify-content-center mb-2">
+                                    <div class="row form-row align-items-center justify-content-center">
                                       <div class="col-6 form-group">
                                         <small class="form-text text-muted" for="date">Date</small>
-                                        <div class="input-group">
-                                          <input class="form-control" type="date" name="date" value="" id="date">
+                                        <div class="input-group mb-2">
+                                          <input class="form-control mb-2" type="date" name="date" value="" id="date">
                                         </div>
-                                        <small name="error"></small>
                                       </div>
                                       <div class="col-6 form-group">
                                         <small class="form-text text-muted" for="time">Time</small>
-                                        <div class="input-group">
-                                          <input class="form-control" type="time" name="time" value="" id="time">
+                                        <div class="input-group mb-2">
+                                          <input class="form-control mb-2" type="time" name="time" value="" id="time">
                                         </div>
-                                        <small name="error"></small>
                                       </div>
                                     </div>
                                     <table id='modal_table' class="table table-striped justify-content-center align-items-center align-middle">
@@ -287,8 +278,7 @@
                                   </div>
                                 </form>
                                   <div class="modal-footer">
-                                    <input type="button" class="btn btn-primary" name="" value="Save Changes" id='save_changes'>
-                                  <!-- <input type="button" class="btn btn-primary" data-dismiss="modal" name="" value="Save Changes" id='save_changes'> -->
+                                  <input type="button" class="btn btn-primary" data-dismiss="modal" name="" value="Save Changes" id='save_changes'>
                                   <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
                                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                   </div>
@@ -326,7 +316,6 @@
 
   <!-- workout javascript -->
   <script src="{{ url_for('static', filename='js/Chart.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/validate.js') }}"></script>
   <script src="{{ url_for('static', filename='js/workout_page.js') }}"></script>
   <script src="{{ url_for('static', filename='js/workout.js') }}"></script>
 
