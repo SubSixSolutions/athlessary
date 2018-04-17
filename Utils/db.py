@@ -34,7 +34,7 @@ def generate_connection_string(unit_test=False):
                 db_credentials['host'], db_credentials['password'],
                 db_credentials['port']
             )
-            log.info('DB Generated from db credentials')
+            log.info('DB {} generated from db credentials'.format(db_name))
             return connect_str
         except ModuleNotFoundError:
             sys.stderr.write('Could Not Establish Database Connection')
