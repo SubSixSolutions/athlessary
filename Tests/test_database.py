@@ -29,7 +29,17 @@ def clean_up_table(table, pk,):
 
 
 def clean_up_all():
-    pass
+    # clean up pieces
+    clean_up_table('erg', 'erg_id')
+
+    # clean up workouts
+    clean_up_table('workout', 'workout_id')
+
+    # clean up profile
+    clean_up_table('profile', 'user_id')
+
+    # clean up users
+    clean_up_table('users', 'user_id')
 
 
 class TestAutoDB(unittest.TestCase):
