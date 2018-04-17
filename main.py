@@ -8,6 +8,7 @@ from passlib.hash import pbkdf2_sha256
 from werkzeug.utils import secure_filename
 
 import Forms.web_forms as web_forms
+from User.roles import Role
 from User.user import User
 from Utils import util_basic
 from Utils.config import db
@@ -269,6 +270,8 @@ def get_all_athletes():
 @application.route('/roster', methods=['GET', 'POST'])
 @login_required
 def roster():
+    if current_user.role != Role.CAPTAIN or Role.ADMIN:
+        return Response({}, status=404, mimetype='application/json')
 
     if request.method == 'POST':
         if 'file' not in request.files:
