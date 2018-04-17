@@ -333,7 +333,6 @@ def drivers():
     if request.method == 'POST':
         athletes = request.form.getlist('athletes[]')
         drivers = request.form.getlist('drivers[]')
-        print(athletes, drivers)
 
         drivers_arr, athelete_dict = generate_cars(athletes, drivers)
         modified_k_means(drivers_arr, athelete_dict)
