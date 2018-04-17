@@ -34,7 +34,7 @@ def generate_connection_string(unit_test=False):
                 db_credentials['host'], db_credentials['password'],
                 db_credentials['port']
             )
-            log.info('DB Generated from db credentials')
+            log.info('DB {} generated from db credentials'.format(db_name))
             return connect_str
         except ModuleNotFoundError:
             sys.stderr.write('Could Not Establish Database Connection')
@@ -573,3 +573,84 @@ class Database:
         if result:
             return result['names']
         return None
+
+    def get_leader_board_meters(self, date):
+        """
+        gets the total meters for every rower from a certain cutoff date
+        :param date: the datetime cutoff date for meters
+        :return:
+        """
+        q = SQL.SQL(
+            '''
+            SELECT SUM(tbl.distance) AS total_meters,  u.username
+            FROM (
+                SELECT distance, user_id
+                FROM workout AS w
+                JOIN erg AS e 
+                ON w.workout_id = e.workout_id
+                WHERE w.time>{}
+                ) AS tbl
+            JOIN users AS u
+            ON u.user_id = tbl.user_id
+            GROUP BY u.username
+            ORDER BY total_meters DESC
+            '''
+        ).format(SQL.Placeholder())
+
+        result = self.safe_execute(q, (date,), fetchone=False)
+        return result
+
+    def get_leader_board_minutes(self, date):
+        """
+        gets total minutes of each athlete from present until the cutoff date
+        :param date: the datetime object of the cuttoff date
+        :return:
+        """
+        q = SQL.SQL(
+            '''
+            SELECT (SUM(tbl.minutes) * 60) + SUM(tbl.seconds) AS total_seconds,  u.username
+            FROM (
+                SELECT user_id, minutes, seconds
+                FROM workout AS w
+                JOIN erg AS e 
+                ON w.workout_id = e.workout_id
+                WHERE w.time>{}
+                ) AS tbl
+            JOIN users AS u
+            ON u.user_id = tbl.user_id
+            GROUP BY u.username
+            ORDER BY total_seconds DESC
+            '''
+        ).format(SQL.Placeholder())
+
+        result = self.safe_execute(q, (date,), fetchone=False)
+        return result
+
+    #           var secs = ((total_seconds / splits) % 60).toFixed(2);
+    #           var mins = (Math.trunc(total_seconds / splits / 60));
+
+    def get_leader_board_split(self, date):
+        """
+        gets aggregated split of each athlete from present until the cutoff date
+        :param date: the datetime object of the cuttoff date
+        :return:
+        """
+        q = SQL.SQL(
+            '''
+            SELECT (((SUM(tbl.minutes) * 60) + SUM(tbl.seconds))::FLOAT / SUM(tbl.distance)) * 500 AS split,  u.username
+            FROM (
+                SELECT user_id, minutes, seconds, distance
+                FROM workout AS w
+                JOIN erg AS e 
+                ON w.workout_id = e.workout_id
+                WHERE w.time>{}
+                ) AS tbl
+            JOIN users AS u
+            ON u.user_id = tbl.user_id
+            GROUP BY u.username
+            ORDER BY split DESC
+            '''
+        ).format(SQL.Placeholder())
+
+        result = self.safe_execute(q, (date,), fetchone=False)
+        return result
