@@ -120,6 +120,7 @@ class Database:
         sql = '''CREATE TABLE IF NOT EXISTS users (
                 password  VARCHAR(255),
                 user_id   SERIAL           PRIMARY KEY,
+                role      INTEGER          DEFAULT (1),
                 first     VARCHAR(20)      NOT NULL,
                 last      VARCHAR(20)      NOT NULL,
                 username  VARCHAR(20)      UNIQUE

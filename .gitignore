@@ -13,5 +13,5 @@ log
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-Utils/secret_config.py
+Utils/secret_config\.py
 csv_uploads/

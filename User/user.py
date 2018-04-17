@@ -5,6 +5,7 @@ import psycopg2
 from geopy.geocoders import Nominatim
 from werkzeug.utils import secure_filename
 
+from User.roles import Role
 from Utils import hashes
 from Utils.config import db
 from Utils.log import log
@@ -34,6 +35,8 @@ class User:
         self.team = result['team']
         self.phone = result['phone']
         self.picture = result['picture']
+        self.role = Role(result['role'])
+
         self.user_id = user_id
         self.active = active
         self.is_anonymous = False
