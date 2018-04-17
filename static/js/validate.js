@@ -6,7 +6,7 @@ function validate_workout_form(elements){
       //       element.name.includes('meters') || element.name.includes('date')
       //       || element.name.includes('time')
       // ){
-      if (!element.name.includes('units') && element.type != 'button'){
+      if (!element.name.includes('units') && element.type != 'button' && element.type != 'submit'){
           console.log(element.parentElement.parentElement);
           var p = element.parentElement.parentElement.querySelector('small[name="error"]');
           if (element.value == ""){
