@@ -190,7 +190,7 @@ def team():
 @application.route('/logout')
 @login_required
 def logout():
-    log.info('Logging out user id:%s' % current_user.user_id)
+    log.info('Logging out user id:{}'.format(current_user.user_id))
     logout_user()
     return redirect(url_for('new_signup'))
 

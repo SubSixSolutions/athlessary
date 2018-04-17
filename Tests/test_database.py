@@ -571,3 +571,86 @@ class TestLeaderBoardQueries(unittest.TestCase):
 
         # clean up everything
         clean_up_all()
+
+    def test_get_leader_board_minutes(self):
+
+        # start with clean db
+        clean_up_all()
+
+        # get last sunday
+        date = get_last_sunday(datetime.datetime.utcnow())
+
+        # create a user
+        id1 = create_user('bob')
+
+        # add a workout
+        create_workout(id1, db, [5233], [20], [00], False)
+
+        # find results
+        res = db.get_leader_board_minutes(date)
+
+        # make sure there is only one result
+        self.assertEqual(len(res), 1, 'there is only one user')
+
+        # assert number of seconds
+        self.assertEqual(res[0]['total_seconds'], 1200, 'there are 1200 seconds')
+
+        # add another workout
+        create_workout(id1, db, [2000, 2000], [6, 6], [32, 54], True)
+
+        # update results
+        res = db.get_leader_board_minutes(date)
+
+        # assert number of seconds
+        self.assertEqual(res[0]['total_seconds'], 2006, 'there are now 2006 seconds')
+
+        # add another user
+        id2 = create_user('jimmy')
+
+        # update results
+        res = db.get_leader_board_minutes(date)
+
+        # assert there is still one person with workouts and they still have 2006 seconds
+        self.assertEqual(len(res), 1, 'only 1 user represented')
+        self.assertEqual(res[0]['total_seconds'], 2006, 'still 2006 seconds')
+
+        # give user 2 a workout
+        create_workout(id2, db, [5233, 5342], [20, 20], [00, 00], False)
+
+        # update result
+        res = db.get_leader_board_minutes(date)
+
+        # assert that user 2 is first now
+        self.assertEqual(res[0]['username'], 'jimmy', 'jimmy is now in first place')
+        self.assertEqual(res[0]['total_seconds'], 2400)
+
+        # change date on user 2 workout
+        old_date = datetime.datetime(2000, 1, 1)
+        w_id = db.select('workout', ['workout_id'], ['user_id'], [id2], fetchone=False)[0]['workout_id']
+        db.update('workout', ['time'], [old_date], ['workout_id'], [w_id])
+
+        # update the results
+        res = db.get_leader_board_minutes(date)
+
+        # assert that user 2 is no longer counted
+        self.assertEqual(len(res), 1, 'user 2 has no workouts this week')
+        self.assertEqual(res[0]['username'], 'bob')
+
+    def test_leader_board_split(self):
+        # clear database
+        clean_up_all()
+
+        # create user
+        id1 = create_user('alex')
+
+        # cutoff date
+        date = get_last_sunday(datetime.datetime.utcnow())
+
+        # create workout
+        create_workout(id1, db, [2000], [6], [00], True)
+
+        # get splits
+        res = db.get_leader_board_split(date)
+
+        self.assertEqual(len(res), 1, 'there is 1 user')
+        self.assertEqual(res[0]['split'], 1.5, 'there is a 1:30 or 1.5min split')
