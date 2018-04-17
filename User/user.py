@@ -5,16 +5,18 @@ from geopy.geocoders import Nominatim
 from werkzeug.utils import secure_filename
 
 from Utils import hashes
-from Utils.config import db
+from Utils.db import Database
 from Utils.log import log
 
 
 class User:
 
+    db = Database()
+
     def __init__(self, user_id, active=True):
 
-        result = db.get_user(user_id)
-        # result = db.select('users', ['ALL'], ['user_id'], [user_id])
+        result = self.db.get_user(user_id)
+        # result = self.db.select('users', ['ALL'], ['user_id'], [user_id])
         if not result:
             raise ValueError('Could Not Find User')
 
@@ -55,10 +57,10 @@ class User:
         if location:
             self.x = location.latitude
             self.y = location.longitude
-            db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
+            self.db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
                            where_cols=['user_id'], where_params=[self.user_id])
         else:
-            db.update('users', ['address'], ['Invalid Address'], ['user_id'], [self.user_id])
+            self.db.update('users', ['address'], ['Invalid Address'], ['user_id'], [self.user_id])
 
     @classmethod
     def user_from_form(cls, form_data, active=True):
@@ -75,10 +77,10 @@ class User:
         col_vals = attr_dict.values()
         # col_names.append('x')
         # col_names.append('y')
-        user_id = db.insert('users', col_names, col_vals, 'user_id')
+        user_id = cls.db.insert('users', col_names, col_vals, 'user_id')
 
         bio_string = 'Hi, my name is %s!' % form_data['first']
-        db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
+        cls.db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
 
         return cls(user_id, None)
 
@@ -132,7 +134,7 @@ class User:
         self.picture = pic_location
 
         # update the database
-        db.update('users', ['picture'], [pic_location], ['user_id'], [self.user_id])
+        self.db.update('users', ['picture'], [pic_location], ['user_id'], [self.user_id])
 
         # return location to update the current user
         return pic_location

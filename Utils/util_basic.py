@@ -3,7 +3,6 @@ import datetime
 import json
 import os
 import sys
-import time
 
 import boto3
 
@@ -30,6 +29,9 @@ def create_workout(user_id, db, meters, minutes, seconds, by_distance):
     date_stamp = datetime.datetime.utcnow()
     stamp = "{}-{}-{} {}:{}:{}".format(date_stamp.year, date_stamp.month, date_stamp.day, date_stamp.hour,
                                            date_stamp.minute, date_stamp.second)
+    # stamp = '0000-00-00 00:00:00'
+    print(stamp)
+    # utc_date_stamp = time.time() // 1
 
     # name the piece
     name = str(len(meters)) + 'x'
@@ -47,6 +49,7 @@ def create_workout(user_id, db, meters, minutes, seconds, by_distance):
 
     # create erg workout
     for meter, minute, second in zip(meters, minutes, seconds):
+        print(meter, minute, second)
         db.insert('erg', ['workout_id', 'distance', 'minutes', 'seconds'], [workout_id, meter, minute, second], 'erg_id')
 
     return name
@@ -79,31 +82,6 @@ def build_graph_data(results, workout_name):
     js = json.dumps(data)
 
     return js
-
-
-def edit_time_stamp(new_date, new_time, old_stamp):
-    """
-    takes a new TIME, new DATE, and a time stamp
-    :param new_date: date in format yyyy-mm-dd
-    :param new_time: time in form hh:mm
-    :param old_stamp: time stamp in seconds since epoch
-    :return:
-    """
-
-    # convert old stamp into a date
-    old_date = datetime.datetime.fromtimestamp(float(old_stamp))
-
-    # break up date and time strings
-    new_date_arr = new_date.split('-')
-    new_time_arr = new_time.split(':')
-
-    # create new date time object from strings
-    new_date_obj = datetime.datetime(int(new_date_arr[0]), int(new_date_arr[1]), int(new_date_arr[2]), int(new_time_arr[0]), int(new_time_arr[1]), old_date.second)
-
-    # format new time stamp
-    new_stamp = time.mktime(new_date_obj.timetuple())
-
-    return new_stamp
 
 
 def edit_erg_workout(request, db):
@@ -163,6 +141,7 @@ def upload_profile_image(img, user_id, pic_location):
     save a new profile picture uploaded by the user
     :param img: byte string from web
     :param user_id: id fo the current user
+    :param pic_location: the location of the current user profile picture
     :return:
     """
 
@@ -190,12 +169,6 @@ def upload_profile_image(img, user_id, pic_location):
     client.put_object(Body=data, Bucket=bucket_name, Key=new_location)
 
     return new_location
-
-
-def get_last_sunday(curr_date):
-    last_sunday = curr_date - datetime.timedelta(curr_date.isoweekday())
-    last_sunday_stamp = datetime.datetime(last_sunday.year, last_sunday.month, last_sunday.day, 23, 59, 59)
-    return last_sunday_stamp
 
 
 def generate_leader_board(first, last):
