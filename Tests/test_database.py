@@ -6,6 +6,7 @@ from Utils.config import db
 from Utils.util_basic import create_workout, get_last_sunday
 
 
+
 def create_user(user_name):
     # add user
     sample_col_names = ['username', 'first', 'last', 'password', 'address', 'num_seats']

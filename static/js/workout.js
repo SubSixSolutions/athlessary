@@ -134,6 +134,7 @@ function reset_form(){
 
     // display submit button
     document.getElementById('submit_bttn').style.display = 'block';
+    $("#submit_bttn_txt").addClass('d-lg-block');
 
     // check meters selector
     document.getElementById('units').value = 'meters';
@@ -155,6 +156,7 @@ function generate_form(){
 
   // hide submit button
   document.getElementById('submit_bttn').style.display = 'none';
+  $("#submit_bttn_txt").removeClass('d-lg-block');
 
   var num_pieces = document.getElementById("num_pieces").value;
   var w_type = document.getElementById("units").value;
