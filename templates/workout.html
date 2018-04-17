@@ -119,7 +119,7 @@
                       <div class="col">
                         <div class="" id="info-div"> <!-- Alerts go here! --> </div>
                         <form class="my-3 py-2 border border-dark" action="{{url_for('workouts')}}" id="add_workout_form" style="background-color: #f8f9fa;">
-                          <div class="row align-items form-row inline-flex align-items-middle mx-2 mt-2 d-md-flex flex-lg-nowrap flex-md-wrap">
+                          <div class="form-row inline-flex align-items-middle mx-2 mt-2 d-md-flex flex-lg-nowrap flex-md-wrap">
                             <div class="col-lg-auto col-6 mb-2" id="num_pieces_parent">
                               <small class="form-text text-muted" for="num_pieces">Number of Pieces</small>
                               <div class="input-group">
@@ -151,15 +151,11 @@
                               </div>
                               <small name="error"></small>
                             </div>
-                            <div class="col-lg-auto col-12 mb-2 d-lg-flex align-items-lg-center" id="submit_bttn_div">
-                              <small></small>
+                            <div class="col-lg-auto col-12 mb-2" id="submit_bttn_div">
                               <div class="input-group">
-                                <!-- <button id="submit_bttn" type="button" class="btn btn-primary w-100" onclick="generate_form();">Submit</button> -->
-                                <small class="d-none d-lg-block form-text">Go!</small>
+                                <small id="submit_bttn_txt" class="d-none d-lg-block form-text text-muted">Go!</small>
                                 <input value="Submit" id="submit_bttn" type="button" class="btn btn-primary w-100" onclick="generate_form();">
-                                <!-- <input type="text" class="form-control" name="" value=""> -->
                               </div>
-                              <small></small>
                             </div>
                           </div>
                         </form>
