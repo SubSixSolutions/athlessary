@@ -30,3 +30,6 @@ Flask:
 Database:
 - [PostgreSQL for Python (psycopg2 module)](http://initd.org/psycopg/docs/usage.html)
 - [SQL Maker](http://initd.org/psycopg/docs/sql.html)
+
+Python:
+- [usaddress](https://github.com/datamade/usaddress)

@@ -1,9 +1,11 @@
+import os
 from urllib.parse import urlparse, urljoin
 
 import boto3
-from flask import Flask, render_template, request, redirect, url_for, Response, json, abort
+from flask import Flask, render_template, request, redirect, url_for, Response, json, abort, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from passlib.hash import pbkdf2_sha256
+from werkzeug.utils import secure_filename
 
 import Forms.web_forms as web_forms
 from User.user import User
@@ -13,11 +15,16 @@ from Utils.driver_generation import generate_cars, modified_k_means
 from Utils.log import log
 from Utils.util_basic import bucket_name
 from Utils.util_basic import create_workout, build_graph_data
+from Utils.data_loading import csv_to_db
 
 application = Flask(__name__)
 # TODO Update secret key and move to external file
 application.secret_key = 'super secret string'  # Change this!
 application.debug = True
+
+CSV_UPLOAD_FOLDER = './csv_uploads'
+ALLOWED_EXTENSIONS = {'csv', 'txt'}
+application.config['CSV_UPLOAD_FOLDER'] = CSV_UPLOAD_FOLDER
 
 login_manager = LoginManager()
 login_manager.init_app(application)
@@ -259,12 +266,41 @@ def get_all_athletes():
     return Response(js, status=200, mimetype='application/json')
 
 
-@application.route('/roster')
+@application.route('/roster', methods=['GET', 'POST'])
 @login_required
 def roster():
+
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part')
+            return render_template('roster_page.html')
+        else:
+            file = request.files['file']
+
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+
+        if file and validate_filename(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(application.config['CSV_UPLOAD_FOLDER'], filename))
+            return redirect(url_for('csv_upload',
+                                    filename=filename))
+
     return render_template('roster_page.html')
 
-  
+
+@application.route('/csv_upload', methods=['GET', 'POST'])
+@login_required
+def csv_upload():
+    filename = request.args.get('filename')
+    path = os.path.join(application.config['CSV_UPLOAD_FOLDER'], filename)
+    csv_to_db(path)
+    return redirect(url_for('roster',
+                            success=True))
+    pass
+
+
 @application.route('/save_img', methods=['POST'])
 @login_required
 def save_img():
@@ -303,6 +339,10 @@ def drivers():
     else:
         print('ok')
         return render_template('drivers.html')
+
+
+def validate_filename(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @application.route('/no_login')
