@@ -30,7 +30,7 @@ def generate_cars(athletes, drivers):
         curr_id = user['user_id']
         num_seats = user['num_seats']
         info_dict = {'x': user['x'], 'y': user['y'], 'id': curr_id, 'num_seats': 0}
-        if str(curr_id) in drivers:
+        if curr_id in drivers:
             info_dict['num_seats'] = num_seats
             info_dict['num_assigned'] = 0
             info_dict['athletes'] = []
@@ -39,10 +39,10 @@ def generate_cars(athletes, drivers):
         else:
             athlete_dict[curr_id] = info_dict
 
-    print(driver_dict)
-    print(athlete_dict)
-
-    return driver_dict, athlete_dict
+    if total_seats < len(athletes):
+        return None
+    else:
+        return driver_dict, athlete_dict
 
 
 def find_squared_distance(x1, y1, x2, y2):
@@ -124,20 +124,25 @@ def assign_to_cars(drivers, athletes, data):
 
         if smallest_dist is not None:
             curr_driver = drivers[smallest_dist_id]
-            if curr_driver['num_assigned'] < curr_driver['num_seats']:
+            curr_driver_athletes = curr_driver['athletes']
+            if len(curr_driver_athletes) > 0:
+                curr_driver_athletes = np.array(curr_driver_athletes)
+                curr_driver_athletes = curr_driver_athletes[:,0]
+            if athlete['id'] in curr_driver_athletes:
+                continue
+            elif curr_driver['num_assigned'] < curr_driver['num_seats']:
                 # add athlete to the current driver
                 curr_driver['athletes'].append([athlete['id'], smallest_dist])
             else:
+                # Get the index of the furthest athlete that the driver has in his/her car
                 furthest_athlete_idx = np.argmax(curr_driver['athletes'], axis=0)[1]
                 furthest_athlete_id = curr_driver['athletes'][furthest_athlete_idx][0]
-
                 # put furthest athlete back on queue
                 athletes.append(seen_athletes[furthest_athlete_id])
 
                 # update the driver by replacing an athlete
                 curr_driver['athletes'][furthest_athlete_idx] = [athlete['id'], smallest_dist]
             curr_driver['num_assigned'] += 1
-
     return drivers
 
 
@@ -177,7 +182,7 @@ def should_replace_athlete(driver, distance):
     :param driver: the current driver dictionary
     :param distance: a float representing the distance between the current driver and
     some athlete in question
-    :return: True or False; True if the disance is less than any of the athletes currently in the
+    :return: True or False; True if the distance is less than any of the athletes currently in the
     driver's car; False otherwise
 
     """
@@ -215,8 +220,19 @@ def update_drivers(driver_dict, athletes):
             new_x = sum_x / float(driver['num_assigned'])
             new_y = sum_y / float(driver['num_assigned'])
 
+            bounce = False
+            old_x = driver.get('old_x')
+            old_y = driver.get('old_y')
+            if old_x and old_y:
+                if np.isclose(old_x, new_x) and np.isclose(old_y, new_y):
+                    bounce = True
             # update the driver x and y to be the average if x and y have changed
-            if driver['x'] != new_x or driver['y'] != new_y:
+            if not bounce and (driver['x'] != new_x or driver['y'] != new_y):
+                log.debug('driver: {}'.format(driver['id']))
+                log.debug('old_x: {} x: {} -> {}'.format(old_x, driver['x'], new_x))
+                log.debug('old_y: {} y: {} -> {}'.format(old_y, driver['y'], new_y))
+                driver['old_x'] = driver['x']
+                driver['old_y'] = driver['y']
                 driver['x'] = new_x
                 driver['y'] = new_y
                 is_complete = False
@@ -226,61 +242,12 @@ def update_drivers(driver_dict, athletes):
     return is_complete
 
 
-# def check_efficiency(drivers, distances):
-#     """
-#     takes in the drivers after they have been assigned and see
-#     if a car can be reduced
-#     :param drivers: array of drivers
-#     :param distances: array of distances
-#     :return:
-#     """
-#
-#     empty_seats = 0
-#     least_used_car = None
-#     len_athletes = 0
-#     for driver in drivers:
-#         if least_used_car is None:
-#             least_used_car = driver
-#         empty_seats += (driver.car_size - len(driver.points))
-#         if (driver.car_size - len(driver.points)) > (least_used_car.car_size - len(least_used_car.points)):
-#             least_used_car = driver
-#         driver.prev_address = ""
-#         len_athletes +=  len(driver.points)
-#     if (len(least_used_car.points) + 1) <= (empty_seats - (least_used_car.car_size - len(least_used_car.points))):
-#         print "Removing driver " + least_used_car.driver_name + " to improve efficiency..."
-#         remove_driver(drivers, least_used_car, distances)
-#         return True
-#     return False
-#
-#
-# def remove_driver(drivers, driver_to_remove, data):
-#     """
-#     takes in a list of drivers and a specific driver to convert
-#     into an athlete
-#     :param drivers: list of drivers
-#     :param driver_to_remove: driver being removed
-#     :param data: data array of distances
-#     :return:
-#     """
-#
-#     athlete_arr = []
-#     for athlete in driver_to_remove.points:
-#         athlete_arr.append(athlete)
-#     new_athlete = Athlete(driver_to_remove.driver_name, driver_to_remove.driver_address, len(data), driver_to_remove.dorm_code)
-#     drivers.remove(driver_to_remove)
-#     athlete_arr.append(new_athlete)
-#     data = add_row_to_data(drivers, new_athlete, data)
-#     modified_k_means(drivers, athlete_arr, data)
-
-
 def modified_k_means(drivers, athletes):
     """
     :param drivers:
     :param athletes:
     :return:
     """
-    print("Running KMeans with added Athletes...")
-    print(drivers, athletes)
 
     data = init_distance_matrix(drivers, athletes)
 
@@ -302,5 +269,5 @@ def modified_k_means(drivers, athletes):
         # update centroids based on new grouping
         is_complete = update_drivers(drivers, athletes)
 
-    print('final result')
-    log.info(drivers)
+    log.info('Successfully assigned athletes to cars as follows: {}'.format(drivers))
+    return drivers

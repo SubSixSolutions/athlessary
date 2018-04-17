@@ -5,8 +5,7 @@ from Utils.db import Database
 from Utils.log import log
 from main import validate_filename
 
-db = Database(True)
-
+from Utils.config import db
 
 def clean_up_table(table, pk):
     # empty users
