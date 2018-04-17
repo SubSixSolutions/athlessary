@@ -38,7 +38,11 @@ def generate_cars(athletes, drivers):
             total_seats += num_seats
         else:
             athlete_dict[curr_id] = info_dict
-    return driver_dict, athlete_dict
+
+    if total_seats < len(athletes):
+        return None
+    else:
+        return driver_dict, athlete_dict
 
 
 def find_squared_distance(x1, y1, x2, y2):
@@ -216,8 +220,19 @@ def update_drivers(driver_dict, athletes):
             new_x = sum_x / float(driver['num_assigned'])
             new_y = sum_y / float(driver['num_assigned'])
 
+            bounce = False
+            old_x = driver.get('old_x')
+            old_y = driver.get('old_y')
+            if old_x and old_y:
+                if np.isclose(old_x, new_x) and np.isclose(old_y, new_y):
+                    bounce = True
             # update the driver x and y to be the average if x and y have changed
-            if driver['x'] != new_x or driver['y'] != new_y:
+            if not bounce and (driver['x'] != new_x or driver['y'] != new_y):
+                log.debug('driver: {}'.format(driver['id']))
+                log.debug('old_x: {} x: {} -> {}'.format(old_x, driver['x'], new_x))
+                log.debug('old_y: {} y: {} -> {}'.format(old_y, driver['y'], new_y))
+                driver['old_x'] = driver['x']
+                driver['old_y'] = driver['y']
                 driver['x'] = new_x
                 driver['y'] = new_y
                 is_complete = False
@@ -254,4 +269,5 @@ def modified_k_means(drivers, athletes):
         # update centroids based on new grouping
         is_complete = update_drivers(drivers, athletes)
 
-    log.info('final result {}'.format(drivers))
+    log.info('Successfully assigned athletes to cars as follows: {}'.format(drivers))
+    return drivers
