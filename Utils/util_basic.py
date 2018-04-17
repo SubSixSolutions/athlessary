@@ -9,6 +9,8 @@ import boto3
 from Forms import web_forms
 from Utils.log import log
 
+from Utils.config import db
+
 # get s3 bucket name
 try:
     bucket_name = os.environ['S3_BUCKET']
@@ -177,8 +179,56 @@ def get_last_sunday(curr_date):
     return last_sunday_stamp
 
 
-def generate_leader_board(first, last):
-    arr = ['{} {}'.format(first, last), 'Unclaimed', 'Unclaimed', 'Unclaimed', 'Unclaimed', 'Unclaimed']
-    arr1 = ['Unclaimed', 'Unclaimed', 'Unclaimed', '{} {}'.format(first, last), 'Unclaimed', 'Unclaimed']
-    arr2 = ['Unclaimed', 'Unclaimed', 'Unclaimed', 'Unclaimed', 'Unclaimed', '{} {}'.format(first, last)]
-    return arr, arr1, arr2, [5, 5, 5]
+def format_leader_arr(arr, key_name, username):
+    """
+
+    :param arr:
+    :param key_name:
+    :param username:
+    :return:
+    """
+
+    ret_val = []
+    found_user = False
+    count = 0
+
+    for user in arr:
+        if count < 5:
+            ret_val.append(user)
+            count += 1
+        elif count < 6 and found_user:
+            ret_val.append(user)
+            count += 1
+        if user['username'] == username:
+            found_user = True
+        if count > 5:
+            break
+
+    if not found_user:
+        ret_val.append({'username': username, key_name: 0})
+
+    while len(ret_val) < 6:
+        ret_val.append({'username': 'Unclaimed', key_name: 0})
+
+    return ret_val
+
+
+def generate_leader_board(username):
+    """
+
+    :param username:
+    :return:
+    """
+
+    last_sunday = get_last_sunday(datetime.datetime.utcnow())
+
+    agg_meters = db.get_leader_board_meters(last_sunday)
+    meters = format_leader_arr(agg_meters, 'total_meters', username)
+
+    agg_minutes = db.get_leader_board_minutes(last_sunday)
+    minutes = format_leader_arr(agg_minutes, 'total_minutes', username)
+
+    agg_split = db.get_leader_board_split(last_sunday)
+    split = format_leader_arr(agg_split, 'split', username)
+
+    return meters, minutes, split

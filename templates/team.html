@@ -85,12 +85,9 @@
       <!-- Your Content Here -->
       <div class="container">
         <div class="">
-          <div class="row mt-2 w-100 justify-content-center">
+          <div class="mt-2 justify-content-center">
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
-              <div class="">
-                <strong>Attention!</strong>
-                <p>This site is under construction. Please continue to come again for further developments.</p>
-              </div>
+              <strong>Warning!</strong> This site is under construction. Please continue to revist for more updates.
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
               </button>
@@ -113,18 +110,18 @@
                 <hr class="my-4">
                 <ul class="list-group">
                   {% for ranked in meters_ranking %}
-                    {% if ranked == "%s %s"|format(current_user.first, current_user.last) %}
+                    {% if ranked['username'] == current_user.username %}
                       <li class="list-group-item d-flex justify-content-between align-items-center bg-info text-white">
                         You
-                        <span class="badge badge-primary badge-pill">194563 m</span>
+                        <span class="badge badge-primary badge-pill">{{ranked['total_meters']}}m</span>
                       </li>
                     {% elif loop.first %}
                       <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
-                        {{ ranked }}
-                        <span class="badge badge-primary badge-pill">194563 m</span>
+                        {{ ranked['username'] }}
+                        <span class="badge badge-primary badge-pill">{{ranked['total_meters']}}m</span>
                       </li>
                     {% else %}
-                      <li class="list-group-item">{{ ranked }}</li>
+                      <li class="list-group-item">{{ ranked['username'] }}</li>
                     {% endif %}
                   {% endfor %}
                 </ul>
@@ -137,18 +134,18 @@
                 <hr class="my-4">
                 <ul class="list-group">
                   {% for ranked in most_minutes %}
-                    {% if ranked == "%s %s"|format(current_user.first, current_user.last) %}
+                    {% if ranked['username'] == current_user.username %}
                       <li class="list-group-item d-flex justify-content-between align-items-center bg-info text-white">
                         You
-                        <span class="badge badge-primary badge-pill">305 min</span>
+                        <span class="badge badge-primary badge-pill">{{ranked['total_seconds']/60}}s</span>
                       </li>
                     {% elif loop.first %}
                       <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
-                        {{ ranked }}
+                        {{ ranked['username'] }}
                         <span class="badge badge-primary badge-pill">305 min</span>
                       </li>
                     {% else %}
-                      <li class="list-group-item">{{ ranked }}</li>
+                      <li class="list-group-item">{{ ranked['username'] }}</li>
                     {% endif %}
                   {% endfor %}
                 </ul>
@@ -161,18 +158,18 @@
                 <hr class="my-4">
                 <ul class="list-group">
                   {% for ranked in best_split %}
-                    {% if ranked == "%s %s"|format(current_user.first, current_user.last) %}
+                    {% if ranked['username'] == current_user.username %}
                       <li class="list-group-item d-flex justify-content-between align-items-center bg-info text-white">
                         You
-                        <span class="badge badge-primary badge-pill">0:00</span>
+                        <span class="badge badge-primary badge-pill">{{ranked['split']}}</span>
                       </li>
                     {% elif loop.first %}
                       <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
-                        {{ ranked }}
+                        {{ ranked['username'] }}
                         <span class="badge badge-primary badge-pill">0:00</span>
                       </li>
                     {% else %}
-                      <li class="list-group-item">{{ ranked }}</li>
+                      <li class="list-group-item">{{ ranked['username'] }}</li>
                     {% endif %}
                   {% endfor %}
                 </ul>
