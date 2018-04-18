@@ -57,18 +57,18 @@
           <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
               <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('profile') }}">Home
+                <a class="nav-link" href="{{ url_for('team') }}">Home
                   <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Workouts</a>
+                <a class="nav-link" href="{{ url_for('workouts') }}">Workouts</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Services</a>
+                <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Contact</a>
+                <a class="nav-link" href="{{ url_for('logout') }}">Log out</a>
               </li>
             </ul>
           </div>
@@ -174,7 +174,7 @@
                           <span class="badge badge-primary badge-pill">{{(split//60)|round|int}}:{% if ranked['split']%60 < 10 %}0{%endif%}{{(split%60)|round(2,'common')}}</span>
                         </li>
                       {% else %}
-                        <li class="list-group-item">{{ ranked['username'] }} {{(split//60)|round|int}}:{% if ranked['split']%60 < 10 %}0{%endif%}{{(split%60)|round(2,'common')}}</li>
+                        <li class="list-group-item">{{ ranked['username'] }}</li>
                       {% endif %}
                     {% endwith %}
                   {% endfor %}

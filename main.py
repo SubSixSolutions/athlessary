@@ -85,7 +85,7 @@ def new_signup():
                         if not is_safe_url(next_url):
                             return abort(400)
 
-                        return redirect(next_url or url_for('profile'))
+                        return redirect(next_url or url_for('team'))
 
                 signin_form.username_field.errors.append("Invalid Username or Password.")
 
@@ -148,14 +148,6 @@ def profile():
     form.bio.data = user_profile['bio']
 
     return render_template('profile.html', form=form, profile=user_profile, sign_certificate=sign_certificate)
-
-
-@application.route('/userlist')
-@login_required
-def userlist():
-    users = db.select('users', ['ALL'], order_by=['username'])
-
-    return render_template('userlist.html', user_list=users)
 
 
 @application.route('/workouts', methods=['GET', 'POST'])
