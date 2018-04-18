@@ -79,6 +79,9 @@
   </head>
 
   <body>
+      {% extends "flash_box.html" %}
+      {% block body %}
+
 
     <div class="container content-div">
       <!-- Navigation -->
@@ -110,8 +113,8 @@
       </nav>
 
       <!-- Your Content Here -->
-      <div class="container">
-        <div class="row">
+      <div class="row">
+        <!-- <div class="row"> -->
           <div class="col-sm-4 align-items-center mt-5" id="img_row">
             <div class="row">
               <div class="col-auto mx-auto">
@@ -241,7 +244,7 @@
               </div>
             </form>
           </div>
-        </div>
+        <!-- </div> -->
 
         <!-- Modal -->
         <div class="modal fade" id="profile_modal" tabindex="-1" role="dialog" aria-labelledby="modal_label" aria-hidden="true">
@@ -302,7 +305,7 @@
     <!-- Core JavaScript -->
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="{{url_for('static', filename='js/new_profile.js')}}"></script>
-
+      {% endblock %}
   </body>
 
 </html>
