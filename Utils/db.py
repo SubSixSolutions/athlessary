@@ -6,6 +6,7 @@ import sys
 import psycopg2
 from psycopg2 import extras, sql as SQL
 
+from Utils import config
 from Utils.log import log
 
 
@@ -66,8 +67,9 @@ class Database:
         try:
             connect_str = generate_connection_string(unit_test)
             self.conn = psycopg2.connect(connect_str, cursor_factory=extras.RealDictCursor)
-            # self.init_tables()
-            log.info('Return NEW database object')
+            if config.DB_INIT:
+                self.init_tables()
+            log.info('Return new database object from connect_str: {}'.format(connect_str))
         except sqlite3.Error as e:
             log.error(e, exc_info=True)
             self.conn = None
