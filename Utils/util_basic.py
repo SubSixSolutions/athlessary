@@ -226,7 +226,7 @@ def generate_leader_board(username):
     meters = format_leader_arr(agg_meters, 'total_meters', username)
 
     agg_minutes = db.get_leader_board_minutes(last_sunday)
-    minutes = format_leader_arr(agg_minutes, 'total_minutes', username)
+    minutes = format_leader_arr(agg_minutes, 'total_seconds', username)
 
     agg_split = db.get_leader_board_split(last_sunday)
     split = format_leader_arr(agg_split, 'split', username)

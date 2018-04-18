@@ -145,7 +145,7 @@
                       {% elif loop.first %}
                         <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white">
                           {{ ranked['username'] }}
-                          <span class="badge badge-primary badge-pill">{{ranked['total_seconds']//60}}:{% if ranked['total_seconds']%60 < 10 %}0{%endif%}{{ranked['total_seconds']%60}}</span>
+                          <span class="badge badge-primary badge-pill">{{seconds//60}}:{% if seconds%60 < 10 %}0{%endif%}{{seconds%60}}</span>
                         </li>
                       {% else %}
                         <li class="list-group-item">{{ ranked['username'] }}</li>
