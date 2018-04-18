@@ -16,7 +16,7 @@ class User:
     def __init__(self, user_id, active=True):
 
         result = db.get_user(user_id)
-        # result = db.select('users', ['ALL'], ['user_id'], [user_id])
+
         if not result:
             raise ValueError('Could Not Find User')
 
@@ -116,6 +116,11 @@ class User:
 
     def get_id(self):
         return str(self.user_id)
+
+    def is_profile_complete(self):
+
+        user_dict = db.get_user(self.user_id)
+        return None not in user_dict.values()
 
     def change_profile_picture(self, form):
         """

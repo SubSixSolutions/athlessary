@@ -85,6 +85,10 @@ def new_signup():
                         if not is_safe_url(next_url):
                             return abort(400)
 
+                        if not current_user.is_profile_complete():
+                            flash('Please complete your profile before continuing!')
+                            return redirect(next_url or url_for('profile'))
+
                         return redirect(next_url or url_for('team'))
 
                 signin_form.username_field.errors.append("Invalid Username or Password.")
