@@ -650,7 +650,7 @@ class Database:
             JOIN users AS u
             ON u.user_id = tbl.user_id
             GROUP BY u.username
-            ORDER BY split DESC
+            ORDER BY split
             '''
         ).format(SQL.Placeholder())
 
