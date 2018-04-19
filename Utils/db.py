@@ -180,7 +180,7 @@ class Database:
                 $$
                 BEGIN
                     DELETE FROM profile
-                    WHERE profile.user_id = old.user_id;
+                    WHERE profile.user_id IN (old.user_id);
                     RETURN NEW;
                 END;
                 $$
