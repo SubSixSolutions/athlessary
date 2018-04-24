@@ -7,8 +7,10 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from passlib.hash import pbkdf2_sha256
 from werkzeug.datastructures import Headers
 from werkzeug.utils import secure_filename
+from twilio.rest import Client
 
 import Forms.web_forms as web_forms
+
 from User.roles import Role
 from User.user import User
 from Utils import util_basic
@@ -18,6 +20,7 @@ from Utils.log import log
 from Utils.util_basic import bucket_name
 from Utils.util_basic import create_workout, build_graph_data
 from Utils.data_loading import csv_to_db
+from Utils.secret_config import twilio_sid, twilio_auth_token, twilio_number
 
 application = Flask(__name__)
 # TODO Update secret key and move to external file
@@ -27,6 +30,8 @@ application.debug = True
 CSV_UPLOAD_FOLDER = './csv_uploads'
 ALLOWED_EXTENSIONS = {'csv', 'txt'}
 application.config['CSV_UPLOAD_FOLDER'] = CSV_UPLOAD_FOLDER
+
+twilio_client = Client(twilio_sid, twilio_auth_token)
 
 login_manager = LoginManager()
 login_manager.init_app(application)
@@ -349,18 +354,31 @@ def drivers():
 def cars():
     assigned_cars = json.loads(request.args.get('cars'))['cars']
     full_car_info = []
-    for driver in list(assigned_cars.keys()):
+    for driver_id in list(assigned_cars.keys()):
         car_info = {}
-        result = db.select('users', ['first', 'last', 'phone'], ['user_id'], [driver], fetchone=True)
-        car_info['driver'] = result
-        for athlete in assigned_cars[driver]['athletes']:
-            athletes = []
+        result = db.select('users', ['first', 'last', 'phone'], ['user_id'], [driver_id], fetchone=True)
+        driver = result
+        car_info['driver'] = driver
+        athletes = []
+        car_string = ''
+        for athlete in assigned_cars[driver_id]['athletes']:
             curr_athlete = athlete[0]
             result = db.select('users', ['first', 'last', 'address', 'city', 'state', 'phone'], ['user_id'],
                                [curr_athlete],
                                fetchone=True)
             athletes.append(result)
-            car_info['athletes'] = athletes
+            car_string += (
+                '{} {}: {}, {} - {}\n'.format(result['first'],
+                                              result['last'],
+                                              result['address'],
+                                              result['state'],
+                                              result['phone']))
+
+        car_info['athletes'] = athletes
+        twilio_client.messages.create(
+            to="+1{}".format(driver['phone']),
+            from_=twilio_number,
+            body="Hi {}, your car tomorrow is: {}".format(driver['first'], car_string))
         full_car_info.append(car_info)
 
     return render_template('cars.html', car_info=full_car_info)
