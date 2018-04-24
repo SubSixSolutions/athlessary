@@ -187,8 +187,9 @@ function populate_chart(_url, chart_instance) {
     // request data and draw the chart
     var elem = document.getElementById("workout");
     if (elem.selectedIndex < 0){
-      // window.alert('Please add at least 2 workouts of the same kind!');
-      return;
+      window.alert('Please log 2 or more workouts of the same type to begin using the graph view.');
+      $("#tab-1").trigger('click');
+      return 1;
     }
     var name = elem.options[elem.selectedIndex].text;
     $.post(_url,
@@ -288,6 +289,7 @@ function format_date_and_time(time_stamp){
 
 function update_workout_table(){
   var table = document.getElementById('myTable');
+  var columns = document.getElementById('new_stuff');
   if (table){
     $.get('/get_all_workouts',
       function(data, status){
@@ -434,16 +436,18 @@ $(window).ready(function(){
   var myChart = create_chart_object();
 
   // add to the chart
-  populate_chart();
+  // removed to stop message from flashing early
+  // populate_chart();
 
   // create the table;
   update_workout_table();
 
   // set up on click function to update data for chart tab
-  elemm = document.getElementById('tab-2');
-  elemm.onclick = function(e) {
+  $("#tab-2").click(function( event ){
+    console.log('a change');
+    event.stopPropagation();
     populate_chart('/generate_graph_data', myChart);
-  };
+  });
 
   // update table tab
   elemm = document.getElementById('tab-3');

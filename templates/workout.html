@@ -13,7 +13,7 @@
     <!-- Bootstrap core CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 
-    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <!-- Link versions of bootstrap and JavaScript -->
@@ -93,12 +93,11 @@
     <!-- tab bar -->
     <div class="container">
         <div class="row">
-            <div class="col-12" style="">
-                <h1 class="mt-5" style="text-align:center;">Your Workouts</h1>
-                <br>
+            <div class="col-12">
+                <h2 class="mt-4 mb-2 display-4 text-center">Your Workouts</h2>
                 <!-- Tabs -->
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
+                <ul class="nav nav-tabs" id="workout-nav-tab">
+                    <li class="nav-item" id="add-workout">
                         <a class="nav-link active" data-toggle="tab" href="#add_a_workout" id="tab-1">Log A Workout</a>
                     </li>
                     <li class="nav-item">
@@ -184,8 +183,8 @@
                             <div class="row">
                                 <!-- Graph Here -->
                                 <div class="col-md-8" id="graph_col">
-                                    <div class="text-center"
-                                         style="border: 1px solid black; max-height:65vh; overflow-y:scroll; height:100%; padding-bottom:0em; padding:1em; background-color: #f8f9fa;">
+                                    <div class="text-center border border-dark"
+                                         style="max-height:65vh; overflow-y:scroll; height:100%; padding-bottom:0em; padding:1em; background-color: #f8f9fa;">
                                         <canvas id="myChart" class="chart" id="a_chart"></canvas>
                                         <div class="col text-center" style="padding-top:1em;">
                                             <!-- <form class=""> -->
@@ -204,10 +203,10 @@
                                 </div>
                                 <!-- Info Panel -->
                                 <div class="col-md-4">
-                                    <div class=""
-                                         style="border: 1px solid black; max-height: 65vh; overflow-y:scroll; height:100%; padding-bottom:0em; padding:1em; background-color: #f8f9fa;">
+                                    <div class="border border-dark"
+                                         style="max-height: 65vh; overflow-y:scroll; height:100%; padding-bottom:0em; padding:1em; background-color: #f8f9fa;">
                                         <div class="col text-center">
-                                            <h5 id='cap'></h5>
+                                            <h5 class="lead" id='cap' ></h5>
                                             <p id="_date"></p>
                                         </div>
                                         <table class="table table-striped" id="side_table">
@@ -232,8 +231,8 @@
                         <ul class="list-group media-list media-list-stream">
                             <div class="container">
                                 <div class="row justify-content-center">
-                                    <div class="col-md-10 mt-3"
-                                         style="border: 1px solid black; padding:1em; background-color: #f8f9fa; margin-bottom:1em;">
+                                    <div class="col-md-10 mt-3 border border-dark"
+                                         style="padding:1em; background-color: #f8f9fa; margin-bottom:1em;">
                                         <div class="col" style="padding-bottom:1em; text-align:center;">
                                             <form class="" action="index.html" method="post">
                                                 <div class="row form-row align-items-center mx-2 mt-2 justify-content-center">
@@ -260,19 +259,19 @@
                                             </form>
                                         </div>
                                         <div class="row table-responsive-md">
-                                            <table class="table table-striped" id="myTable">
-                                                <thead>
-                                                <tr>
-                                                    <th>Date</th>
-                                                    <th>Name</th>
-                                                    <th>Split</th>
-                                                    <th>Edit</th>
-                                                    <th>Delete</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                </tbody>
-                                            </table>
+                                          <table class="table table-striped" id="myTable">
+                                            <thead>
+                                            <tr>
+                                              <th>Date</th>
+                                              <th>Name</th>
+                                              <th>Split</th>
+                                              <th>Edit</th>
+                                              <th>Delete</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                          </table>
                                         </div>
                                     </div>
                                     <!-- Modal -->
