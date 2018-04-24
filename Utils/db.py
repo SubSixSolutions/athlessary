@@ -69,6 +69,7 @@ class Database:
             self.conn = psycopg2.connect(connect_str, cursor_factory=extras.RealDictCursor)
             if config.DB_INIT:
                 self.init_tables()
+            self.init_tables()
             log.info('Return new database object from connect_str: {}'.format(connect_str))
         except sqlite3.Error as e:
             log.error(e, exc_info=True)
@@ -102,7 +103,6 @@ class Database:
             log.error(params)
             log.error('roll back required')
             return None
-
 
     def safe_execute_sql_only(self, sql_statement, params=None):
         try:
@@ -419,7 +419,8 @@ class Database:
           FROM workout AS w
           JOIN erg AS e
           ON e.workout_id = w.workout_id
-          WHERE w.user_id={}'''
+          WHERE w.user_id={}
+          ORDER BY w.time DESC'''
         ).format(SQL.Literal(user_id))
 
         result = self.safe_execute(sql, params=None, fetchone=False)
