@@ -14,7 +14,8 @@ def generate_cars(athletes, drivers):
     :param drivers: array of user_ids of people driving
     :return: dictionary of drivers; dictionary of athletes
     """
-
+    drivers = list(map(int, drivers))
+    athletes = list(map(int, athletes))
     # get results from database
     results = db.select('users', select_cols=['ALL'], where_cols=['user_id'],
                         where_params=[athletes + drivers], fetchone=False)
@@ -127,12 +128,13 @@ def assign_to_cars(drivers, athletes, data):
             curr_driver_athletes = curr_driver['athletes']
             if len(curr_driver_athletes) > 0:
                 curr_driver_athletes = np.array(curr_driver_athletes)
-                curr_driver_athletes = curr_driver_athletes[:,0]
+                curr_driver_athletes = curr_driver_athletes[:, 0]
             if athlete['id'] in curr_driver_athletes:
                 continue
             elif curr_driver['num_assigned'] < curr_driver['num_seats']:
                 # add athlete to the current driver
                 curr_driver['athletes'].append([athlete['id'], smallest_dist])
+                curr_driver['num_assigned'] += 1
             else:
                 # Get the index of the furthest athlete that the driver has in his/her car
                 furthest_athlete_idx = np.argmax(curr_driver['athletes'], axis=0)[1]
@@ -143,7 +145,7 @@ def assign_to_cars(drivers, athletes, data):
 
                 # update the driver by replacing an athlete
                 curr_driver['athletes'][furthest_athlete_idx] = [athlete['id'], smallest_dist]
-            curr_driver['num_assigned'] += 1
+                curr_driver['num_assigned'] += 1
     return drivers
 
 

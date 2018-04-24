@@ -43,15 +43,12 @@
         .footer_style {
             flex-shrink: 0;
         }
-
-        .info {
-            background-color: #2f96b4 !important;
-        }
     </style>
 
 </head>
 
-<body>
+{% extends "flash_box.html" %}
+      {% block body %}
 
 <div class="content-div">
     <!-- Navigation -->
@@ -90,9 +87,6 @@
                 <button type="button" id="csv_button" data-toggle="modal" data-target="#uploadModal" class="my-lg-2 ml-lg-1 btn btn-block btn-outline-dark">Upload
                     CSV
                 </button>
-                <button type="button" id="gdrive_button" class="my-lg-2 ml-lg-1 btn btn-block btn-outline-dark">
-                    Import from GDrive
-                </button>
             </div>
             <div class="col-auto">
                 <table class="table table-striped" id="athlete_table">
@@ -108,7 +102,7 @@
 
                     </tbody>
                 </table>
-                <button type="button" id="done_button" class="btn btn-primary btn-lg btn-block">ok</button>
+                <button type=button id="done_button" class="btn btn-primary btn-lg btn-block">Assign Cars</button>
 
             </div>
         </div>
@@ -155,9 +149,8 @@
     </div>
 </div>
 
-<!-- <script src="/Users/Max/PycharmProjects/athlessary/static/js/roster.js"></script> -->
 <script src="{{ url_for( 'static', filename='js/roster.js' ) }}"></script>
 
-</body>
+{% endblock %}
 
 </html>
