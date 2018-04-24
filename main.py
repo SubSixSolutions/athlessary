@@ -371,7 +371,7 @@ def cars():
                 '{} {}: {}, {} - {}\n'.format(result['first'],
                                               result['last'],
                                               result['address'],
-                                              result['state'],
+                                              result['city'],
                                               result['phone']))
 
         car_info['athletes'] = athletes
