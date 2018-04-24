@@ -63,9 +63,12 @@ function on_submit() {
     //console.log(athletes);
     //let json = JSON.stringify(athletes);
     //console.log(json);
+    $.post('/drivers', {athletes: athletes, drivers:drivers},
+            function(data, status){
+            window.location.assign("/cars?cars="+ JSON.stringify(data));
+    });
 
-    $.post('/drivers', {athletes: athletes, drivers:drivers});
-    return false;
+    //return false;
 }
 function submit_success() {
     console.log('success');
