@@ -161,44 +161,41 @@ function draw_chart(data, myChart){
     myChart.update();
 }
 
-function update_graph_options(){
-  console.log('update the options');
-  // $("#workout").empty();
-  $.get('/get_workout_names', {}, function(data, status) {
-    // clear old workouts
-    $("#workout").empty();
-
-    // add new workouts
-    var elem = document.getElementById("workout");
-    for (var i = 0; i < data.length; i++){
-      option = document.createElement('option');
-      option.innerHTML = data[i]['name'];
-      elem.appendChild(option);
-    }
-  });
-}
-
 function populate_chart(_url, chart_instance) {
-    // var length = 0;
 
-    //generate workout workout
-    update_graph_options();
+    //generate workout names
+    $.get('/get_workout_names', {}, function(data, status) {
+      $("#workout").empty();
 
-    // request data and draw the chart
-    var elem = document.getElementById("workout");
-    if (elem.selectedIndex < 0){
-      window.alert('Please log 2 or more workouts of the same type to begin using the graph view.');
-      $("#tab-1").trigger('click');
-      return 1;
-    }
-    var name = elem.options[elem.selectedIndex].text;
-    $.post(_url,
-        {share: name}, function (data, status) {
-            console.log(data);
-            draw_chart(data, chart_instance);
-        }
-    );
-    return 0;
+      // add new workouts
+      var elem = document.getElementById("workout");
+      for (var i = 0; i < data.length; i++){
+        option = document.createElement('option');
+        option.innerHTML = data[i]['name'];
+        elem.appendChild(option);
+      }
+
+      // request data and draw the chart
+      var elem = document.getElementById("workout");
+
+      // fail and go back to first tab if there are no workouts to graph
+      if (elem.selectedIndex < 0){
+        window.alert('Please log 2 or more workouts of the same type to begin using the graph view.');
+        $("#tab-1").trigger('click');
+        return 1;
+      }
+
+      // otherwise, show first workout in list
+      var name = elem.options[elem.selectedIndex].text;
+      $.post(_url,
+          {share: name}, function (data, status) {
+              console.log(data);
+              draw_chart(data, chart_instance);
+          }
+      );
+      $("#tab-2").tab('show');
+      return 0;
+    });
 }
 
 function modal_edit(_id, _url){
