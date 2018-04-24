@@ -14,7 +14,33 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <!-- Custom styles for this template -->
+    <style>
+        html {
+            height: 100%;
+        }
 
+        body {
+            height: 100vh;
+            padding-top: 54px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 992px) {
+            body {
+                padding-top: 56px;
+            }
+        }
+
+        .content-div {
+            flex: 1 0 auto;
+        }
+
+        .footer_style {
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
 <div class="content-div">
@@ -46,32 +72,45 @@
             </div>
         </div>
     </nav>
-
-        <!-- Your Content Here -->
+    <!-- Your Content Here -->
     <div class="row justify-content-center">
         <div class="d-flex flex-column">
-            {% if car_info %}
-                You said: {{ car_info }}
-            {% endif %}
-            <div class="col-auto">
-                <table class="table table-striped" id="athlete_table">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Address</th>
-                        <th>Number of Seats</th>
-                        <th>Driving?</th>
-                    </tr>
-                    </thead>
-                    <tbody>
 
-                    </tbody>
-                </table>
+            <table class="table">
+                {% if car_info %}
+                    {% for car in car_info %}
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">{{ car['driver']['first'] }} {{ car['driver']['last'] }}</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            {% if car['driver']['phone'] %}
+                                <th scope="col">{{ car['driver']['phone'] }}</th>
+                            {% else %}
+                                <th scope="col">No number</th>
+                            {% endif %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for athlete in car['athletes'] %}
+                            <tr>
+                                  <th scope="row">{{  loop.index}}</th>
+                                <td>{{ athlete['first'] }} {{ athlete['last'] }}</td>
+                                <td>{{ athlete['address'] }}, {{ athlete['city'] }}</td>
+                                {% if athlete['phone'] %}
+                                    <th scope="col">{{ athlete['phone'] }}</th>
+                                {% else %}
+                                    <th scope="col">No number</th>
+                                {% endif %}                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    {% endfor %}
+                {% endif %}
 
-            </div>
+            </table>
         </div>
-
     </div>
+
 </div>
 </body>
 <script src="{{ url_for( 'static', filename='js/cars.js' ) }}"></script>
