@@ -8,11 +8,13 @@ TESTING = bool(os.environ.get('TESTING'))
 
 db = Database(TESTING)
 
+environ_twilio = True
 try:
     twilio_sid = os.environ['TWILIO_SID']
     twilio_auth_token = os.environ['TWILIO_AUTH_TOKEN']
     twilio_number = os.environ['TWILIO_NUMBER']
 except KeyError:
+    environ_twilio = False
     try:
         from Utils.secret_config import twilio_sid, twilio_auth_token, twilio_number
 
