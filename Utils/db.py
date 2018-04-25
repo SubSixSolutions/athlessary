@@ -69,7 +69,6 @@ class Database:
             self.conn = psycopg2.connect(connect_str, cursor_factory=extras.RealDictCursor)
             if config.DB_INIT:
                 self.init_tables()
-            self.init_tables()
             log.info('Return new database object from connect_str: {}'.format(connect_str))
         except sqlite3.Error as e:
             log.error(e, exc_info=True)

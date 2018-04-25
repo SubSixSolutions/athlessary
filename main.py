@@ -20,7 +20,7 @@ from Utils.log import log
 from Utils.util_basic import bucket_name
 from Utils.util_basic import create_workout, build_graph_data
 from Utils.data_loading import csv_to_db
-from Utils.secret_config import twilio_sid, twilio_auth_token, twilio_number
+from Utils.config import twilio_sid, twilio_auth_token, twilio_number
 
 application = Flask(__name__)
 # TODO Update secret key and move to external file
