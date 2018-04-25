@@ -54,7 +54,8 @@ def set_where_clause(cols, operators=None):
         operators = ['=' for i in range(len(cols))]
 
     base = SQL.SQL('{}{}{} ').format(SQL.Identifier(cols[0]), SQL.SQL(operators[0]), SQL.Placeholder())
-    where_col_to_str = [SQL.SQL('AND {}{}{}').format(SQL.Identifier(cols[i]), SQL.SQL(operators[i]), SQL.Placeholder()) for i in range(1, len(cols))]
+    where_col_to_str = [SQL.SQL('AND {}{}{}').format(SQL.Identifier(cols[i]), SQL.SQL(operators[i]), SQL.Placeholder())
+                        for i in range(1, len(cols))]
     return SQL.SQL("{} {}").format(base, SQL.SQL(" ").join(where_col_to_str))
 
 
@@ -118,27 +119,37 @@ class Database:
     def create_users(self):
         # cur.execute("DROP TABLE IF EXISTS users")
 
-        sql = '''CREATE TABLE IF NOT EXISTS users (
-                password  VARCHAR(255),
-                user_id   SERIAL           PRIMARY KEY,
-                role      INTEGER          DEFAULT (1),
-                first     VARCHAR(20)      NOT NULL,
-                last      VARCHAR(20)      NOT NULL,
-                username  VARCHAR(20)      UNIQUE
-                                           NOT NULL,
-                address   VARCHAR(150),
-                city      VARCHAR(255),
-                state     VARCHAR(255),
-                zip       INTEGER,
-                num_seats INTEGER          DEFAULT (0),
-                phone     BIGINT,
-                team      VARCHAR(20),
-                y         REAL,
-                x         REAL
-            );'''
-
+        sql = '''CREATE TABLE IF NOT EXISTS users ()'''
         self.safe_execute_sql_only(sql)
-        self.conn.commit()
+
+        column_list = [{'col_name': 'password', 'd_type': 'VARCHAR(255)', 'config': []},
+                       {'col_name': 'user_id', 'd_type': 'SERIAL', 'config': ['PRIMARY_KEY']},
+                       {'col_name': 'role', 'd_type': 'INTEGER', 'config': ['DEFAULT(1)']},
+                       {'col_name': 'first', 'd_type': 'VARCHAR(20)', 'config': ['NOT NULL']},
+                       {'col_name': 'last', 'd_type': 'VARCHAR(20)', 'config': ['NOT NULL']},
+                       {'col_name': 'username', 'd_type': 'VARCHAR(20)', 'config': ['NOT NULL', 'UNIQUE']},
+                       {'col_name': 'address', 'd_type': 'VARCHAR(150)', 'config': []},
+                       {'col_name': 'city', 'd_type': 'VARCHAR(255)', 'config': []},
+                       {'col_name': 'state', 'd_type': 'VARCHAR(255)', 'config': []},
+                       {'col_name': 'zip', 'd_type': 'INTEGER', 'config': []},
+                       {'col_name': 'num_seats', 'd_type': 'INTEGER', 'config': ['DEFAULT(0)']},
+                       {'col_name': 'phone', 'd_type': 'BIGINT', 'config': []},
+                       {'col_name': 'team', 'd_type': 'VARCHAR(20)', 'config': []},
+                       {'col_name': 'x', 'd_type': 'REAL', 'config': []},
+                       {'col_name': 'y', 'd_type': 'REAL', 'config': []}]
+
+        for column in column_list:
+            self.add_column(table='users', col_name=column['col_name'],
+                            data_type=column['d_type'],
+                            config=column['config'])
+
+    def add_column(self, table='', col_name='', data_type='', config=[]):
+        sql = '''ALTER TABLE {} ADD {} {}'''.format(table, col_name, data_type, ' '.join(config))
+
+        try:
+            self.safe_execute_sql_only(sql)
+        except psycopg2.ProgrammingError as e:
+            log.error('{}'.format(e))
 
     def create_profile(self):
         # cur.execute("DROP TABLE IF EXISTS profile")
@@ -302,9 +313,11 @@ class Database:
         """
 
         q1 = SQL.SQL("insert into {} ({}) values ({}) returning {}").format(SQL.Identifier(table_name),
-                                                               SQL.SQL(', ').join(map(SQL.Identifier, col_names)),
-                                                               SQL.SQL(', ').join(SQL.Placeholder() * len(col_names)),
-                                                               SQL.Identifier(pk))
+                                                                            SQL.SQL(', ').join(
+                                                                                map(SQL.Identifier, col_names)),
+                                                                            SQL.SQL(', ').join(
+                                                                                SQL.Placeholder() * len(col_names)),
+                                                                            SQL.Identifier(pk))
         print(list(col_params))
 
         row_id = self.safe_execute(q1, list(col_params))[pk]
@@ -322,7 +335,7 @@ class Database:
         """
 
         sql = SQL.SQL("DELETE FROM {} WHERE {}={}").format(SQL.Identifier(table_name), SQL.Identifier(id_col_name),
-                                                       SQL.Literal(item_id))
+                                                           SQL.Literal(item_id))
         self.safe_execute_sql_only(sql)
         self.conn.commit()
 
@@ -367,11 +380,13 @@ class Database:
         params_tuple = tuple(where_params)
         if type(params_tuple[0]) == list:
             user_id_list = SQL.SQL(', ').join(map(SQL.Literal, params_tuple[0]))
-            sql = SQL.SQL("SELECT {} FROM {} WHERE {} IN ({});").format(select_cols_to_str, SQL.Identifier(table_name), SQL.Identifier(where_cols[0]), user_id_list)
+            sql = SQL.SQL("SELECT {} FROM {} WHERE {} IN ({});").format(select_cols_to_str, SQL.Identifier(table_name),
+                                                                        SQL.Identifier(where_cols[0]), user_id_list)
             result = self.safe_execute(sql, params=None, fetchone=False)
             return result
         else:
-            sql = SQL.SQL("SELECT {} FROM {} WHERE {}").format(select_cols_to_str, SQL.Identifier(table_name), where_col_to_str)
+            sql = SQL.SQL("SELECT {} FROM {} WHERE {}").format(select_cols_to_str, SQL.Identifier(table_name),
+                                                               where_col_to_str)
 
         if order_by:
             sql += order
@@ -393,7 +408,8 @@ class Database:
         :return:
         """
 
-        set_str = [SQL.SQL("{}={}").format(SQL.Identifier(update_cols[i]), SQL.Placeholder()) for i in range(len(update_cols))]
+        set_str = [SQL.SQL("{}={}").format(SQL.Identifier(update_cols[i]), SQL.Placeholder()) for i in
+                   range(len(update_cols))]
         set_str = SQL.SQL(", ").join(set_str)
 
         where_str = set_where_clause(where_cols, operators)
@@ -435,13 +451,13 @@ class Database:
         """
 
         sql = SQL.SQL(
-             '''SELECT *, to_char(time, 'yyyy-mm-ddThh24:mi:ss.000Z') as time
-              FROM workout AS w
-              JOIN erg AS e
-              ON e.workout_id = w.workout_id
-              WHERE w.user_id={}
-              AND e.workout_id={}
-              ORDER BY e.erg_id'''
+            '''SELECT *, to_char(time, 'yyyy-mm-ddThh24:mi:ss.000Z') as time
+             FROM workout AS w
+             JOIN erg AS e
+             ON e.workout_id = w.workout_id
+             WHERE w.user_id={}
+             AND e.workout_id={}
+             ORDER BY e.erg_id'''
         ).format(SQL.Placeholder(), SQL.Placeholder())
 
         result = self.safe_execute(sql, (user_id, workout_id), fetchone=False)
@@ -531,7 +547,7 @@ class Database:
              WHERE user_id={}
              GROUP BY name
              HAVING COUNT(workout_id) > 1'''
-            ).format(SQL.Placeholder())
+        ).format(SQL.Placeholder())
 
         result = self.safe_execute(sql, (user_id,), fetchone=False)
 
