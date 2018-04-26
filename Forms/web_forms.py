@@ -27,6 +27,26 @@ def unique_user_name(form, field):
         raise ValidationError('Username \'%s\' is taken!' % field.data)
 
 
+def can_drive_check(form, field):
+    if int(form.num_seats.data) > 0:
+        if not field.data:
+            raise ValidationError('This field is required.')
+
+
+def make_selection(form, field):
+    if field.data == 'blank':
+        raise ValidationError('Please make a selection.')
+
+
+class ChangePasswordForm(FlaskForm):
+    new_pass = PasswordField('New Password', [
+        validators.InputRequired(),
+        validators.EqualTo('retype_new_pass', message='Passwords must match.')
+    ])
+    retype_new_pass = PasswordField('retype password', validators=[InputRequired()])
+    submit = SubmitField(u'Change Password')
+
+
 class SignUpForm(FlaskForm):
     username = StringField('username',
                            validators=[Length(min=1, max=25, message="Username must be less than 25 characters."),
@@ -39,17 +59,6 @@ class SignUpForm(FlaskForm):
     first = StringField('First Name', validators=[validators.InputRequired()])
     last = StringField('last name', validators=[validators.InputRequired()])
     submit = SubmitField(u'Create Account')
-
-
-def can_drive_check(form, field):
-    if int(form.num_seats.data) > 0:
-        if not field.data:
-            raise ValidationError('This field is required.')
-
-
-def make_selection(form, field):
-    if field.data == 'blank':
-        raise ValidationError('Please make a selection.')
 
 
 class ProfileForm(FlaskForm):

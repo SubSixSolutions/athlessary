@@ -196,6 +196,17 @@ def team():
                            best_split=best_split)
 
 
+@application.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings():
+    password_form = web_forms.ChangePasswordForm()
+    print(request.method)
+    if password_form.validate_on_submit():
+        print('validated')
+        return 'go u'
+    return render_template('user_settings.html', pass_form=password_form)
+
+
 @application.route('/logout')
 @login_required
 def logout():
