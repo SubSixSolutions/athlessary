@@ -7,8 +7,9 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from passlib.hash import pbkdf2_sha256
 from werkzeug.utils import secure_filename
 from twilio.rest import Client
-
 import Forms.web_forms as web_forms
+from itsdangerous import URLSafeTimedSerializer
+
 
 from User.user import User
 from Utils import util_basic
@@ -26,6 +27,8 @@ application = Flask(__name__)
 # TODO Update secret key and move to external file
 application.secret_key = 'super secret string'  # Change this!
 application.debug = True
+
+ts = URLSafeTimedSerializer(application.config["SECRET_KEY"])
 
 CSV_UPLOAD_FOLDER = './csv_uploads'
 ALLOWED_EXTENSIONS = {'csv', 'txt'}
@@ -112,6 +115,50 @@ def new_signup():
 
     return render_template('signup.html', sign_up=signup_form, sign_in=signin_form, login=login,
                            _url="https://s3-us-west-2.amazonaws.com/athlessary-images/defaults/login_photo.jpg")
+
+
+@application.route('/recover', methods=['GET', 'POST'])
+def recover():
+
+    form = web_forms.EnterUserName()
+
+    if form.validate_on_submit():
+        subject = "Password reset requested"
+
+        token = ts.dumps('target-email', salt='recover-key')
+
+        recover_url = url_for(
+            'recover_password',
+            token=token,
+            _external=True)
+
+        html = render_template('recover_email.html', recover_url=recover_url)
+
+        import yagmail
+        yag = yagmail.SMTP("sender-email", "sender-password")
+        yag.send("target-email", subject, html)
+        flash('Password recovery directions have been sent to your email account.', 'alert-success')
+        return redirect(url_for('new_signup'))
+
+    return render_template('recover.html', form=form)
+
+
+@application.route('/reset/<token>', methods=['GET', 'POST'])
+def recover_password(token):
+    try:
+        email = ts.loads(token, salt="recover-key", max_age=86400)
+    except:
+        abort(404)
+
+    password_form = web_forms.ChangePasswordForm()
+
+    if password_form.validate_on_submit():
+        # look up user via email address
+        # change password in the database
+        pass
+        redirect(url_for('new_signup'))
+
+    return render_template('password_recovery.html', pass_form=password_form, token=token)
 
 
 @application.route('/profile', methods=['GET', 'POST'])

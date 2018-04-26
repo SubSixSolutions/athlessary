@@ -33,6 +33,12 @@ def unique_user_name(form, field):
         raise ValidationError('Username \'%s\' is taken!' % field.data)
 
 
+def find_user_name(form, field):
+    names = db.get_names()
+    if names and field.data not in names:
+        raise ValidationError('Unable to locate account for user \'%s\'!' % field.data)
+
+
 def can_drive_check(form, field):
     if int(form.num_seats.data) > 0:
         if not field.data:
@@ -42,6 +48,11 @@ def can_drive_check(form, field):
 def make_selection(form, field):
     if field.data == 'blank':
         raise ValidationError('Please make a selection.')
+
+
+class EnterUserName(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), find_user_name])
+    submit = SubmitField()
 
 
 class ChangePasswordForm(FlaskForm):

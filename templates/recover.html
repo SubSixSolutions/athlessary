@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Password Recovery</title>
+
+    <!-- Bootstrap core CSS -->
+
+    <!-- Link versions of bootstrap and JavaScript -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <!-- Custom styles for this template -->
+    <style>
+      html {
+        height: 100%;
+      }
+      body {
+        height: 100vh;
+        padding-top: 54px;
+        display: flex;
+        flex-direction: column;
+      }
+      @media (min-width: 992px) {
+        body {
+          padding-top: 56px;
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        .border-right, .border-dark {
+          border: none !important;
+        }
+      }
+
+      .content-div {
+        flex: 1 0 auto;
+      }
+      .footer_style {
+        flex-shrink: 0;
+      }
+      .upload-demo .upload-demo-wrap,
+      .upload-demo .upload-result,
+      .upload-demo.ready .upload-msg {
+          display: none;
+      }
+      .upload-demo.ready .upload-demo-wrap {
+          display: block;
+      }
+      .upload-demo.ready .upload-result {
+          display: inline-block;
+      }
+      .upload-demo-wrap {
+          width: 300px;
+          height: 300px;
+          margin: 0 auto;
+      }
+
+      .upload-msg {
+          text-align: center;
+          padding: 50px;
+          font-size: 22px;
+          color: #aaa;
+          width: 260px;
+          margin: 50px auto;
+          border: 1px solid #aaa;
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+
+    <div class="container content-div">
+      <!-- Navigation -->
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="#">Athlessary</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('team') }}">Home
+                  <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('workouts')}}">Workouts</a>
+              </li>
+              <li class="nav-item active dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{url_for('profile')}}">Edit</a>
+                  <a class="dropdown-item" href="{{url_for('settings')}}">Settings</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('logout')}}">Log Out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Your Content Here -->
+      <div class="col mt-4">
+        <form method="POST">
+          {{form.csrf_token}}
+          <div class="form-group row">
+            <label for="staticEmail" class="col-sm-3 col-form-label">Enter Your Username</label>
+            <div class="col-sm-9">
+              {{form.username(class_="form-control", placeholder="", autocomplete="")}}
+              <small>
+                {% for err in form.username.errors %}
+                  <p class="text-danger mb-0">{{err}}</p>
+                {% endfor %}
+              </small>
+            </div>
+          </div>
+          {{form.submit(class_="btn btn-secondary")}}
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer_style" style="padding:0em; margin:0em;">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
+        <div class="container">
+          <div class="navbar-brand">
+            <p style="margin:0em;">Sub Six Solutions Group&trade; 2018</p>
+          </div>
+        </div>
+      </nav>
+    </footer>
+
+    <!-- Core JavaScript -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  </body>
+
+</html>
