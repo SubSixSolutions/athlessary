@@ -143,6 +143,8 @@ class Database:
                             data_type=column['d_type'],
                             config=column['config'])
 
+        self.conn.commit()
+
     def add_column(self, table='', col_name='', data_type='', config=[]):
         sql = '''ALTER TABLE {} ADD {} {}'''.format(table, col_name, data_type, ' '.join(config))
 
