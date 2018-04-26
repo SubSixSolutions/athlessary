@@ -6,6 +6,13 @@ from Utils.log import log
 
 TESTING = bool(os.environ.get('TESTING'))
 
+try:
+    DB_INIT = os.environ['REQ_DB_INIT']
+except KeyError:
+    DB_INIT = False
+
+log.info('DB_INIT: {}\nTESTING: {}\n')
+
 db = Database(TESTING)
 
 environ_twilio = True
@@ -22,9 +29,3 @@ except KeyError:
         log.error('Could Not Find Twilio Credentials')
         sys.exit(1)
 
-try:
-    DB_INIT = os.environ['REQ_DB_INIT']
-except KeyError:
-    DB_INIT = False
-
-log.info('DB_INIT: {}\nTESTING: {}\n')
