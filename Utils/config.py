@@ -11,7 +11,7 @@ try:
 except KeyError:
     DB_INIT = False
 
-log.info('DB_INIT: {}\nTESTING: {}\n')
+log.info('DB_INIT: {}\nTESTING: {}\n'.format(DB_INIT, TESTING))
 
 db = Database(TESTING)
 
