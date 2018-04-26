@@ -17,8 +17,12 @@
   {% if messages %}
     {% for category, message in messages %}
     <div class="justify-content-center">
+      {% if category == 'alert-success' %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {% else %}
       <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Warning!</strong> {{message}}
+      {% endif %}
+        <strong>{% if category == 'alert-success'%}Success!{% else %}Warning!{% endif %}</strong> {{message}}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>

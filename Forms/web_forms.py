@@ -15,6 +15,12 @@ class SignInForm(FlaskForm):
     submit_bttn = SubmitField('Sign In')
 
 
+def password_contains_number(form, field):
+    regex = re.compile('.*[0-9].*')
+    if not regex.match(field.data):
+        raise ValidationError(u'Password must contain at least one number.')
+
+
 def username_start_with_letter(form, field):
     p = re.compile('[a-zA-Z].')
     if not p.match(field.data):
@@ -41,9 +47,14 @@ def make_selection(form, field):
 class ChangePasswordForm(FlaskForm):
     new_pass = PasswordField('New Password', [
         validators.InputRequired(),
-        validators.EqualTo('retype_new_pass', message='Passwords must match.')
+        validators.EqualTo('retype_new_pass', message='Passwords must match.'),
+        Length(min=5, max=25, message='Password must be between 5 and 25 characters long.'),
+        password_contains_number
     ])
-    retype_new_pass = PasswordField('retype password', validators=[InputRequired()])
+    retype_new_pass = PasswordField('retype password',
+            validators=[InputRequired(),
+                        Length(min=5, max=25, message='Password must be between 5 and 25 characters long.'),
+                        password_contains_number])
     submit = SubmitField(u'Change Password')
 
 

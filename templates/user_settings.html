@@ -18,14 +18,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
-    <!-- croppie -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.1/croppie.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.1/croppie.min.js"></script>
-
-    <!-- AWS -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.219.1.min.js"></script>
-
-
     <!-- Custom styles for this template -->
     <style>
       html {
@@ -106,8 +98,12 @@
               <li class="nav-item">
                 <a class="nav-link" href="{{url_for('workouts')}}">Workouts</a>
               </li>
-              <li class="nav-item active">
-                <a class="nav-link" href="{{url_for('profile')}}">Profile</a>
+              <li class="nav-item active dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{url_for('profile')}}">Edit</a>
+                  <a class="dropdown-item" href="{{url_for('settings')}}">Settings</a>
+                </div>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{{url_for('logout')}}">Log Out</a>
@@ -122,12 +118,13 @@
         <div class="col-md-3 border-right border-dark">
           <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
             <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#change-password" role="tab" aria-controls="v-pills-home" aria-selected="true">Change Password</a>
-            <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#user-info" role="tab" aria-controls="v-pills-profile" aria-selected="false">Your Info</a>
+            <!-- <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#user-info" role="tab" aria-controls="v-pills-profile" aria-selected="false">Your Info</a> -->
           </div>
         </div>
         <div class="col-md-9 tab-content">
           <div role="tabpanel" class="tab-pane active" id="change-password">
             <form method="POST">
+              {{pass_form.csrf_token}}
               <div class="form-group row">
                 <label for="staticEmail" class="col-sm-3 col-form-label">Enter a New Password</label>
                 <div class="col-sm-9">
@@ -143,13 +140,18 @@
                 <label for="inputPassword" class="col-sm-3 col-form-label">Retype Your Password</label>
                 <div class="col-sm-9">
                   {{pass_form.retype_new_pass(class_="form-control", placeholder="", autocomplete="new-password")}}
+                  <small>
+                    {% for err in pass_form.retype_new_pass.errors %}
+                      <p class="text-danger mb-0">{{err}}</p>
+                    {% endfor %}
+                  </small>
                 </div>
               </div>
               {{pass_form.submit(class_="btn btn-secondary")}}
             </form>
           </div>
           <div role="tabpanel" class="tab-pane" id="user-info">
-            <p>no</p>
+            <p>Coming Soon!</p>
           </div>
         </div>
       </div>

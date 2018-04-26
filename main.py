@@ -5,13 +5,11 @@ import boto3
 from flask import Flask, render_template, request, redirect, url_for, Response, json, abort, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from passlib.hash import pbkdf2_sha256
-from werkzeug.datastructures import Headers
 from werkzeug.utils import secure_filename
 from twilio.rest import Client
 
 import Forms.web_forms as web_forms
 
-from User.roles import Role
 from User.user import User
 from Utils import util_basic
 from Utils.config import db
@@ -21,6 +19,8 @@ from Utils.util_basic import bucket_name
 from Utils.util_basic import create_workout, build_graph_data
 from Utils.data_loading import csv_to_db
 from Utils.config import twilio_sid, twilio_auth_token, twilio_number
+from Utils.hashes import hash_password
+
 
 application = Flask(__name__)
 # TODO Update secret key and move to external file
@@ -200,10 +200,14 @@ def team():
 @login_required
 def settings():
     password_form = web_forms.ChangePasswordForm()
-    print(request.method)
+
     if password_form.validate_on_submit():
-        print('validated')
-        return 'go u'
+        new_password = hash_password(password_form.data['new_pass'])
+        db.update('users', ['password'], [new_password], ['user_id'], [current_user.user_id])
+
+        flash('Password Changed!', 'alert-success')
+        return redirect(url_for('profile'))
+
     return render_template('user_settings.html', pass_form=password_form)
 
 
