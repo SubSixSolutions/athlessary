@@ -32,6 +32,8 @@ except KeyError:
 try:
     password_recovery_email = os.environ['RECOVERY_EMAIL']
     password_recovery_email_creds = os.environ['RECOVERY_PASS']
+    log.info(password_recovery_email)
+    log.info(password_recovery_email_creds)
 except KeyError:
     try:
         from Utils.secret_config import password_recovery_email, password_recovery_email_creds
