@@ -2,9 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Password Recovery</title>
 </head>
 <body>
-    {{recover_url}}
+  <p>Dear {{user.first}} {{user.last}},</p>
+  <p>You are receiving this email because you have requested a link to recover your password.</p>
+  <p><a href="{{recover_url}}">Here</a> is a link that will allow you to enter a new password and regain access to your account.</p>
+  <p></p>
+  <p>The Team at Athlessary</p>
 </body>
 </html>

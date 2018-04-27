@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, validators, IntegerField, SelectField, BooleanField, TextAreaField
 from wtforms import SubmitField, ValidationError
 from wtforms.fields.html5 import TelField
-from wtforms.validators import InputRequired, Length
+from wtforms.validators import InputRequired, Length, Email
 
 from Utils.config import db
 
@@ -31,6 +31,12 @@ def unique_user_name(form, field):
     names = db.get_names()
     if names and field.data in names:
         raise ValidationError('Username \'%s\' is taken!' % field.data)
+
+
+def unique_email(form, field):
+    emails = db.get_emails()
+    if emails and field.data in emails:
+        raise ValidationError('This email is already associated with an account!')
 
 
 def find_user_name(form, field):
@@ -73,11 +79,8 @@ class SignUpForm(FlaskForm):
     username = StringField('username',
                            validators=[Length(min=1, max=25, message="Username must be less than 25 characters."),
                                        InputRequired(), username_start_with_letter, unique_user_name])
-    password = PasswordField('New Password', [
-        validators.InputRequired(),
-        validators.EqualTo('retype_pass', message='Passwords must match.')
-    ])
-    retype_pass = PasswordField('retype password', validators=[InputRequired()])
+    password = PasswordField('New Password', [validators.InputRequired()])
+    email = StringField('Email', validators=[InputRequired(), Email('Please enter a valid email address.'), unique_email])
     first = StringField('First Name', validators=[validators.InputRequired()])
     last = StringField('last name', validators=[validators.InputRequired()])
     submit = SubmitField(u'Create Account')

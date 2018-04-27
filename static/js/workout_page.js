@@ -52,7 +52,12 @@ function get_workout_by_id(_id, _url){
           else {
             cols += '<td>' + data[i]['minutes'] + ':' + data[i]['seconds'] + '</td>';
           }
-          cols += '<td>' + mins + ':' + secs + '</td>';
+          if (secs < 10){
+            cols += '<td>' + mins + ':0' + secs + '</td>';
+          }
+          else{
+            cols += '<td>' + mins + ':' + secs + '</td>';
+          }
 
           newRow.append(cols);
           $("#side_table").append(newRow);
@@ -301,7 +306,12 @@ function update_workout_table(){
 
           cols += '<td>' + curr_date + '</td>';
           cols += '<td>' + data[i]['name'] + '</td>';
-          cols += '<td>' + data[i]['avg_min'] + ':' + data[i]['avg_sec'] + '</td>';
+          if (data[i]['avg_sec'] < 10){
+            cols += '<td>' + data[i]['avg_min'] + ':0' + data[i]['avg_sec'] + '</td>';
+          }
+          else{
+            cols += '<td>' + data[i]['avg_min'] + ':' + data[i]['avg_sec'] + '</td>';
+          }
           cols += '<td><button type=\"button\" onclick=\"modal_edit(\'' + data[i]['workout_id'] + '\', \'get_a_workout\')\" class=\"btn btn-outline-warning btn-sm\">Edit</button></td>';
           cols += '<td><button type=\"button\" class=\"btn btn-sm btn-outline-danger\" onclick=\"delete_workout(\'' + data[i]['workout_id'] + '\',\'' + i + '\')\">Delete</button></td>';
 

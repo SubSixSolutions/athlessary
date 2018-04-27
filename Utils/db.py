@@ -128,6 +128,7 @@ class Database:
                        {'col_name': 'first', 'd_type': 'VARCHAR(20)', 'config': ['NOT NULL']},
                        {'col_name': 'last', 'd_type': 'VARCHAR(20)', 'config': ['NOT NULL']},
                        {'col_name': 'username', 'd_type': 'VARCHAR(20)', 'config': ['NOT NULL', 'UNIQUE']},
+                       {'col_name': 'email', 'd_type': 'VARCHAR(255)', 'config': ['NOT NULL', 'UNIQUE']},
                        {'col_name': 'address', 'd_type': 'VARCHAR(150)', 'config': []},
                        {'col_name': 'city', 'd_type': 'VARCHAR(255)', 'config': []},
                        {'col_name': 'state', 'd_type': 'VARCHAR(255)', 'config': []},
@@ -592,6 +593,15 @@ class Database:
 
         if result:
             return result['names']
+        return None
+
+    def get_emails(self):
+        sql = SQL.SQL("SELECT ARRAY_AGG(email) as emails FROM users")
+
+        result = self.safe_execute(sql, params=None, fetchone=True)
+
+        if result:
+            return result['emails']
         return None
 
     def get_leader_board_meters(self, date):

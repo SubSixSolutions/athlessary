@@ -9,10 +9,11 @@ from werkzeug.utils import secure_filename
 from twilio.rest import Client
 import Forms.web_forms as web_forms
 from itsdangerous import URLSafeTimedSerializer
+import yagmail
 
 
 from User.user import User
-from Utils import util_basic
+from Utils import util_basic, hashes
 from Utils.config import db
 from Utils.driver_generation import generate_cars, modified_k_means
 from Utils.log import log
@@ -21,6 +22,7 @@ from Utils.util_basic import create_workout, build_graph_data
 from Utils.data_loading import csv_to_db
 from Utils.config import twilio_sid, twilio_auth_token, twilio_number
 from Utils.hashes import hash_password
+from Utils.config import password_recovery_email, password_recovery_email_creds
 
 
 application = Flask(__name__)
@@ -123,20 +125,27 @@ def recover():
     form = web_forms.EnterUserName()
 
     if form.validate_on_submit():
-        subject = "Password reset requested"
 
-        token = ts.dumps('target-email', salt='recover-key')
+        # this will exist -- the form validates it
+        username = form.data['username']
+
+        user = db.select('users', ['ALL'], ['username'], [username])
+
+        email_address = user['email']
+
+        subject = "Password Reset Requested"
+
+        token = ts.dumps(email_address, salt='recover-key')
 
         recover_url = url_for(
             'recover_password',
             token=token,
             _external=True)
 
-        html = render_template('recover_email.html', recover_url=recover_url)
+        html = render_template('recover_email.html', recover_url=recover_url, user=user)
 
-        import yagmail
-        yag = yagmail.SMTP("sender-email", "sender-password")
-        yag.send("target-email", subject, html)
+        yag = yagmail.SMTP(password_recovery_email, password_recovery_email_creds)
+        yag.send(email_address, subject, html)
         flash('Password recovery directions have been sent to your email account.', 'alert-success')
         return redirect(url_for('new_signup'))
 
@@ -153,10 +162,15 @@ def recover_password(token):
     password_form = web_forms.ChangePasswordForm()
 
     if password_form.validate_on_submit():
-        # look up user via email address
+        # hash password
+        password = hashes.hash_password(password_form.data['new_pass'])
+
         # change password in the database
-        pass
-        redirect(url_for('new_signup'))
+        db.update('users', ['password'], [password], ['email'], [email])
+
+        # make them sign in? or redirect to home?
+        flash('Password Changed!', 'alert-success')
+        return redirect(url_for('new_signup'))
 
     return render_template('password_recovery.html', pass_form=password_form, token=token)
 

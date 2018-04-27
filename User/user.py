@@ -35,6 +35,7 @@ class User:
         self.team = result['team']
         self.phone = result['phone']
         self.picture = result['picture']
+        self.email = result['email']
         self.role = Role(result['role'])
 
         self.user_id = user_id
@@ -70,7 +71,7 @@ class User:
         form_data['password'] = hashes.hash_password(form_data['password'])
 
         # wanted_attrs = ['first', 'last', 'username', 'password', 'address', 'has_car', 'num_seats']
-        wanted_attrs = ['first', 'last', 'username', 'password']
+        wanted_attrs = ['first', 'last', 'username', 'password', 'email']
         attr_dict = {x: str(form_data[x]) for x in wanted_attrs}
 
         col_names = attr_dict.keys()

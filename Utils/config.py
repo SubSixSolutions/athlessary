@@ -29,3 +29,13 @@ except KeyError:
         log.error('Could Not Find Twilio Credentials')
         sys.exit(1)
 
+try:
+    password_recovery_email = os.environ['RECOVERY_EMAIL']
+    password_recovery_email_creds = os.environ['RECOVERY_PASS']
+except KeyError:
+    try:
+        from Utils.secret_config import password_recovery_email, password_recovery_email_creds
+    except ModuleNotFoundError:
+        log.error('Could not find password recovery credentials')
+        sys.exit(1)
+
