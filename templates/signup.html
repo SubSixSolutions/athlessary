@@ -176,7 +176,7 @@
                         <form class="" action="{{ url_for('new_signup') }}" method="POST">
                           {{ sign_up.hidden_tag() }}
                           <div class="form-row">
-                            <div class="col-md-6 form-group">
+                            <!-- <div class="col-md-6 form-group">
                               <small class="form-text text-white">Username</small>
                               <div class="input-group mb-1">
                                 {{ sign_up.username(placeholder='User Name', class_="form-control", autocomplete="username") }}
@@ -186,11 +186,11 @@
                                   <p class="text-danger mb-0">{{err}}</p>
                                 {% endfor %}
                               </small>
-                            </div>
-                            <div class="form-group col-md-6">
+                            </div> -->
+                            <div class="form-group col-md-12">
                               <small class="form-text text-white">Email</small>
                               <div class="input-group mb-1">
-                                {{ sign_up.email(placeholder='Password', class_="form-control", autocomplete="email")}}
+                                {{ sign_up.email(placeholder='you@example.com', class_="form-control", autocomplete="email")}}
                               </div>
                               <small>
                                 {% for err in sign_up.email.errors %}
@@ -224,18 +224,18 @@
                             </div>
                           </div>
                           <div class="form-row">
-                            <!-- <div class="form-group col-md-6">
-                              <small class="form-text text-white">Email</small>
+                            <div class="col-md-6 form-group">
+                              <small class="form-text text-white">Username</small>
                               <div class="input-group mb-1">
-                                {{ sign_up.email(placeholder='Password', class_="form-control", autocomplete="email")}}
+                                {{ sign_up.username(placeholder='User Name', class_="form-control", autocomplete="username") }}
                               </div>
                               <small>
-                                {% for err in sign_up.email.errors %}
+                                {% for err in sign_up.username.errors %}
                                   <p class="text-danger mb-0">{{err}}</p>
                                 {% endfor %}
                               </small>
-                            </div> -->
-                            <div class="form-group col-md-12">
+                            </div>
+                            <div class="form-group col-md-6">
                               <small class="form-text text-white">Password</small>
                               <div class="input-group mb-1">
                                 {{ sign_up.password(placeholder='Password', class_="form-control", autocomplete="new-password")}}
