@@ -155,6 +155,12 @@
             <form method="POST">
               {{email_form.csrf_token(id='tag1')}}
               <div class="form-group row">
+                <label for="" class="col-sm-3 col-form-label">Current Email Address</label>
+                <div class="col-sm-9">
+                  <input disabled type="text" name="old_email" value="{{current_user.email}}" class="form-control">
+                </div>
+              </div>
+              <div class="form-group row">
                 <label for="staticEmail" class="col-sm-3 col-form-label">New Email Address</label>
                 <div class="col-sm-9">
                   {{email_form.email(class_="form-control", placeholder="you@example.com", autocomplete="email")}}
