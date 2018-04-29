@@ -19,19 +19,20 @@
     <!-- Custom styles for this template -->
     <style>
       html {
-        min-height: 100%;
-        position: relative;
+        height: 100%;
       }
       body {
-        min-height: 100%;
-        margin-top: 54px;
-        margin-bottom: 56px;
+        height: 100%;
+        padding-top: 56px;
+        /* padding-bottom: 56px; */
       }
       @media (min-width: 992px) {
         body {
-          margin-top: 56px;
-          margin-bottom: 56px;
+          padding-top: 56px;
         }
+      }
+      .main-guy{
+        height: 100%;
       }
       .footer {
         position: absolute;
@@ -101,10 +102,10 @@
     </nav>
 
     <!-- Your Content Here -->
-    <div class="d-flex align-items-center" style="overflow:auto; min-height:100%;">
+    <div class="d-flex align-items-center main-guy">
       <div class="container my-auto" style="overflow-y:scroll;">
           <div class="col-md-6 mx-auto">
-              <div class="transparent_box my-2 container border border-white p-1" style="overflow:auto;">
+              <div class="transparent_box my-2 container border border-white p-1" style="overflow:auto; max-height:100%;">
                 <h1 class="my-3 text-white display-4 text-center">Welcome</h1>
                 <!-- Tabs -->
                 <div class="container">
@@ -257,15 +258,13 @@
       </div>
 
     <!-- Footer -->
-    <footer class="footer" style="padding:0em; margin:0em;">
+    <!-- <footer class="footer" style="padding:0em; margin:0em;">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
-        <!-- <div class="container"> -->
           <div class="navbar-brand">
             <span style="margin:0em;">Sub Six Solutions Group&trade; 2018</span>
           </div>
-        <!-- </div> -->
       </nav>
-    </footer>
+    </footer> -->
 
     {% endblock %}
   </body>
