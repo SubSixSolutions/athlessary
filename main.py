@@ -226,8 +226,6 @@ def workouts():
     if request.method == 'POST':
 
         # TODO implement other workouts
-        print('hello it\'s me')
-        print(request.form)
 
         # get the parameters from the form
         meters = request.form.getlist('meters[]')
@@ -261,15 +259,65 @@ def team():
 @login_required
 def settings():
     password_form = web_forms.ChangePasswordForm()
+    email_form = web_forms.ChangeEmail()
+    tab_num = 0
 
-    if password_form.validate_on_submit():
-        new_password = hash_password(password_form.data['new_pass'])
-        db.update('users', ['password'], [new_password], ['user_id'], [current_user.user_id])
+    if request.method == 'POST':
+        if password_form.data['submit'] and password_form.validate():
+            new_password = hash_password(password_form.data['new_pass'])
+            db.update('users', ['password'], [new_password], ['user_id'], [current_user.user_id])
 
-        flash('Password Changed!', 'alert-success')
-        return redirect(url_for('profile'))
+            flash('Password Changed!', 'alert-success')
+            return redirect(url_for('profile'))
 
-    return render_template('user_settings.html', pass_form=password_form)
+        if email_form.data['email_submit']:
+            tab_num = 1
+            if email_form.validate():
+
+                # update the email address
+                db.update('users', ['email'], [email_form.data['email']], ['user_id'], [current_user.user_id])
+
+                subject = "Confirm Your Email"
+
+                # generate token
+                token = ts.dumps(email_form.data['email'], salt='email-confirm-key')
+
+                # build url
+                confirm_url = url_for(
+                    'confirm_email',
+                    token=token,
+                    _external=True)
+
+                # generate email
+                html = render_template(
+                    'validate_email.html',
+                    validate_url=confirm_url,
+                    user=current_user)
+
+                # set up email sending
+                yag = yagmail.SMTP(password_recovery_email, password_recovery_email_creds)
+                yag.send(email_form.data['email'], subject, html)
+
+                # flash message and return to settings page
+                flash('Please check your email and follow the instructions to confirm your new email address.', 'alert-success')
+                return render_template('user_settings.html', pass_form=password_form, email_form=email_form, tab_num=tab_num)
+
+    return render_template('user_settings.html', pass_form=password_form, email_form=email_form, tab_num=tab_num)
+
+
+@application.route('/validate/<token>', methods=['GET', 'POST'])
+def confirm_email(token):
+    try:
+        email = ts.loads(token, salt="email-confirm-key", max_age=86400)
+    except:
+        abort(404)
+
+    # set "confirmed" to true then return
+    user = db.select('users', ['ALL'], ['email'], [email])
+    db.update('users', ['confirm_email'], [True], ['user_id'], [user['user_id']])
+
+    flash('Your email has been confirmed!', 'alert-success')
+    return redirect(url_for('new_signup'))
 
 
 @application.route('/logout')

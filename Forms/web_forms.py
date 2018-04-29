@@ -56,6 +56,11 @@ def make_selection(form, field):
         raise ValidationError('Please make a selection.')
 
 
+class ChangeEmail(FlaskForm):
+    email = StringField('Email', validators=[InputRequired(), Email('Please enter a valid email address.'), unique_email])
+    email_submit = SubmitField(u'Update Email')
+
+
 class EnterUserName(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), find_user_name])
     submit = SubmitField()

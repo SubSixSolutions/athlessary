@@ -78,7 +78,8 @@
   </head>
 
   <body>
-
+    {% extends "flash_box.html" %}
+    {% block body %}
 
     <div class="container content-div">
       <!-- Navigation -->
@@ -117,12 +118,12 @@
       <div class="row mt-4">
         <div class="col-md-3 border-right border-dark">
           <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-            <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#change-password" role="tab" aria-controls="v-pills-home" aria-selected="true">Change Password</a>
-            <!-- <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#user-info" role="tab" aria-controls="v-pills-profile" aria-selected="false">Your Info</a> -->
+            <a class="nav-link {% if tab_num == 0 %}active{% endif%}" id="v-pills-home-tab" data-toggle="pill" href="#change-password" role="tab" aria-controls="v-pills-home" aria-selected="true">Change Password</a>
+            <a class="nav-link {% if tab_num == 1 %}active{% endif%}" id="v-pills-profile-tab" data-toggle="pill" href="#user-info" role="tab" aria-controls="v-pills-profile" aria-selected="false">Update Email</a>
           </div>
         </div>
         <div class="col-md-9 tab-content">
-          <div role="tabpanel" class="tab-pane active" id="change-password">
+          <div role="tabpanel" class="tab-pane {% if tab_num == 0 %}active{% endif%}" id="change-password">
             <form method="POST">
               {{pass_form.csrf_token}}
               <div class="form-group row">
@@ -150,8 +151,22 @@
               {{pass_form.submit(class_="btn btn-secondary")}}
             </form>
           </div>
-          <div role="tabpanel" class="tab-pane" id="user-info">
-            <p>Coming Soon!</p>
+          <div role="tabpanel" class="tab-pane {% if tab_num == 1 %}active{% endif%}" id="user-info">
+            <form method="POST">
+              {{email_form.csrf_token(id='tag1')}}
+              <div class="form-group row">
+                <label for="staticEmail" class="col-sm-3 col-form-label">New Email Address</label>
+                <div class="col-sm-9">
+                  {{email_form.email(class_="form-control", placeholder="you@example.com", autocomplete="email")}}
+                  <small>
+                    {% for err in email_form.email.errors %}
+                      <p class="text-danger mb-0">{{err}}</p>
+                    {% endfor %}
+                  </small>
+                </div>
+              </div>
+              {{email_form.email_submit(class_="btn btn-secondary", id='submit1')}}
+            </form>
           </div>
         </div>
       </div>
@@ -170,6 +185,7 @@
 
     <!-- Core JavaScript -->
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    {% endblock %}
   </body>
 
 </html>

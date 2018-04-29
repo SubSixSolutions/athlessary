@@ -129,6 +129,7 @@ class Database:
                        {'col_name': 'last', 'd_type': 'VARCHAR(20)', 'config': ['NOT NULL']},
                        {'col_name': 'username', 'd_type': 'VARCHAR(20)', 'config': ['NOT NULL', 'UNIQUE']},
                        {'col_name': 'email', 'd_type': 'VARCHAR(255)', 'config': ['NOT NULL', 'UNIQUE']},
+                       {'col_name': 'confirm_email', 'd_type': 'Boolean', 'config': ['Default(False)']},
                        {'col_name': 'address', 'd_type': 'VARCHAR(150)', 'config': []},
                        {'col_name': 'city', 'd_type': 'VARCHAR(255)', 'config': []},
                        {'col_name': 'state', 'd_type': 'VARCHAR(255)', 'config': []},
