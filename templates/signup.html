@@ -20,13 +20,12 @@
     <style>
       html {
         height: 100%;
+        position: relative;
       }
       body {
         height: 100%;
         padding-top: 54px;
         padding-bottom: 56px;
-        display: flex;
-        flex-direction: column;
       }
       @media (min-width: 992px) {
         body {
@@ -34,12 +33,14 @@
           padding-bottom: 56px;
         }
       }
+      .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 56px;
+      }
       .content-div {
-        /* opacity: 0.3; */
-        flex: 1 0 auto;
         background-image: url({{_url}});
-        /* background-image: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.99) 100%), url({{ url_for('static',filename='images/1/IMG_0706.JPG') }}); */
-        /* background-image: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.6) 100%), url(http://markinternational.info/data/out/39/218888766-cool-amazing-backgrounds.jpg); */
         background-image: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.6) 100%), url({{_url}});
         -webkit-background-size: cover;
         -moz-background-size: cover;
@@ -50,7 +51,6 @@
         flex-shrink: 0;
       }
       .transparent_box {
-        /* background: rgba(76, 175, 80, 0.3); */
         background: rgba(160, 181, 201, 0.3);
       }
       .nav-link{
@@ -60,8 +60,6 @@
         color:black;
       }
       .nav-link:hover{
-        /* color: #FFFFF2;
-        font-weight: bold; */
         background: rgba(255, 255, 255, 0.3);
         color:white;
       }
@@ -74,203 +72,198 @@
     {% extends "flash_box.html" %}
     {% block body %}
 
-    <div class="h-100">
-      <!-- Navigation -->
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container">
-          <a class="navbar-brand" href="#">Athlessary</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="#">Home
-                  <span class="sr-only">(current)</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">About</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Services</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Contact</a>
-              </li>
-            </ul>
-          </div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">Athlessary</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Contact</a>
+            </li>
+          </ul>
         </div>
-      </nav>
+      </div>
+    </nav>
 
-      <!-- Your Content Here -->
-      <div class="container h-100" style="overflow:auto;">
-        <div class="row align-items-center h-100">
-            <div class="col-md-6 mx-auto">
-                <div class="transparent_box my-2 container border border-white p-1" style="overflow:auto;">
-                  <h1 class="my-3 text-white display-4 text-center">Welcome</h1>
-                  <!-- Tabs -->
-                  <div class="container">
-                    <ul class="nav nav-tabs justify-content-center">
-                      <li class="nav-item">
-                        <a class="nav-link {% if login %}active{% endif %}" data-toggle="tab" href="#sign_in_tab" style="border:1px solid white;">Log In</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link {% if login == false %}active{% endif %}" data-toggle="tab" href="#sign_up_tab" style="border:1px solid white;">Sign Up</a>
-                      </li>
-                    </ul>
-                    <br>
-                  </div>
+    <!-- Your Content Here -->
+    <div class="d-flex align-items-center h-100" style="overflow:auto; height:100%;">
+      <div class="container my-auto" style="overflow-y:scroll;">
+          <div class="col-md-6 mx-auto">
+              <div class="transparent_box my-2 container border border-white p-1" style="overflow:auto;">
+                <h1 class="my-3 text-white display-4 text-center">Welcome</h1>
+                <!-- Tabs -->
+                <div class="container">
+                  <ul class="nav nav-tabs justify-content-center">
+                    <li class="nav-item">
+                      <a class="nav-link {% if login %}active{% endif %}" data-toggle="tab" href="#sign_in_tab" style="border:1px solid white;">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link {% if login == false %}active{% endif %}" data-toggle="tab" href="#sign_up_tab" style="border:1px solid white;">Sign Up</a>
+                    </li>
+                  </ul>
+                </div>
 
-                  <div class="container">
-                    <!-- Tab Content -->
-                    <div class="tab-content">
-                      <div role="tabpanel" class="tab-pane {% if login %}active{% else %}fade in{% endif %}" id="sign_in_tab">
-                        <br>
-                        <div class="row">
-                          <div class="col-md-12 mx-auto">
-                            <form class="mx-auto" method="POST">
-                            <!-- change ID so 2 things don't have the same ID -->
-                              {{ sign_in.csrf_token(id='tag1') }}
-                              <div class="form-row row">
-                                <div class="form-group col-md-8 mx-auto">
-                                  <small class="form-text text-white" for="team">User Name</small>
-                                  <div class="input-group mb-1">
-                                    {{ sign_in.username_field(placeholder='User Name', autocomplete="username", class_="form-control") }}
-                                  </div>
-                                  <small>
-                                    {% for err in sign_in.username_field.errors %}
-                                      <p class="text-danger mb-0">{{err}}</p>
-                                    {% endfor %}
-                                  </small>
+                <div class="container mt-3">
+                  <!-- Tab Content -->
+                  <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane {% if login %}active{% else %}fade in{% endif %}" id="sign_in_tab">
+                      <div class="row">
+                        <div class="col-md-12 mx-auto">
+                          <form class="mx-auto" method="POST">
+                          <!-- change ID so 2 things don't have the same ID -->
+                            {{ sign_in.csrf_token(id='tag1') }}
+                            <div class="form-row row">
+                              <div class="form-group col-md-8 mx-auto">
+                                <small class="form-text text-white" for="team">User Name</small>
+                                <div class="input-group mb-1">
+                                  {{ sign_in.username_field(placeholder='User Name', autocomplete="username", class_="form-control") }}
+                                </div>
+                                <small>
+                                  {% for err in sign_in.username_field.errors %}
+                                    <p class="text-danger mb-0">{{err}}</p>
+                                  {% endfor %}
+                                </small>
+                              </div>
+                            </div>
+                            <div class="form-row row">
+                              <div class="form-group col-md-8 mx-auto">
+                                <small class="form-text text-white">Password</small>
+                                <div class="input-group mb-1">
+                                  {{ sign_in.password_field(placeholder='Password', class_="form-control", autocomplete="current-password") }}
+                                </div>
+                                <small>
+                                  {% for err in sign_in.password_field.errors %}
+                                    <p class="text-danger mb-0">{{err}}</p>
+                                  {% endfor %}
+                                </small>
+                                <small>
+                                  <a class="text-info" href="{{url_for('recover')}}">Forgot Password?</a>
+                                </small>
+                              </div>
+                            </div>
+                            <div class="form-row">
+                              <div class="form-group col-auto mx-auto">
+                                <div class="input-group mx-auto">
+                                  {{ sign_in.submit_bttn(class_="btn btn-primary") }}
                                 </div>
                               </div>
-                              <div class="form-row row">
-                                <div class="form-group col-md-8 mx-auto">
-                                  <small class="form-text text-white">Password</small>
-                                  <div class="input-group mb-1">
-                                    {{ sign_in.password_field(placeholder='Password', class_="form-control", autocomplete="current-password") }}
-                                  </div>
-                                  <small>
-                                    {% for err in sign_in.password_field.errors %}
-                                      <p class="text-danger mb-0">{{err}}</p>
-                                    {% endfor %}
-                                  </small>
-                                  <small>
-                                    <a class="text-info" href="{{url_for('recover')}}">Forgot Password?</a>
-                                  </small>
-                                </div>
-                              </div>
-                              <div class="form-row">
-                                <div class="form-group col-auto mx-auto">
-                                  <div class="input-group mx-auto">
-                                    {{ sign_in.submit_bttn(class_="btn btn-primary") }}
-                                  </div>
-                                </div>
-                              </div>
-                            </form>
-                          </div>
+                            </div>
+                          </form>
                         </div>
                       </div>
-                      <div role="tabpanel" class="tab-pane {% if login == false %}active{% else %}fade in{% endif %}" id="sign_up_tab">
-                        <form class="" action="{{ url_for('new_signup') }}" method="POST">
-                          {{ sign_up.hidden_tag() }}
-                          <div class="form-row">
-                            <!-- <div class="col-md-6 form-group">
-                              <small class="form-text text-white">Username</small>
-                              <div class="input-group mb-1">
-                                {{ sign_up.username(placeholder='User Name', class_="form-control", autocomplete="username") }}
-                              </div>
-                              <small>
-                                {% for err in sign_up.username.errors %}
-                                  <p class="text-danger mb-0">{{err}}</p>
-                                {% endfor %}
-                              </small>
-                            </div> -->
-                            <div class="form-group col-md-12">
-                              <small class="form-text text-white">Email</small>
-                              <div class="input-group mb-1">
-                                {{ sign_up.email(placeholder='you@example.com', class_="form-control", autocomplete="email")}}
-                              </div>
-                              <small>
-                                {% for err in sign_up.email.errors %}
-                                  <p class="text-danger mb-0">{{err}}</p>
-                                {% endfor %}
-                              </small>
+                    </div>
+                    <div role="tabpanel" class="tab-pane {% if login == false %}active{% else %}fade in{% endif %}" id="sign_up_tab">
+                      <form class="" action="{{ url_for('new_signup') }}" method="POST">
+                        {{ sign_up.hidden_tag() }}
+                        <div class="form-row">
+                          <!-- <div class="col-md-6 form-group">
+                            <small class="form-text text-white">Username</small>
+                            <div class="input-group mb-1">
+                              {{ sign_up.username(placeholder='User Name', class_="form-control", autocomplete="username") }}
                             </div>
+                            <small>
+                              {% for err in sign_up.username.errors %}
+                                <p class="text-danger mb-0">{{err}}</p>
+                              {% endfor %}
+                            </small>
+                          </div> -->
+                          <div class="form-group col-md-12">
+                            <small class="form-text text-white">Email</small>
+                            <div class="input-group mb-1">
+                              {{ sign_up.email(placeholder='you@example.com', class_="form-control", autocomplete="email")}}
+                            </div>
+                            <small>
+                              {% for err in sign_up.email.errors %}
+                                <p class="text-danger mb-0">{{err}}</p>
+                              {% endfor %}
+                            </small>
                           </div>
-                          <div class="form-row">
-                            <div class="col-md-6 form-group">
-                              <small class="form-text text-white">First Name</small>
-                              <div class="input-group mb-1">
-                                {{ sign_up.first(placeholder='First Name', class_="form-control", autocomplete="given-name") }}
-                              </div>
-                              <small>
-                                {% for err in sign_up.first.errors %}
-                                  <p class="text-danger mb-0">{{err}}</p>
-                                {% endfor %}
-                              </small>
+                        </div>
+                        <div class="form-row">
+                          <div class="col-md-6 form-group">
+                            <small class="form-text text-white">First Name</small>
+                            <div class="input-group mb-1">
+                              {{ sign_up.first(placeholder='First Name', class_="form-control", autocomplete="given-name") }}
                             </div>
-                            <div class="col-md-6 form-group">
-                              <small class="form-text text-white">Last Name</small>
-                              <div class="input-group mb-1">
-                                {{ sign_up.last(placeholder='Last Name', class_="form-control", autocomplete="family-name") }}
-                              </div>
-                              <small>
-                                {% for err in sign_up.last.errors %}
-                                  <p class="text-danger mb-0">{{err}}</p>
-                                {% endfor %}
-                              </small>
-                            </div>
+                            <small>
+                              {% for err in sign_up.first.errors %}
+                                <p class="text-danger mb-0">{{err}}</p>
+                              {% endfor %}
+                            </small>
                           </div>
-                          <div class="form-row">
-                            <div class="col-md-6 form-group">
-                              <small class="form-text text-white">Username</small>
-                              <div class="input-group mb-1">
-                                {{ sign_up.username(placeholder='User Name', class_="form-control", autocomplete="username") }}
-                              </div>
-                              <small>
-                                {% for err in sign_up.username.errors %}
-                                  <p class="text-danger mb-0">{{err}}</p>
-                                {% endfor %}
-                              </small>
+                          <div class="col-md-6 form-group">
+                            <small class="form-text text-white">Last Name</small>
+                            <div class="input-group mb-1">
+                              {{ sign_up.last(placeholder='Last Name', class_="form-control", autocomplete="family-name") }}
                             </div>
-                            <div class="form-group col-md-6">
-                              <small class="form-text text-white">Password</small>
-                              <div class="input-group mb-1">
-                                {{ sign_up.password(placeholder='Password', class_="form-control", autocomplete="new-password")}}
-                              </div>
-                              <small>
-                                {% for err in sign_up.password.errors %}
-                                  <p class="text-danger mb-0">{{err}}</p>
-                                {% endfor %}
-                              </small>
-                            </div>
+                            <small>
+                              {% for err in sign_up.last.errors %}
+                                <p class="text-danger mb-0">{{err}}</p>
+                              {% endfor %}
+                            </small>
                           </div>
-                          <div class="form-row">
-                            <div class="form-group col-auto mx-auto">
-                              {{ sign_up.submit(class_="btn btn-primary") }}
+                        </div>
+                        <div class="form-row">
+                          <div class="col-md-6 form-group">
+                            <small class="form-text text-white">Username</small>
+                            <div class="input-group mb-1">
+                              {{ sign_up.username(placeholder='User Name', class_="form-control", autocomplete="username") }}
                             </div>
+                            <small>
+                              {% for err in sign_up.username.errors %}
+                                <p class="text-danger mb-0">{{err}}</p>
+                              {% endfor %}
+                            </small>
                           </div>
-                        </form>
-                      </div>
+                          <div class="form-group col-md-6">
+                            <small class="form-text text-white">Password</small>
+                            <div class="input-group mb-1">
+                              {{ sign_up.password(placeholder='Password', class_="form-control", autocomplete="new-password")}}
+                            </div>
+                            <small>
+                              {% for err in sign_up.password.errors %}
+                                <p class="text-danger mb-0">{{err}}</p>
+                              {% endfor %}
+                            </small>
+                          </div>
+                        </div>
+                        <div class="form-row">
+                          <div class="form-group col-auto mx-auto">
+                            {{ sign_up.submit(class_="btn btn-primary") }}
+                          </div>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-        </div>
+          </div>
       </div>
-    </div>
 
     <!-- Footer -->
-    <footer class="footer_style" style="padding:0em; margin:0em;">
+    <footer class="footer" style="padding:0em; margin:0em;">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
-        <div class="container">
+        <!-- <div class="container"> -->
           <div class="navbar-brand">
-            <p style="margin:0em;">Sub Six Solutions Group&trade; 2018</p>
+            <span style="margin:0em;">Sub Six Solutions Group&trade; 2018</span>
           </div>
-        </div>
+        <!-- </div> -->
       </nav>
     </footer>
 
