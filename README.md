@@ -11,11 +11,12 @@ Things you can do right now:
 - Log an Ergometer Workout
 - Edit/Delete Workouts
 - Graph Your Workouts
+- View Your Team Leaderboard
+- Reset your password via email link
 
 Things you will be able to do:
-- Change your password
 - Organize Transportation to Practice
-- View Your Team
+- View Your Team Roster
 
 # Built With
 
