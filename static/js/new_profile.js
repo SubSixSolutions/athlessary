@@ -57,8 +57,8 @@ function demoUpload() {
 
       reader.readAsDataURL(input.files[0]);
       $("#save_profile_img").removeClass('disabled');
-      document.getElementById("save_profile_img").hidden = false;
-      document.getElementById("rotate").hidden = false;
+      document.getElementById("save_profile_img").disabled = false;
+      document.getElementById("rotate").disabled = false;
       $("#load_file").removeClass("col-12");
       $("#load_file").addClass("col-8");
       $('#rotate').on('click', function(ev) {
