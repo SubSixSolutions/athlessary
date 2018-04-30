@@ -1,4 +1,5 @@
 import os
+import threading
 from urllib.parse import urlparse, urljoin
 
 import boto3
@@ -106,17 +107,50 @@ def new_signup():
 
         elif signup_form.data['submit']:
             if signup_form.validate():
-                # log new user in
+                # create token
+                token = ts.dumps(signup_form.data['email'], salt='email-confirm-key')
+
+                # build url
+                confirm_url = url_for(
+                    'confirm_email',
+                    token=token,
+                    _external=True)
+
+                # set up html that makes up email
+                html = render_template(
+                    'signup_email.html',
+                    validate_url=confirm_url,
+                    user={'first': signup_form.data['first'], 'last': signup_form.data['last']})
+
+                # create thread to speed up process
+                t1 = threading.Thread(target=send_welcome_email, args=(signup_form.data['email'], html))
+                t1.start()
+
+                # create user
                 curr_user = User.user_from_form(signup_form.data)
+
+                # log user in
                 login_user(curr_user)
 
-                # redirect user to their new profile page
+                # wait for thread
+                t1.join()
+
+                # flash message and redirect user to their new profile page
+                flash('Please check your email and follow the instructions to confirm your email address.', 'alert-success')
                 return redirect(url_for('profile'))
 
             login = False
 
     return render_template('signup.html', sign_up=signup_form, sign_in=signin_form, login=login,
                            _url="https://s3-us-west-2.amazonaws.com/athlessary-images/defaults/login_photo.jpg")
+
+
+def send_welcome_email(email_address, html):
+    subject = "Confirm Your Email"
+
+    # set up email sending
+    yag = yagmail.SMTP(password_recovery_email, password_recovery_email_creds)
+    yag.send(email_address, subject, html)
 
 
 @application.route('/recover', methods=['GET', 'POST'])
