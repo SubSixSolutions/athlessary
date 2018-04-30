@@ -263,7 +263,7 @@ class Database:
                     workout_id INTEGER NOT NULL,
                     distance   INTEGER NOT NULL,
                     minutes    INTEGER NOT NULL,
-                    seconds    INTEGER NOT NULL
+                    seconds    FLOAT NOT NULL
                 );'''
 
         self.safe_execute_sql_only(sql)

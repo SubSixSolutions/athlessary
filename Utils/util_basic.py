@@ -99,7 +99,7 @@ def edit_erg_workout(request, db):
         seconds = request.form.getlist('seconds[]')
 
         for i in range(len(erg_ids)):
-            db.update('erg', ['minutes', 'seconds'], [int(minutes[i]), int(seconds[i])], ['erg_id'], [erg_ids[i]])
+            db.update('erg', ['minutes', 'seconds'], [int(minutes[i]), float(seconds[i])], ['erg_id'], [erg_ids[i]])
 
     workout_id = request.form.get('workout_id')
     if workout_id:

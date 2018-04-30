@@ -21,29 +21,7 @@ $(document).ready(function(){
     console.log(document.getElementById("add_workout_form").elements);
     var elements = document.getElementById("add_workout_form").elements;
     var post = validate_workout_form(elements);
-    // for (var i = 0, element; element = elements[i++];) {
-    //     console.log(element.value);
-    //     if (element.name == "minutes" || element.name == "seconds" || element.name == "meters"){
-    //         var p = element.parentElement.parentElement.querySelector('small[name="error"]');
-    //         if (element.value == ""){
-    //           element.classList.add("border-danger");
-    //           p.className = "text-danger";
-    //           p.innerHTML = "Input Required.";
-    //           dont_post = true;
-    //         }
-    //         else if ((element.name == 'seconds') && element.value > 59) {
-    //           element.classList.add("border-danger");
-    //           p.className = "text-danger";
-    //           p.innerHTML = "Value must be less than 60.";
-    //           dont_post = true;
-    //         }
-    //         else {
-    //           p.innerHTML = "";
-    //           p.className = "";
-    //           element.classList.remove("border-danger");
-    //         }
-    //     }
-    // }
+
     if (post == false){
       return false;
     }
@@ -192,12 +170,12 @@ function generate_form(){
           var d_value_1 = document.getElementById('second_input').value;
           input1 = content_div + small_class + "Meters" + end_small + input + "name=\"meters\"" + end_input + end_content_div;
           input2 = content_div + "col-6" + small_class + "Minutes" + end_small + input + "name=\"minutes\" value=\"" + meter_minutes + "\"" + end_input + end_content_div;
-          input3 = content_div + "col-6" + small_class + "Seconds" + end_small + input + "name=\"seconds\" value=\"" + d_value_1 + "\"" + end_input + end_content_div;
+          input3 = content_div + "col-6" + small_class + "Seconds" + end_small + input + "step=\"any\"" + "name=\"seconds\" value=\"" + d_value_1 + "\"" + end_input + end_content_div;
       }
       else {
           input1 = content_div + small_class + "Meters" + end_small + input + "name=\"meters\" value=\"" + meter_minutes + "\"" + end_input + end_content_div;
           input2 = content_div + "col-6" + small_class + "Minutes" + end_small + input + "name=\"minutes\"" + end_input + end_content_div;
-          input3 = content_div + "col-6" + small_class + "Seconds" + end_small + input + "name=\"seconds\"" + end_input + end_content_div;
+          input3 = content_div + "col-6" + small_class + "Seconds" + end_small + input + "name=\"seconds\"" + "step=\"any\"" + end_input + end_content_div;
       }
 
       var header_div = document.createElement('div');
