@@ -54,13 +54,13 @@
       .transparent_box {
         background: rgba(160, 181, 201, 0.3);
       }
-      .nav-link{
-        color:white;
+      .my_link {
+        color: white;
       }
-      .nav-link.active{
+      .my_link.active{
         color:black;
       }
-      .nav-link:hover{
+      .my_link:hover{
         background: rgba(255, 255, 255, 0.3);
         color:white;
       }
@@ -111,10 +111,10 @@
                 <div class="container">
                   <ul class="nav nav-tabs justify-content-center">
                     <li class="nav-item">
-                      <a class="nav-link {% if login %}active{% endif %}" data-toggle="tab" href="#sign_in_tab" style="border:1px solid white;">Log In</a>
+                      <a class="nav-link my_link {% if login %}active{% endif %}" data-toggle="tab" href="#sign_in_tab" style="border:1px solid white;">Log In</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link {% if login == false %}active{% endif %}" data-toggle="tab" href="#sign_up_tab" style="border:1px solid white;">Sign Up</a>
+                      <a class="nav-link my_link {% if login == false %}active{% endif %}" data-toggle="tab" href="#sign_up_tab" style="border:1px solid white;">Sign Up</a>
                     </li>
                   </ul>
                 </div>
