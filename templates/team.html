@@ -137,7 +137,7 @@
                       <li class="list-group-item d-flex justify-content-between align-items-center">
                         {% if ranked['username'] == current_user.username %}You{% else %}{{ ranked['username'] }}{% endif %}
                         {% if ranked['username'] != 'Unclaimed' %}
-                          <span class="badge badge-primary badge-pill">{{seconds//60}}m{% if seconds%60 < 10 %}0{%endif%}{{seconds%60}}s</span>
+                          <span class="badge badge-primary badge-pill">{{(seconds//60)|round|int}}m{% if seconds%60 < 10 %}0{%endif%}{{(seconds%60)|round(1,'common')}}s</span>
                         {% endif %}
                       </li>
                     {% endwith %}
