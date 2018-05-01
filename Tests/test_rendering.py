@@ -21,7 +21,7 @@ def clean_up_table(table, pk):
         db.delete_entry(table, pk, _id[pk])
 
 
-class TestHome(unittest.TestCase):
+class TestBasicRender(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         clean_up_table('users', 'user_id')
@@ -106,9 +106,20 @@ class TestHome(unittest.TestCase):
         self.login('test_user', '123')
         self.driver.get("http://127.0.0.1:5000/roster")
         title = self.driver.title
-        table = self.driver.find_element_by_id('athlete_table')
-        rows = table.find_elements(By.TAG_NAME, "tr")  #
-        for row in rows:
-            col = row.find_elements(By.TAG_NAME, "td")  # note: index start from 0, 1 is col 2
-            log.info(col)  #prints text from the element
         self.assertEqual("Roster", title)
+
+    def test_profile(self):
+        self.login('test_user', '123')
+        self.driver.get("http://127.0.0.1:5000/profile")
+        bio = self.driver.find_element_by_id('bio')
+        self.assertEqual("Hi, my name is w!", bio.text)
+        address = self.driver.find_element_by_id('address')
+        self.assertEqual('123 East Main Street', address.get_attribute('placeholder'))
+
+    def test_roster_contents(self):
+        self.login('test_user', '123')
+        self.driver.get("http://127.0.0.1:5000/roster")
+        table = self.driver.find_element_by_id('athlete_table')
+        rows = table.find_elements(By.TAG_NAME, "tr")
+        for row in rows:
+            self.assertEqual("Name Address Number of Seats Driving?", row.text)
