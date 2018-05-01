@@ -35,12 +35,17 @@
         }
       }
 
-      @media screen and (max-width: 768px) {
+      @media screen and (max-width: 767.98px) {
         .border-right, .border-dark {
           border: none !important;
         }
+        .mobile-line {
+          display: block !important;
+        }
       }
-
+      .mobile-line {
+        display: none;
+      }
       .content-div {
         flex: 1 0 auto;
       }
@@ -116,19 +121,20 @@
 
       <!-- Your Content Here -->
       <div class="row mt-4">
-        <div class="col-md-3 border-right border-dark">
+        <div class="col-md-3 border-right border-dark mb-2">
           <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
             <a class="nav-link {% if tab_num == 0 %}active{% endif%}" id="v-pills-home-tab" data-toggle="pill" href="#change-password" role="tab" aria-controls="v-pills-home" aria-selected="true">Change Password</a>
             <a class="nav-link {% if tab_num == 1 %}active{% endif%}" id="v-pills-profile-tab" data-toggle="pill" href="#user-info" role="tab" aria-controls="v-pills-profile" aria-selected="false">Update Email</a>
           </div>
+          <hr class="mobile-line">
         </div>
         <div class="col-md-9 tab-content">
           <div role="tabpanel" class="tab-pane {% if tab_num == 0 %}active{% endif%}" id="change-password">
             <form method="POST">
               {{pass_form.csrf_token}}
               <div class="form-group row">
-                <label for="staticEmail" class="col-sm-3 col-form-label">Enter a New Password</label>
-                <div class="col-sm-9">
+                <label for="staticEmail" class="col-xl-3 col-lg-4 col-md-5 col-12 col-form-label">Enter a New Password</label>
+                <div class="col-xl-9 col-lg-8 col-md-7 col-12">
                   {{pass_form.new_pass(class_="form-control", placeholder="", autocomplete="new-password")}}
                   <small>
                     {% for err in pass_form.new_pass.errors %}
@@ -138,8 +144,8 @@
                 </div>
               </div>
               <div class="form-group row">
-                <label for="inputPassword" class="col-sm-3 col-form-label">Retype Your Password</label>
-                <div class="col-sm-9">
+                <label for="inputPassword" class="col-xl-3 col-lg-4 col-md-5 col-12 col-form-label">Retype Your Password</label>
+                <div class="col-xl-9 col-lg-8 col-md-7 col-12">
                   {{pass_form.retype_new_pass(class_="form-control", placeholder="", autocomplete="new-password")}}
                   <small>
                     {% for err in pass_form.retype_new_pass.errors %}
@@ -155,14 +161,14 @@
             <form method="POST">
               {{email_form.csrf_token(id='tag1')}}
               <div class="form-group row">
-                <label for="" class="col-sm-3 col-form-label">Current Email Address</label>
-                <div class="col-sm-9">
+                <label for="" class="col-xl-3 col-lg-4 col-md-5 col-12 col-form-label">Current Email Address</label>
+                <div class="col-xl-9 col-lg-8 col-md-7 col-12">
                   <input disabled type="text" name="old_email" value="{{current_user.email}}" class="form-control">
                 </div>
               </div>
               <div class="form-group row">
-                <label for="staticEmail" class="col-sm-3 col-form-label">New Email Address</label>
-                <div class="col-sm-9">
+                <label for="staticEmail" class="col-xl-3 col-lg-4 col-md-5 col-12 col-form-label">New Email Address</label>
+                <div class="col-xl-9 col-lg-8 col-md-7 col-12">
                   {{email_form.email(class_="form-control", placeholder="you@example.com", autocomplete="email")}}
                   <small>
                     {% for err in email_form.email.errors %}
