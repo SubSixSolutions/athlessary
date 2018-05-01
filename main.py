@@ -10,8 +10,6 @@ from werkzeug.utils import secure_filename
 from twilio.rest import Client
 import Forms.web_forms as web_forms
 from itsdangerous import URLSafeTimedSerializer
-import yagmail
-
 
 from User.user import User
 from Utils import util_basic, hashes
@@ -123,7 +121,9 @@ def new_signup():
                     user={'first': signup_form.data['first'], 'last': signup_form.data['last']})
 
                 # create thread to speed up process
-                t1 = threading.Thread(target=send_welcome_email, args=(signup_form.data['email'], html))
+                subject = "Confirm Your Email"
+
+                t1 = threading.Thread(target=util_basic.send_email, args=(signup_form.data['email'], html, subject))
                 t1.start()
 
                 # create user
@@ -143,14 +143,6 @@ def new_signup():
 
     return render_template('signup.html', sign_up=signup_form, sign_in=signin_form, login=login,
                            _url="https://s3-us-west-2.amazonaws.com/athlessary-images/defaults/login_photo.jpg")
-
-
-def send_welcome_email(email_address, html):
-    subject = "Confirm Your Email"
-
-    # set up email sending
-    yag = yagmail.SMTP(password_recovery_email, password_recovery_email_creds)
-    yag.send(email_address, subject, html)
 
 
 @application.route('/recover', methods=['GET', 'POST'])
@@ -178,8 +170,8 @@ def recover():
 
         html = render_template('recover_email.html', recover_url=recover_url, user=user)
 
-        yag = yagmail.SMTP(password_recovery_email, password_recovery_email_creds)
-        yag.send(email_address, subject, html)
+        # send user email
+        util_basic.send_email(email_address, html, subject)
         flash('Password recovery directions have been sent to your email account.', 'alert-success')
         return redirect(url_for('new_signup'))
 
@@ -310,8 +302,9 @@ def settings():
 
                 # update the email address
                 db.update('users', ['email'], [email_form.data['email']], ['user_id'], [current_user.user_id])
+                current_user.email = email_form.data['email']
 
-                subject = "Confirm Your Email"
+                subject = "Confirm Email Address Change"
 
                 # generate token
                 token = ts.dumps(email_form.data['email'], salt='email-confirm-key')
@@ -329,8 +322,7 @@ def settings():
                     user=current_user)
 
                 # set up email sending
-                yag = yagmail.SMTP(password_recovery_email, password_recovery_email_creds)
-                yag.send(email_form.data['email'], subject, html)
+                util_basic.send_email(email_form.data['email'], html, subject)
 
                 # flash message and return to settings page
                 flash('Please check your email and follow the instructions to confirm your new email address.', 'alert-success')

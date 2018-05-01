@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Password Recovery</title>
-</head>
-<body>
-  <p>Dear {{user.first}} {{user.last}},</p>
-  <p>You are receiving this message because you have requested to change the email address associated with your Athlessary account.</p>
-  <p>Please click <a href="{{validate_url}}">here</a> to confirm this as your new email address.</p>
-  <p></p>
-  <p>The Team at Athlessary</p>
-</body>
+  <head>
+      <meta charset="UTF-8">
+      <title>Email Change</title>
+  </head>
+  <body>
+    <p>Dear {{user.first}} {{user.last}},</p>
+    <br>
+    <p>You are receiving this message because you have requested to change the email address associated with your Athlessary account.</p>
+    <p>Please click <a href="{{validate_url}}">here</a> to confirm this as your new email address.</p>
+    <br>
+    <p>The Team at Athlessary</p>
+  </body>
 </html>
