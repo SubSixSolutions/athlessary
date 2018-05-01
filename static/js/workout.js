@@ -1,3 +1,7 @@
+$(window).ready(function () {
+    demoUpload();
+});
+
 $(document).ready(function(){
   $("#add_workout_form").on('submit', function(e){
     e.preventDefault();
@@ -200,4 +204,64 @@ function generate_form(){
   submit_div.appendChild(reset_div);
 
   document.getElementById('add_workout_form').appendChild(submit_div);
+}
+
+function demoUpload() {
+    console.log('upload');
+
+    vEl = document.getElementById('erg-image');
+    var $uploadCrop = new Croppie(vEl, {
+        enableExif: true,
+        viewport: {width: 900, height: 900, type: 'square'},
+        boundary: {width: 1000, height: 1000},
+        enableOrientation: true
+    });
+
+    function readFile(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('.upload-demo').addClass('ready');
+
+                $uploadCrop.bind({
+                    url: e.target.result,
+                    orientation: 1,
+                }).then(function () {
+                    console.log('jQuery bind complete');
+                });
+            }
+
+            reader.readAsDataURL(input.files[0]);
+            $("#save_erg_image").removeClass('disabled');
+            document.getElementById("save_erg_image").hidden = false;
+            document.getElementById("rotate").hidden = false;
+            $("#load_file").removeClass("col-12");
+            $("#load_file").addClass("col-8");
+            $('#rotate').on('click', function (ev) {
+                $uploadCrop.rotate(90);
+            });
+        }
+        else {
+            swal("Sorry - you're browser doesn't support the FileReader API");
+        }
+    }
+
+    $('#upload').on('change', function () {
+        readFile(this);
+    });
+    $('#save_erg_image').on('click', function (ev) {
+        if (!$('#save_erg_image').hasClass('disabled')) {
+            $uploadCrop.result({
+                type: 'base64',
+                size: {width: 1000, height: 1000},
+                format: 'jpeg'
+            }).then(function (img) {
+                $.post('/save_erg_image', {img: img}, function (data, status) {
+                    console.log(status);
+                    console.log(data['screen_data']);
+                });
+            });
+        }
+    });
 }

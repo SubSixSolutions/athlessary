@@ -173,6 +173,31 @@ def upload_profile_image(img, user_id, pic_location):
     return new_location
 
 
+def upload_erg_image(img, user_id):
+    """
+    save the erg screen image from the user
+    :param img: byte string from web
+    :param user_id: id fo the current user
+    :param pic_location: the location of erg screen picture
+    :return:
+    """
+
+    img = img.split(',')[1]
+
+    data = img.encode()
+    data = base64.b64decode(data)
+
+    # create new picture location
+    mseconds = datetime.datetime.now().microsecond
+    new_location = 'users/{}/erg_pics/{}.png'.format(user_id, mseconds)
+
+    # open s3 client
+    client = boto3.client('s3')
+    # save new image
+    client.put_object(Body=data, Bucket=bucket_name, Key=new_location)
+
+    return new_location
+
 def get_last_sunday(curr_date):
     last_sunday = curr_date - datetime.timedelta(curr_date.isoweekday())
     last_sunday_stamp = datetime.datetime(last_sunday.year, last_sunday.month, last_sunday.day, 23, 59, 59)
