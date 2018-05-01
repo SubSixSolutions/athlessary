@@ -2,14 +2,18 @@ import base64
 import datetime
 import json
 import os
+import smtplib
 import sys
-
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import boto3
 
 from Forms import web_forms
 from Utils.log import log
 
 from Utils.config import db
+from Utils.config import password_recovery_email, password_recovery_email_creds
+
 
 # get s3 bucket name
 try:
@@ -257,3 +261,17 @@ def generate_leader_board(username):
     split = format_leader_arr(agg_split, 'split', username)
 
     return meters, minutes, split
+
+
+def send_email(email_address, html, subject):
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = password_recovery_email
+    msg['To'] = email_address
+    body = MIMEText(html, 'html')
+    msg.attach(body)
+    server = smtplib.SMTP('smtp.gmail.com:587')
+    server.starttls()
+    server.login(password_recovery_email, password_recovery_email_creds)
+    problems = server.sendmail(password_recovery_email, email_address, msg.as_string())
+    server.quit()
