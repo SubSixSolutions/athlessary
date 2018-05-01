@@ -1,3 +1,4 @@
+import base64
 import os
 from urllib.parse import urlparse, urljoin
 
@@ -451,6 +452,34 @@ def save_img():
 
     return Response(json.dumps({}), status=400, mimetype='application/json')
 
+
+@application.route('/save_erg_image', methods=['POST'])
+@login_required
+def save_erg_image():
+    img = request.form.get('img')
+
+    if img:
+        log.info("Have new erg image")
+        #picture_location = util_basic.upload_erg_image(img, current_user.user_id)
+        img = img.split(',')[1]
+
+        print(len(img))
+        #nparr = np.fromstring(img, np.uint8)
+        #img_np = cv2.imdecode(data, cv2.IMREAD_ANYDEPTH)
+        #thread = threading.Thread(target=save_contour, args=(self.contours[cnt_idx], self.width, self.height, im_save_path))
+        #thread.start()
+        # update current user
+        #current_user.picture = pic_location
+
+        # update the database
+        #db.update('profile', ['picture'], [pic_location], ['user_id'], [current_user.user_id])
+
+        # sign certificate
+        #signed_url = sign_certificate(pic_location)
+
+        return Response(json.dumps({'data': 'hello_world'}), status=201, mimetype='application/json')
+
+    return Response(json.dumps({}), status=400, mimetype='application/json')
 
 @application.route('/drivers', methods=['POST'])
 @login_required

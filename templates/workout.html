@@ -11,7 +11,7 @@
     <title>Workouts</title>
 
     <!-- Bootstrap core CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 
     <!-- <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -23,7 +23,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 
     <script src="{{ url_for('static', filename='js/workout.js') }}"></script>
-
+    <!-- croppie -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.1/croppie.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.1/croppie.min.js"></script>
 
     <!-- Custom styles for this template -->
     <style>
@@ -52,6 +54,35 @@
             flex-shrink: 0;
         }
 
+        .upload-demo .upload-demo-wrap,
+        .upload-demo .upload-result,
+        .upload-demo.ready .upload-msg {
+            display: none;
+        }
+
+        .upload-demo.ready .upload-demo-wrap {
+            display: block;
+        }
+
+        .upload-demo.ready .upload-result {
+            display: block;
+        }
+
+        .upload-demo-wrap {
+            width: 1000px;
+            height: 1000px;
+            margin: 0 auto;
+        }
+
+        .upload-msg {
+            text-align: center;
+            padding: 50px;
+            font-size: 22px;
+            color: #aaa;
+            width: 260px;
+            margin: 50px auto;
+            border: 1px solid #aaa;
+        }
     </style>
 
 </head>
@@ -62,32 +93,34 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-          <a class="navbar-brand" href="#">Athlessary</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('team') }}">Home
-                  <span class="sr-only">(current)</span>
-                </a>
-              </li>
-              <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('workouts')}}">Workouts</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" href="{{url_for('profile')}}">Edit</a>
-                  <a class="dropdown-item" href="{{url_for('settings')}}">Settings</a>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
-              </li>
-            </ul>
-          </div>
+            <a class="navbar-brand" href="#">Athlessary</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                    aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('team') }}">Home
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{ url_for('workouts') }}">Workouts</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                           aria-haspopup="true" aria-expanded="false">Profile</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ url_for('profile') }}">Edit</a>
+                            <a class="dropdown-item" href="{{ url_for('settings') }}">Settings</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -170,6 +203,15 @@
                                                     <input value="Submit" id="submit_bttn" type="button"
                                                            class="btn btn-primary w-100" onclick="generate_form();">
                                                 </div>
+                                                <div class="input-group">
+                                                    <small id="submit_bttn_txt"
+                                                           class="d-none d-lg-block form-text text-muted">(beta)
+                                                    </small>
+                                                    <input value="Upload" id="image_upload_bttn" type="button"
+                                                           class="btn btn-primary w-100" data-toggle="modal"
+                                                           data-target="#image_upload_modal" onclick="generate_form();">
+                                                </div>
+                                                <!-- <button type="button" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#profile_modal" name="button">Change Picture</button> -->
                                             </div>
                                         </div>
                                     </form>
@@ -207,7 +249,7 @@
                                     <div class="border border-dark"
                                          style="max-height: 65vh; overflow-y:scroll; height:100%; padding-bottom:0em; padding:1em; background-color: #f8f9fa;">
                                         <div class="col text-center">
-                                            <h5 class="lead" id='cap' ></h5>
+                                            <h5 class="lead" id='cap'></h5>
                                             <p id="_date"></p>
                                         </div>
                                         <table class="table table-striped" id="side_table">
@@ -260,19 +302,19 @@
                                             </form>
                                         </div>
                                         <div class="row table-responsive-md">
-                                          <table class="table table-striped" id="myTable">
-                                            <thead>
-                                            <tr>
-                                              <th>Date</th>
-                                              <th>Name</th>
-                                              <th>Split</th>
-                                              <th>Edit</th>
-                                              <th>Delete</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                          </table>
+                                            <table class="table table-striped" id="myTable">
+                                                <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Name</th>
+                                                    <th>Split</th>
+                                                    <th>Edit</th>
+                                                    <th>Delete</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                     <!-- Modal -->
@@ -339,6 +381,56 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- Upload screen modal -->
+        <div class="modal fade" id="image_upload_modal" tabindex="-1" role="dialog" aria-labelledby="modal_label"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal_label">Upload erg screen</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" name="button">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="overflow:auto">
+                        <div class="demo-wrap upload-demo">
+                            <div class="container">
+                                <div class="upload-msg">
+                                    <p>Upload a file to begin</p>
+                                </div>
+                                <div class="upload-demo-wrap">
+                                    <div id="erg-image"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="form-row align-items-center">
+                            <div class="col-md-auto col-12 mb-1" id="load_file">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="upload" accept="/image/*">
+                                    <label class="custom-file-label" for="customFile">Choose File</label>
+                                </div>
+                            </div>
+                            <div class="col-md-auto col-4 mb-1">
+                                <button type="button" hidden class="btn btn-outline-primary w-100" id="rotate"
+                                        data-deg="90"
+                                        name="button">Rotate
+                                </button>
+                            </div>
+                            <div class="col-md-auto col-12 mb-1">
+                                <button type="button" hidden class="btn btn-primary w-100 disabled" name="button"
+                                        id="save_erg_image" data-dismiss="modal">Save
+                                </button>
+                            </div>
+                        </div>
+                        <!-- <button type="button" class="btn btn-secondary col-auto" data-dismiss="modal" name="button">Close</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!-- Footer -->
@@ -347,7 +439,7 @@
         <!-- <nav class="navbar navbar-expand-lg"> -->
         <div class="container">
             <div class="navbar-brand">
-                <p style="margin:0em;">This is Athlessary</p>
+                <p style="margin:0em;">Sub Six Solutions Group&trade; 2018</p>
             </div>
         </div>
     </nav>
