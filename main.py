@@ -247,6 +247,11 @@ def profile():
     return render_template('profile.html', form=form, profile=user_profile, sign_certificate=sign_certificate)
 
 
+@application.route('/user_overview')
+def user_overview():
+    return render_template('user_overview.html', user=current_user, sign_certificate=sign_certificate)
+
+
 @application.route('/workouts', methods=['GET', 'POST'])
 @login_required
 def workouts():

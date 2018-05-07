@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{{current_user.first}} {{current_user.last}}</title>
+
+    <!-- Bootstrap core CSS -->
+
+    <!-- Link versions of bootstrap and JavaScript -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <!-- Heat Map -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/calendar-heatmap/0.4.1/calendar-heatmap.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script src="{{url_for('static', filename='js/calendar-heatmap.js')}}"></script>
+
+
+    <!-- Custom styles for this template -->
+    <style>
+      html {
+        height: 100%;
+      }
+      body {
+        height: 100%;
+        padding-top: 54px;
+        padding-bottom: 56px;
+        display: flex;
+        flex-direction: column;
+      }
+      @media (min-width: 992px) {
+        body {
+          padding-top: 56px;
+          padding-bottom: 56px;
+        }
+      }
+      .content-div {
+        flex: 1 0 auto;
+      }
+      .footer_style {
+        flex-shrink: 0;
+      }
+      .upload-demo .upload-demo-wrap,
+      .upload-demo .upload-result,
+      .upload-demo.ready .upload-msg {
+          display: none;
+      }
+      .upload-demo.ready .upload-demo-wrap {
+          display: block;
+      }
+      .upload-demo.ready .upload-result {
+          display: inline-block;
+      }
+      .upload-demo-wrap {
+          width: 300px;
+          height: 300px;
+          margin: 0 auto;
+      }
+      .map {}
+      .upload-msg {
+          text-align: center;
+          padding: 50px;
+          font-size: 22px;
+          color: #aaa;
+          width: 260px;
+          margin: 50px auto;
+          border: 1px solid #aaa;
+      }
+    </style>
+
+  </head>
+
+  <body>
+      {% extends "flash_box.html" %}
+      {% block body %}
+
+
+    <div class="content-div h-100">
+      <!-- Navigation -->
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="#">Athlessary</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('team') }}">Home
+                  <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('workouts')}}">Workouts</a>
+              </li>
+              <li class="nav-item active dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{url_for('profile')}}">Edit</a>
+                  <a class="dropdown-item" href="{{url_for('settings')}}">Settings</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('logout')}}">Log Out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Your Content Here -->
+      <div class="row">
+        <div class="col-sm-4 align-items-center mt-5" id="img_row">
+          <div class="row">
+            <div class="col-auto mx-auto">
+              <img style="width:auto;" id="profile_img" class="img-responsive center-block" src="{{ sign_certificate(user.picture) }}" alt="Profile Photo">
+            </div>
+          </div>
+          <div class="row d-flex align-items-center">
+            <!-- <div class="col-auto mx-auto"> -->
+              <p>{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}</p>
+
+            <!-- </div> -->
+          </div>
+        </div>
+        <div class="col-sm-8 mt-5" id="my-spot">
+          <!-- <div id="my-spot">
+
+          </div> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer_style" style="padding:0em; margin:0em;">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
+        <div class="container">
+          <div class="navbar-brand">
+            <p style="margin:0em;">Sub Six Solutions Group&trade; 2018</p>
+          </div>
+        </div>
+      </nav>
+    </footer>
+
+    <!-- Core JavaScript -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script type="text/javascript">
+      var now = moment().endOf('day').toDate();
+      var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();
+      var chartData = d3.timeDays(yearAgo, now).map(function (dateElement) {
+        return {
+          date: dateElement,
+          count: (dateElement.getDay() !== 0 && dateElement.getDay() !== 6) ? Math.floor(Math.random() * 3) : Math.floor(Math.random() * 2)
+        };
+      });
+      var heatmap = calendarHeatmap()
+        .data(chartData)
+        .selector('#my-spot')
+        .tooltipEnabled(true)
+        .colorRange(['#ffdcb2', '#ff8c00'])
+        .onClick(function (data) {
+          console.log('data', data);
+        });
+      heatmap();  // render the chart
+    </script>
+      {% endblock %}
+  </body>
+
+</html>
