@@ -37,6 +37,7 @@ class User:
         self.picture = result['picture']
         self.email = result['email']
         self.role = Role(result['role'])
+        self.bio = result['bio']
 
         self.user_id = user_id
         self.active = active

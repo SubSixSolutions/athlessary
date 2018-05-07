@@ -1,0 +1,41 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>D3.js v4 Calendar Heatmap</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='js/calendar-heatmap.css')}}">
+</head>
+
+<body>
+  <div class="container"></div>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/calendar-heatmap/0.4.1/calendar-heatmap.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js" charset="utf-8"></script>
+  <script src="{{url_for('static', filename='js/moment.js')}}"></script>
+  <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+  <script src="{{url_for('static', filename='js/calendar-heatmap.js')}}"></script>
+  <script type="text/javascript">
+    var now = moment().endOf('day').toDate();
+    var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();
+    var chartData = d3.timeDays(yearAgo, now).map(function (dateElement) {
+      return {
+        date: dateElement,
+        count: (dateElement.getDay() !== 0 && dateElement.getDay() !== 6) ? Math.floor(Math.random() * 3) : Math.floor(Math.random() * 2)
+      };
+    });
+    var heatmap = calendarHeatmap()
+      .data(chartData)
+      .selector('.container')
+      .tooltipEnabled(true)
+      .colorRange(['#ffdcb2', '#ff8c00'])
+      .onClick(function (data) {
+        console.log('data', data);
+      });
+    heatmap();  // render the chart
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Link versions of bootstrap and JavaScript -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style>
+    html {
+      height: 100%;
+    }
+    body {
+      height: 100vh;
+      padding-top: 54px;
+      display: flex;
+      flex-direction: column;
+    }
+    @media (min-width: 992px) {
+      body {
+        padding-top: 56px;
+      }
+    }
+    .content-div {
+      flex: 1 0 auto;
+    }
+    .footer_style {
+      flex-shrink: 0;
+    }
+    @media(min-width:576px){.card-columns{column-count: 2;}}
+    @media(min-width:768px){.card-columns{column-count: 3;}}
+    @media(min-width:992px){.card-columns{column-count: 4;}}
+    @media(min-width:1200px){.card-columns{column-count: 5;}}
+    </style>
+</head>
+<body>
+
+  <div class="content-div">
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="#">Athlessary</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('team') }}">Home
+                  <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('workouts')}}">Workouts</a>
+              </li>
+              <li class="nav-item active dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{url_for('profile')}}">Edit</a>
+                  <a class="dropdown-item" href="{{url_for('settings')}}">Settings</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('logout')}}">Log Out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="container mt-3">
+      <div class="card-columns">
+        {% for user in users %}
+        <div class="card" style="max-width:250px;">
+          <img class="card-img-top" src="{{sign_certificate(user['picture'])}}" alt="Card image cap" style="max-width:250px;">
+          <div class="card-body">
+            <h5 class="card-title">{{user['first']}} {{user['last']}}</h5>
+            <p class="card-text">{{user['bio']}}</p>
+            {% if user['team'] %}
+              <p class="card-text">{{user['team']}}</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer_style" style="padding:0em; margin:0em;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="">
+      <div class="container">
+        <div class="navbar-brand">
+          <p style="margin:0em;">Sub Six Solutions Group&trade; 2018</p>
+        </div>
+      </div>
+    </nav>
+  </footer>
+
+
+</body>
+</html>
