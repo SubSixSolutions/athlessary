@@ -31,16 +31,16 @@
         height: 100%;
       }
       body {
-        height: 100%;
+        height: 100vh;
         padding-top: 54px;
-        padding-bottom: 56px;
+        /* padding-bottom: 56px; */
         display: flex;
         flex-direction: column;
       }
       @media (min-width: 992px) {
         body {
-          padding-top: 56px;
-          padding-bottom: 56px;
+          margin-top: 56px;
+          /* margin-bottom: 56px; */
         }
       }
       .content-div {
@@ -48,32 +48,6 @@
       }
       .footer_style {
         flex-shrink: 0;
-      }
-      .upload-demo .upload-demo-wrap,
-      .upload-demo .upload-result,
-      .upload-demo.ready .upload-msg {
-          display: none;
-      }
-      .upload-demo.ready .upload-demo-wrap {
-          display: block;
-      }
-      .upload-demo.ready .upload-result {
-          display: inline-block;
-      }
-      .upload-demo-wrap {
-          width: 300px;
-          height: 300px;
-          margin: 0 auto;
-      }
-      .map {}
-      .upload-msg {
-          text-align: center;
-          padding: 50px;
-          font-size: 22px;
-          color: #aaa;
-          width: 260px;
-          margin: 50px auto;
-          border: 1px solid #aaa;
       }
     </style>
 
@@ -84,7 +58,7 @@
       {% block body %}
 
 
-    <div class="content-div h-100">
+    <div class="content-div">
       <!-- Navigation -->
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
@@ -118,24 +92,22 @@
       </nav>
 
       <!-- Your Content Here -->
-      <div class="row">
-        <div class="col-sm-4 align-items-center mt-5" id="img_row">
-          <div class="row">
-            <div class="col-auto mx-auto">
-              <img style="width:auto;" id="profile_img" class="img-responsive center-block" src="{{ sign_certificate(user.picture) }}" alt="Profile Photo">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-4 align-items-center mt-5" id="img_row">
+            <div class="row">
+              <div class="col-auto mx-auto">
+                <img style="width:auto;" id="profile_img" class="img-responsive center-block" src="{{ sign_certificate(user.picture) }}" alt="Profile Photo">
+              </div>
+            </div>
+            <div class="row mt-3 mx-2">
+              <div class="mx-auto">
+                <p class="text-center">{{user.bio}}</p>
+              </div>
             </div>
           </div>
-          <div class="row d-flex align-items-center">
-            <!-- <div class="col-auto mx-auto"> -->
-              <p>{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}{{user.bio}}</p>
-
-            <!-- </div> -->
+          <div class="col-sm-8 mt-5" id="my-spot">
           </div>
-        </div>
-        <div class="col-sm-8 mt-5" id="my-spot">
-          <!-- <div id="my-spot">
-
-          </div> -->
         </div>
       </div>
     </div>
