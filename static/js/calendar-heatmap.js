@@ -151,13 +151,13 @@ function calendarHeatmap() {
           var result = cellDate.week() - firstDate.week() + (firstDate.weeksInYear() * (cellDate.weekYear() - firstDate.weekYear()));
           console.log(result * (SQUARE_LENGTH + SQUARE_PADDING));
           max_x = result * (SQUARE_LENGTH + SQUARE_PADDING);
-          return max_x
+          return max_x;
         })
         .attr('y', function (d, i) {
           return MONTH_LABEL_PADDING + formatWeekday(d.getDay()) * (SQUARE_LENGTH + SQUARE_PADDING);
         });
 
-      width = max_x + SQUARE_LENGTH + SQUARE_PADDING;
+      width = max_x + SQUARE_LENGTH + SQUARE_PADDING + 5;
       svg.attr('width', width);
 
       if (typeof onClick === 'function') {
@@ -168,7 +168,7 @@ function calendarHeatmap() {
       }
 
       if (chart.tooltipEnabled()) {
-        (v === 3 ? enterSelection : enterSelection.merge(dayRects)).on('mouseover', function(d, i) {
+        (v === 3 ? enterSelection : enterSelection.merge(dayRects)).on('mouseenter', function(d, i) {
           tooltip = d3.select(chart.selector())
             .append('div')
             .attr('class', 'day-cell-tooltip')
@@ -177,8 +177,17 @@ function calendarHeatmap() {
             .style('top', function () {
               return formatWeekday(d.getDay()) * (SQUARE_LENGTH + SQUARE_PADDING) + MONTH_LABEL_PADDING * 2 + 'px';
             });
+
+          // custom script to make tool tip not flicker
+          var tool_height = $(".day-cell-tooltip").height();
+          var curr_left = parseInt($(".day-cell-tooltip").css(['left'])['left'].slice(0,-2));
+
+          if (tool_height == 36){
+            var curr_top = parseInt($(".day-cell-tooltip").css(['top'])['top'].slice(0,-2));
+            tooltip.style('top', curr_top - 18 + 'px');
+          }
         })
-        .on('mouseout', function (d, i) {
+        .on('mouseleave', function (d, i) {
           tooltip.remove();
         });
       }
