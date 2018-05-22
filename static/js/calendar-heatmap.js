@@ -1,3 +1,36 @@
+var heatmap;
+var oldWidth;
+
+$(document).ready(function () {
+    var oldWidth = $(window).width();
+    var now = moment().endOf('day').toDate();
+    var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();
+    var chartData = d3.timeDays(yearAgo, now).map(function (dateElement) {
+      return {
+        date: dateElement,
+        count: (dateElement.getDay() !== 0 && dateElement.getDay() !== 6) ? Math.floor(Math.random() * 3) : Math.floor(Math.random() * 2)
+      };
+    });
+    heatmap = calendarHeatmap()
+      .data(chartData)
+      .selector('#my-spot')
+      .tooltipEnabled(true)
+      .colorRange(['#DCDCDC', '#ff8c00'])
+      .onClick(function (data) {
+        console.log('data', data);
+      });
+    heatmap();  // render the chart
+});
+
+$(window).resize(function () {
+   if ($(window).width() != oldWidth) {
+      // do whatever we want to do
+      // update the size of the current browser (oldWidth)
+         oldWidth = $(window).width();
+         heatmap();
+   }
+});
+
 function calendarHeatmap() {
   // defaults
   var width = 750;
@@ -7,6 +40,7 @@ function calendarHeatmap() {
   var SQUARE_LENGTH = 11;
   var SQUARE_PADDING = 2;
   var MONTH_LABEL_PADDING = 6;
+  var TOP_PADDING = 8;
   var now = moment().endOf('day').toDate();
   var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();
   var startDate = null;
@@ -96,7 +130,7 @@ function calendarHeatmap() {
 
     doc_width = $(document).width();
     if (doc_width < 576){
-      yearAgo = moment().startOf('day').subtract(4, 'month').toDate();
+      yearAgo = moment().startOf('day').subtract(3, 'month').toDate();
     } else if (doc_width < 768) {
       yearAgo = moment().startOf('day').subtract(5, 'month').toDate();
     } else if (doc_width < 992) {
@@ -104,7 +138,7 @@ function calendarHeatmap() {
     } else if (doc_width < 1200) {
       yearAgo = moment().startOf('day').subtract(9, 'month').toDate();
     } else {
-      // do nothing
+      yearAgo = moment().startOf('day').subtract(12, 'month').toDate();
     }
 
     var dateRange = ((d3.time && d3.time.days) || d3.timeDays)(yearAgo, now); // generates an array of date objects within the specified range
@@ -128,14 +162,14 @@ function calendarHeatmap() {
 
     function drawChart() {
       var svg = d3.select(chart.selector())
-        .style('position', 'relative')
+        // .style('position', 'relative')
         .append('svg')
         .attr('width', width)
         .attr('class', 'calendar-heatmap')
-        // .attr('height', height)
-        .style('padding', '36px');
-
-      console.log(svg);
+        .attr('height', '125px')
+        .style('padding-top', TOP_PADDING)
+        .style('padding-left', '15px');
+        // .style('padding-right', '36px');
 
       dayRects = svg.selectAll('.day-cell')
         .data(dateRange);  //  array of days for the last yr
@@ -175,17 +209,41 @@ function calendarHeatmap() {
             .html(tooltipHTMLForDate(d))
             .style('left', function () { return Math.floor(i / 7) * SQUARE_LENGTH + 'px'; })
             .style('top', function () {
-              return formatWeekday(d.getDay()) * (SQUARE_LENGTH + SQUARE_PADDING) + MONTH_LABEL_PADDING * 2 + 'px';
+
+              // original code
+              // return formatWeekday(d.getDay()) * (SQUARE_LENGTH + SQUARE_PADDING) + MONTH_LABEL_PADDING * 2 + 'px';
+
+              var weekday = formatWeekday(d.getDay());
+              var tool_height = $(".day-cell-tooltip").height();
+
+              // place tooltip below square
+              if (weekday < 2) {
+                return weekday * (SQUARE_LENGTH + SQUARE_PADDING)  + TOP_PADDING + tool_height + 1 + 'px';
+              }
+              // place tooltip above square
+              else {
+                return weekday * (SQUARE_LENGTH + SQUARE_PADDING) + MONTH_LABEL_PADDING + TOP_PADDING - tool_height - 12 + 'px';
+              }
             });
+          console.log(tooltip.style('top'));
 
           // custom script to make tool tip not flicker
+          var weekday = formatWeekday(d.getDay());
           var tool_height = $(".day-cell-tooltip").height();
           var curr_left = parseInt($(".day-cell-tooltip").css(['left'])['left'].slice(0,-2));
 
-          if (tool_height == 36){
+          if (tool_height == 36 && weekday < 2){
             var curr_top = parseInt($(".day-cell-tooltip").css(['top'])['top'].slice(0,-2));
             tooltip.style('top', curr_top - 18 + 'px');
+            console.log('top is now:' + $(".day-cell-tooltip").css(['top'])['top'].slice(0,-2))
           }
+
+          // custom script to move tool tip down if above the graph
+          // var tool_top = tooltip.style('top').slice(0,-2);
+          // if (tool_top < 38){
+          //   old_top = parseInt($(".day-cell-tooltip").css(['top'])['top'].slice(0,-2));
+          //   tooltip.style('top', old_top + 10 + (SQUARE_LENGTH +  2*SQUARE_PADDING) + tool_height + 'px');
+          // }
         })
         .on('mouseleave', function (d, i) {
           tooltip.remove();
@@ -241,6 +299,17 @@ function calendarHeatmap() {
             return Math.floor(matchIndex / 7) * (SQUARE_LENGTH + SQUARE_PADDING);
           })
           .attr('y', 0);  // fix these to the top
+
+        // remove month name if it crowds out another month name
+        var month_list = $('.month-name');
+        for (i = 0; i < month_list.length-1; i++){
+          var month_1_x = month_list[i].getAttribute('x');
+          var month_2_x = month_list[i+1].getAttribute('x');
+          if (month_2_x - month_1_x < 20){
+            $('.month-name')[i].remove();
+          }
+          console.log(month_2_x-month_1_x);
+        }
 
       locale.days.forEach(function (day, index) {
         index = formatWeekday(index);
