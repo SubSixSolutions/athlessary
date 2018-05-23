@@ -202,7 +202,7 @@ def recover_password(token):
     return render_template('password_recovery.html', pass_form=password_form, token=token)
 
 
-@application.route('/profile', methods=['GET', 'POST'])
+@application.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def profile():
     form = web_forms.ProfileForm()
@@ -247,8 +247,8 @@ def profile():
     return render_template('profile.html', form=form, profile=user_profile, sign_certificate=sign_certificate)
 
 
-@application.route('/user_overview')
-def user_overview():
+@application.route('/profile/view')
+def view_profile():
     return render_template('user_overview.html', user=current_user, sign_certificate=sign_certificate)
 
 
@@ -287,7 +287,7 @@ def team():
                            best_split=best_split)
 
 
-@application.route('/settings', methods=['GET', 'POST'])
+@application.route('/profile/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
     password_form = web_forms.ChangePasswordForm()
@@ -431,6 +431,14 @@ def generate_individual_heatmap():
     js = json.dumps(heatmap)
     print(heatmap)
     print(js)
+    return Response(js, status=200, mimetype='application/json')
+
+
+@application.route('/get_past_three_workouts', methods=['GET'])
+@login_required
+def get_past_three_workouts():
+    last_three = db.get_last_three_workouts(current_user.user_id)
+    js = json.dumps(last_three)
     return Response(js, status=200, mimetype='application/json')
 
 
