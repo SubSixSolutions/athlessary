@@ -13,16 +13,22 @@
     <!-- Bootstrap core CSS -->
 
     <!-- Link versions of bootstrap and JavaScript -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+    <!-- resize profile picture -->
+    <script src="{{url_for('static', filename='js/profile_img_resize.js')}}"></script>
 
     <!-- Heat Map -->
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/calendar-heatmap/0.4.1/calendar-heatmap.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js" charset="utf-8"></script>
     <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
     <script src="{{url_for('static', filename='js/calendar-heatmap.js')}}"></script>
+
+    <!-- Import heatmap calendar -->
+    <script src="{{url_for('static', filename='js/user_heatmap.js')}}"></script>
 
     <!-- Custom styles for this template -->
     <style>
@@ -76,6 +82,7 @@
               <li class="nav-item active dropdown">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
                 <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{url_for('view_profile')}}">View</a>
                   <a class="dropdown-item" href="{{url_for('profile')}}">Edit</a>
                   <a class="dropdown-item" href="{{url_for('settings')}}">Settings</a>
                 </div>
@@ -124,8 +131,13 @@
 
               </div>
             </div>
-            <div class="mt-1">
-              <h1 class="text-center display-4 mt-1">Recent Activity</h1>
+            <div class="row mt-1">
+              <div class="mx-auto">
+                <h1 class="text-center display-4 mt-1">Recent Activity</h1>
+              </div>
+            </div>
+            <div class="mt-2" id="recent_workouts">
+
             </div>
           </div>
         </div>
@@ -146,20 +158,9 @@
     <!-- pretty alerts -->
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
-    <!-- Run heatmap calendar -->
-    <script src="{{url_for('static', filename='js/user_heatmap.js')}}"></script>
-
     <script type="text/javascript">
-      var date = new Date();
-      var offset = date.getTimezoneOffset() / 60;
-      $.get('/generate_individual_heatmap', function(data, status){
-        console.log(data);
-        data.forEach(function(element) {
-          element['date'] = new Date(element['date']);
-        });
-        console.log(data);
-        generate_heatmap(data);
-      });
+      create_heat_map();
+      display_past_three_workouts();
     </script>
 
   {% endblock %}

@@ -18,6 +18,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
+    <!-- resize profile picture -->
+    <script src="{{url_for('static', filename='js/profile_img_resize.js')}}"></script>
+
     <!-- croppie -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.1/croppie.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.1/croppie.min.js"></script>
@@ -104,6 +107,7 @@
               <li class="nav-item active dropdown">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
                 <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{url_for('view_profile')}}">View</a>
                   <a class="dropdown-item" href="{{url_for('profile')}}">Edit</a>
                   <a class="dropdown-item" href="{{url_for('settings')}}">Settings</a>
                 </div>

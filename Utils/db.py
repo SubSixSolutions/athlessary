@@ -702,3 +702,40 @@ class Database:
 
         result = self.safe_execute(q1, (user_id,), fetchone=False)
         return result
+
+    def get_last_three_workouts(self, user_id):
+        """
+        ** gets all workouts for a specific user
+        for each workout for a specific user (for which there may be several pieces),
+        take the average distance and time of all the pieces in the workout
+        :param user_id: the id of the user for which to gather all workouts
+        :return: an array of dictionaries, each representing a workout with
+        aggregated totals for distance and time
+        """
+        sql = SQL.SQL(
+            '''SELECT distance, total_seconds, w.workout_id, w.time, w.by_distance, w.name
+             FROM workout AS w
+             JOIN
+                  (SELECT AVG(e.distance) AS distance,
+                  AVG((e.minutes*60)+e.seconds) AS total_seconds, e.workout_id
+                  FROM workout AS w
+                  JOIN erg AS e
+                  ON e.workout_id = w.workout_id
+                  WHERE w.user_id={}
+                  GROUP BY e.workout_id) AS agg_table
+             ON w.workout_id = agg_table.workout_id
+             ORDER BY w.time DESC
+             LIMIT 3'''
+        ).format(SQL.Placeholder())
+
+        result = self.safe_execute(sql, (user_id,), fetchone=False)
+
+        for res in result:
+            res['total_seconds'] = float(res['total_seconds'])
+            res['distance'] = float(res['distance'])
+            # res['time'] = res['time'].strftime('%Y-%m-%dT%H:%M:00.000Z')
+            splits = float(res['distance']) / float(500)
+            res['avg_sec'] = format(((res['total_seconds'] / splits) % 60), '.2f')
+            res['avg_min'] = int(res['total_seconds'] / splits / 60)
+
+        return result
