@@ -24,7 +24,6 @@
     <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
     <script src="{{url_for('static', filename='js/calendar-heatmap.js')}}"></script>
 
-
     <!-- Custom styles for this template -->
     <style>
       html {
@@ -146,6 +145,22 @@
 
     <!-- pretty alerts -->
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <!-- Run heatmap calendar -->
+    <script src="{{url_for('static', filename='js/user_heatmap.js')}}"></script>
+
+    <script type="text/javascript">
+      var date = new Date();
+      var offset = date.getTimezoneOffset() / 60;
+      $.get('/generate_individual_heatmap', function(data, status){
+        console.log(data);
+        data.forEach(function(element) {
+          element['date'] = new Date(element['date']);
+        });
+        console.log(data);
+        generate_heatmap(data);
+      });
+    </script>
 
   {% endblock %}
   </body>

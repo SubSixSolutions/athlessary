@@ -424,6 +424,16 @@ def get_all_athletes():
     return Response(js, status=200, mimetype='application/json')
 
 
+@application.route('/generate_individual_heatmap', methods=['GET'])
+@login_required
+def generate_individual_heatmap():
+    heatmap = db.get_heat_map_calendar_results(current_user.user_id)
+    js = json.dumps(heatmap)
+    print(heatmap)
+    print(js)
+    return Response(js, status=200, mimetype='application/json')
+
+
 @application.route('/roster', methods=['GET', 'POST'])
 @login_required
 def roster():
