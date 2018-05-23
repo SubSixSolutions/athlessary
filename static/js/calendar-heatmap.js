@@ -1,36 +1,3 @@
-var heatmap;
-var oldWidth;
-
-$(document).ready(function () {
-    var oldWidth = $(window).width();
-    var now = moment().endOf('day').toDate();
-    var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();
-    var chartData = d3.timeDays(yearAgo, now).map(function (dateElement) {
-      return {
-        date: dateElement,
-        count: (dateElement.getDay() !== 0 && dateElement.getDay() !== 6) ? Math.floor(Math.random() * 3) : Math.floor(Math.random() * 2)
-      };
-    });
-    heatmap = calendarHeatmap()
-      .data(chartData)
-      .selector('#my-spot')
-      .tooltipEnabled(true)
-      .colorRange(['#DCDCDC', '#ff8c00'])
-      .onClick(function (data) {
-        console.log('data', data);
-      });
-    heatmap();  // render the chart
-});
-
-$(window).resize(function () {
-   if ($(window).width() != oldWidth) {
-      // do whatever we want to do
-      // update the size of the current browser (oldWidth)
-         oldWidth = $(window).width();
-         heatmap();
-   }
-});
-
 function calendarHeatmap() {
   // defaults
   var width = 750;
@@ -183,7 +150,6 @@ function calendarHeatmap() {
         .attr('x', function (d, i) {
           var cellDate = moment(d);
           var result = cellDate.week() - firstDate.week() + (firstDate.weeksInYear() * (cellDate.weekYear() - firstDate.weekYear()));
-          console.log(result * (SQUARE_LENGTH + SQUARE_PADDING));
           max_x = result * (SQUARE_LENGTH + SQUARE_PADDING);
           return max_x;
         })
@@ -225,7 +191,6 @@ function calendarHeatmap() {
                 return weekday * (SQUARE_LENGTH + SQUARE_PADDING) + MONTH_LABEL_PADDING + TOP_PADDING - tool_height - 12 + 'px';
               }
             });
-          console.log(tooltip.style('top'));
 
           // custom script to make tool tip not flicker
           var weekday = formatWeekday(d.getDay());
@@ -235,7 +200,6 @@ function calendarHeatmap() {
           if (tool_height == 36 && weekday < 2){
             var curr_top = parseInt($(".day-cell-tooltip").css(['top'])['top'].slice(0,-2));
             tooltip.style('top', curr_top - 18 + 'px');
-            console.log('top is now:' + $(".day-cell-tooltip").css(['top'])['top'].slice(0,-2))
           }
 
           // custom script to move tool tip down if above the graph
@@ -308,7 +272,6 @@ function calendarHeatmap() {
           if (month_2_x - month_1_x < 20){
             $('.month-name')[i].remove();
           }
-          console.log(month_2_x-month_1_x);
         }
 
       locale.days.forEach(function (day, index) {

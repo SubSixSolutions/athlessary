@@ -657,8 +657,6 @@ class Database:
         result = self.safe_execute(q, (date,), fetchone=False)
         return result
 
-    #           var secs = ((total_seconds / splits) % 60).toFixed(2);
-    #           var mins = (Math.trunc(total_seconds / splits / 60));
 
     def get_leader_board_split(self, date):
         """
@@ -684,4 +682,23 @@ class Database:
         ).format(SQL.Placeholder())
 
         result = self.safe_execute(q, (date,), fetchone=False)
+        return result
+
+    def get_heat_map_calendar_results(self, user_id):
+        """
+        take a user ID and a time offset (from GMT to user's local time) and return the counts of each day
+        :param user_id:
+        :return:
+        """
+
+        q1 = SQL.SQL(
+            '''
+            SELECT COUNT(time) as count, time as date
+            FROM workout
+            WHERE user_id={}
+            GROUP BY date;
+            '''
+        ).format(SQL.Placeholder())
+
+        result = self.safe_execute(q1, (user_id,), fetchone=False)
         return result
