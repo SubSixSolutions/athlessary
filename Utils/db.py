@@ -161,7 +161,14 @@ class Database:
         sql = '''CREATE TABLE IF NOT EXISTS profile (
                         user_id INTEGER      UNIQUE PRIMARY KEY NOT NULL,
                         picture VARCHAR(255) NOT NULL DEFAULT ('defaults/profile.jpg'),
-                        bio     VARCHAR(250) NOT NULL);'''
+                        bio     VARCHAR(250) NOT NULL,
+                        age     DATE,
+                        height  INTEGER      DEFAULT(0),
+                        weight  INTEGER      DEFAULT(0),
+                        show_age BOOLEAN     DEFAULT(FALSE),
+                        show_height BOOLEAN  DEFAULT(FALSE),
+                        show_weight BOOLEAN DEFAULT(FALSE)
+              );'''
         self.safe_execute_sql_only(sql)
         self.conn.commit()
 
