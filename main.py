@@ -287,7 +287,11 @@ def team():
 def settings():
     password_form = web_forms.ChangePasswordForm()
     email_form = web_forms.ChangeEmail()
+    stats_form = web_forms.UserStatsForm()
     tab_num = 0
+
+    range_list = range(75, 325, 25)
+    height_list = range(60, 85, 6)
 
     if request.method == 'POST':
         if password_form.data['submit'] and password_form.validate():
@@ -329,7 +333,7 @@ def settings():
                 flash('Please check your email and follow the instructions to confirm your new email address.', 'alert-success')
                 return render_template('user_settings.html', pass_form=password_form, email_form=email_form, tab_num=tab_num)
 
-    return render_template('user_settings.html', pass_form=password_form, email_form=email_form, tab_num=tab_num)
+    return render_template('user_settings.html', pass_form=password_form, email_form=email_form, stats_form=stats_form, range_list=range_list, height_list=height_list, tab_num=tab_num)
 
 
 @application.route('/validate/<token>', methods=['GET', 'POST'])

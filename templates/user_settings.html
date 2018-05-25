@@ -124,7 +124,8 @@
         <div class="col-md-3 border-right border-dark mb-2">
           <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
             <a class="nav-link {% if tab_num == 0 %}active{% endif%}" id="v-pills-home-tab" data-toggle="pill" href="#change-password" role="tab" aria-controls="v-pills-home" aria-selected="true">Change Password</a>
-            <a class="nav-link {% if tab_num == 1 %}active{% endif%}" id="v-pills-profile-tab" data-toggle="pill" href="#user-info" role="tab" aria-controls="v-pills-profile" aria-selected="false">Update Email</a>
+            <a class="nav-link {% if tab_num == 1 %}active{% endif%}" id="v-pills-profile-tab" data-toggle="pill" href="#change-email" role="tab" aria-controls="v-pills-profile" aria-selected="false">Update Email</a>
+            <a class="nav-link {% if tab_num == 2 %}active{% endif%}" id="v-pills-profile-tab" data-toggle="pill" href="#user-info" role="tab" aria-controls="v-pills-profile" aria-selected="false">Update Stats</a>
           </div>
           <hr class="mobile-line">
         </div>
@@ -157,7 +158,7 @@
               {{pass_form.submit(class_="btn btn-secondary")}}
             </form>
           </div>
-          <div role="tabpanel" class="tab-pane {% if tab_num == 1 %}active{% endif%}" id="user-info">
+          <div role="tabpanel" class="tab-pane {% if tab_num == 1 %}active{% endif%}" id="change-email">
             <form method="POST">
               {{email_form.csrf_token(id='tag1')}}
               <div class="form-group row">
@@ -180,6 +181,114 @@
               {{email_form.email_submit(class_="btn btn-secondary", id='submit1')}}
             </form>
           </div>
+          <div role="tabpanel" class="tab-pane {% if tab_num == 1 %}active{% endif%}" id="user-info">
+            <form method="POST">
+              <div class="row">
+                <div class="mx-auto">
+                  <h4 class="display-4">Birthday</h4>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-8 mx-auto">
+                  {{stats_form.birthday(class_="form-control")}}
+                </div>
+              </div>
+              <div class="d-flex justify-content-center mt-1">
+                <div class="form-row">
+                  <div class="col-md-12 form-group">
+                    <div class="form-check">
+                      {{stats_form.show_age(class_="form-check-input form-control-sm")}}
+                      <label class="form-check-label" for="show_age">
+                        Show my age on my profile?
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-4">
+                <div class="mx-auto">
+                  <h4 class="display-4">Weight</h4>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-3 col-md-2">
+                  <p class="text-center">75lbs</p>
+                </div>
+                <div class="col-6 col-md-8 mx-auto">
+                  {{stats_form.weight(min=75, max=300, step="0.5", class_="form-control", list="steplist", oninput="outputUpdate(value, 'selected-age')")}}
+                  <datalist id="steplist">
+                    {% for value in range_list %}
+                      <option value="{{value}}" label="{{value}}lbs">
+                    {% endfor %}
+                  </datalist>
+                </div>
+                <div class="col-3 col-md-2">
+                  <p class="text-center">300lbs</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="mx-auto">
+                  <p class="lead"><output for="age" id="selected-age">{{ stats_form.weight.data }}</output>lbs</p>
+                </div>
+              </div>
+              <div class="d-flex justify-content-center">
+                <div class="form-row">
+                  <div class="col-md-12 form-group">
+                    <div class="form-check">
+                      {{stats_form.show_weight(class_="form-check-input form-control-sm")}}
+                      <label class="form-check-label" for="show_age">
+                        Show my weight on my profile?
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- <hr> -->
+              <div class="row mt-4">
+                <div class="mx-auto">
+                  <h4 class="display-4">Height</h4>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-3 col-md-2">
+                  <p class="text-center">56in</p>
+                </div>
+                <div class="col-6 col-md-8 mx-auto">
+                  {{stats_form.height(min=56, max=88, step="0.25", class_="form-control", list="heights", oninput="outputUpdate(value, 'selected-height')")}}
+                  <datalist id="heights">
+                    {% for value in height_list %}
+                      <option value="{{value}}" label="{{value}}lbs">
+                    {% endfor %}
+                  </datalist>
+                </div>
+                <div class="col-3 col-md-2">
+                  <p class="text-center">88in</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="mx-auto">
+                  <p class="lead"><output for="age" id="selected-height">{{ stats_form.height.data }}</output>in</p>
+                </div>
+              </div>
+              <div class="d-flex justify-content-center">
+                <div class="form-row">
+                  <div class="col-md-12 form-group">
+                    <div class="form-check">
+                      {{stats_form.show_height(class_="form-check-input form-control-sm")}}
+                      <label class="form-check-label" for="show_age">
+                        Show my height on my profile?
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row form-row">
+                <div class="mx-auto">
+                  {{stats_form.save_changes(class_="btn btn-secondary mb-2")}}
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -197,6 +306,11 @@
 
     <!-- Core JavaScript -->
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+      function outputUpdate(number, selector) {
+          document.querySelector('#' + selector).value = number;
+      }
+    </script>
     {% endblock %}
   </body>
 
