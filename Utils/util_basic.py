@@ -142,6 +142,30 @@ def set_up_profile_form(user, profile):
     return form_obj
 
 
+def set_up_stats_form(user_id, form):
+
+    user_profile = db.select('profile', ['ALL'], ['user_id'], [user_id])
+
+    print('boi')
+    print(user_profile)
+
+    if user_profile['birthday']:
+        form.birthday.data = user_profile['birthday']
+    if user_profile['height'] != 0:
+        form.height.data = user_profile['height']
+    if user_profile['weight'] != 0:
+        form.weight.data = user_profile['weight']
+
+    if user_profile['show_age']:
+        form.show_age.data = True
+    if user_profile['show_height']:
+        form.show_height = True
+    if user_profile['show_weight']:
+        form.show_weight = True
+
+    return form
+
+
 def upload_profile_image(img, user_id, pic_location):
     """
     save a new profile picture uploaded by the user
@@ -201,6 +225,7 @@ def upload_erg_image(img, user_id):
     client.put_object(Body=data, Bucket=bucket_name, Key=new_location)
 
     return new_location
+
 
 def get_last_sunday(curr_date):
     last_sunday = curr_date - datetime.timedelta(curr_date.isoweekday())
