@@ -11,23 +11,14 @@ from wtforms.fields.html5 import DecimalRangeField, DateField
 from Utils.config import db
 
 
-class BooleanSubField(BooleanField):
-
-    def process_data(self, value):
-        if isinstance(value, BooleanField):
-            self.data = value.data
-        else:
-            self.data = bool(value)
-
-
 class UserStatsForm(FlaskForm):
     birthday = DateField('birthday', validators=[validators.InputRequired()])
     weight = DecimalRangeField('weight', validators=[validators.NumberRange(min=75, max=300),
-                                                     validators.InputRequired()], default=150)
+                                                     validators.InputRequired()])
     height = DecimalRangeField('height', validators=[validators.NumberRange(min=30, max=100),
-                                                     validators.InputRequired()], default=72)
+                                                     validators.InputRequired()])
     show_age = BooleanField('show_age')
-    show_weight = BooleanSubField('show_weight', false_values=('F', '', 'false', 'False'))
+    show_weight = BooleanField('show_weight', false_values=('F', '', 'false', 'False'))
     show_height = BooleanField('show_height')
     save_changes = SubmitField(u'Save Changes')
 

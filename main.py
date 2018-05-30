@@ -1,6 +1,7 @@
 import base64
 import os
 import threading
+import datetime
 from urllib.parse import urlparse, urljoin
 
 import boto3
@@ -332,12 +333,16 @@ def settings():
     if stats_form.data['save_changes']:
         tab_num = 2
         if stats_form.validate():
-            # print(stats_form.raw_data)
-            print(stats_form.data)
-            # update profile
+
+            # create new birthday
+            birth_day = list(map(int, stats_form.birthday.raw_data[0].split('-')))
+
+            new_birthday = datetime.date(birth_day[0], birth_day[1], birth_day[2])
+
+            # update the profile in the db
             db.update('profile', ['birthday', 'height', 'weight', 'show_age', 'show_height', 'show_weight'],
-                      [stats_form.data['birthday'], stats_form.data['height'], stats_form.data['weight'],
-                       bool(stats_form.data['show_age']), bool(stats_form.data['show_height']), bool(stats_form.data['show_weight'])],
+                      [new_birthday, float(stats_form.height.raw_data[0]), float(stats_form.weight.raw_data[0]),
+                       stats_form.data['show_age'], (stats_form.data['show_height']), (stats_form.data['show_weight'])],
                       ['user_id'], [current_user.user_id])
             return redirect(url_for('profile'))
         print(stats_form.errors)
