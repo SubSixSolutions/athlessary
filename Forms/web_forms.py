@@ -5,8 +5,22 @@ from wtforms import StringField, PasswordField, validators, IntegerField, Select
 from wtforms import SubmitField, ValidationError
 from wtforms.fields.html5 import TelField
 from wtforms.validators import InputRequired, Length, Email
+from wtforms.fields.html5 import DecimalRangeField, DateField
+
 
 from Utils.config import db
+
+
+class UserStatsForm(FlaskForm):
+    birthday = DateField('birthday', validators=[validators.InputRequired()])
+    weight = DecimalRangeField('weight', validators=[validators.NumberRange(min=75, max=300),
+                                                     validators.InputRequired()])
+    height = DecimalRangeField('height', validators=[validators.NumberRange(min=30, max=100),
+                                                     validators.InputRequired()])
+    show_age = BooleanField('show_age')
+    show_weight = BooleanField('show_weight', false_values=('F', '', 'false', 'False'))
+    show_height = BooleanField('show_height')
+    save_changes = SubmitField(u'Save Changes')
 
 
 class SignInForm(FlaskForm):

@@ -1,6 +1,7 @@
 import base64
 import os
 import threading
+import datetime
 from urllib.parse import urlparse, urljoin
 
 import boto3
@@ -292,7 +293,11 @@ def team():
 def settings():
     password_form = web_forms.ChangePasswordForm()
     email_form = web_forms.ChangeEmail()
+    stats_form = util_basic.set_up_stats_form(current_user.user_id, web_forms.UserStatsForm())
     tab_num = 0
+
+    weight_list = range(75, 325, 25)
+    height_list = range(60, 85, 6)
 
     if request.method == 'POST':
         if password_form.data['submit'] and password_form.validate():
@@ -316,25 +321,38 @@ def settings():
                 token = ts.dumps(email_form.data['email'], salt='email-confirm-key')
 
                 # build url
-                confirm_url = url_for(
-                    'confirm_email',
-                    token=token,
-                    _external=True)
+                confirm_url = url_for('confirm_email', token=token, _external=True)
 
                 # generate email
-                html = render_template(
-                    'validate_email.html',
-                    validate_url=confirm_url,
-                    user=current_user)
+                html = render_template('validate_email.html', validate_url=confirm_url, user=current_user)
 
                 # set up email sending
                 util_basic.send_email(email_form.data['email'], html, subject)
 
                 # flash message and return to settings page
                 flash('Please check your email and follow the instructions to confirm your new email address.', 'alert-success')
-                return render_template('user_settings.html', pass_form=password_form, email_form=email_form, tab_num=tab_num)
+                return render_template('user_settings.html', pass_form=password_form, email_form=email_form,
+                                       stats_form=stats_form, range_list=weight_list, height_list=height_list,
+                                       tab_num=tab_num)
 
-    return render_template('user_settings.html', pass_form=password_form, email_form=email_form, tab_num=tab_num)
+    if stats_form.data['save_changes']:
+        tab_num = 2
+        if stats_form.validate():
+
+            # create new birthday
+            birth_day = list(map(int, stats_form.birthday.raw_data[0].split('-')))
+
+            new_birthday = datetime.date(birth_day[0], birth_day[1], birth_day[2])
+
+            # update the profile in the db
+            db.update('profile', ['birthday', 'height', 'weight', 'show_age', 'show_height', 'show_weight'],
+                      [new_birthday, float(stats_form.height.raw_data[0]), float(stats_form.weight.raw_data[0]),
+                       stats_form.data['show_age'], (stats_form.data['show_height']), (stats_form.data['show_weight'])],
+                      ['user_id'], [current_user.user_id])
+            return redirect(url_for('profile'))
+        print(stats_form.errors)
+    return render_template('user_settings.html', pass_form=password_form, email_form=email_form, stats_form=stats_form,
+                           range_list=weight_list, height_list=height_list, tab_num=tab_num)
 
 
 @application.route('/validate/<token>', methods=['GET', 'POST'])

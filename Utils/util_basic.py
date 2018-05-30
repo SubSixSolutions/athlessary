@@ -7,6 +7,7 @@ import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import boto3
+import numpy as np
 
 from Forms import web_forms
 from Utils.log import log
@@ -142,6 +143,40 @@ def set_up_profile_form(user, profile):
     return form_obj
 
 
+def set_up_stats_form(user_id, form):
+
+    user_profile = db.get_user(user_id)
+    print('boi')
+    print(user_profile)
+    print(type(user_profile['height']))
+
+    user_weight = float(user_profile['weight'])
+    print(type(user_weight))
+    print(type(225.5))
+
+    if user_profile['birthday']:
+        form.birthday.data = user_profile['birthday']
+    if user_profile['height'] != 0:
+        form.height.data = user_profile['height']
+    if user_profile['weight'] != 0:
+        form.weight.data = user_weight
+
+    # form.process()
+
+    if user_profile['show_age']:
+        form.show_age.data = True
+    if user_profile['show_height']:
+        form.show_height.data = True
+    if user_profile['show_weight']:
+        form.show_weight.data = True
+
+    # form.process()
+    print('form')
+    print(form.data)
+
+    return form
+
+
 def upload_profile_image(img, user_id, pic_location):
     """
     save a new profile picture uploaded by the user
@@ -201,6 +236,7 @@ def upload_erg_image(img, user_id):
     client.put_object(Body=data, Bucket=bucket_name, Key=new_location)
 
     return new_location
+
 
 def get_last_sunday(curr_date):
     last_sunday = curr_date - datetime.timedelta(curr_date.isoweekday())
