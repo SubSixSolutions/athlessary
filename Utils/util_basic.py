@@ -146,22 +146,13 @@ def set_up_profile_form(user, profile):
 def set_up_stats_form(user_id, form):
 
     user_profile = db.get_user(user_id)
-    print('boi')
-    print(user_profile)
-    print(type(user_profile['height']))
-
-    user_weight = float(user_profile['weight'])
-    print(type(user_weight))
-    print(type(225.5))
 
     if user_profile['birthday']:
         form.birthday.data = user_profile['birthday']
     if user_profile['height'] != 0:
         form.height.data = user_profile['height']
     if user_profile['weight'] != 0:
-        form.weight.data = user_weight
-
-    # form.process()
+        form.weight.data = user_profile['weight']
 
     if user_profile['show_age']:
         form.show_age.data = True
@@ -169,10 +160,6 @@ def set_up_stats_form(user_id, form):
         form.show_height.data = True
     if user_profile['show_weight']:
         form.show_weight.data = True
-
-    # form.process()
-    print('form')
-    print(form.data)
 
     return form
 

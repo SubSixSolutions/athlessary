@@ -2,7 +2,7 @@ import base64
 import os
 import threading
 import datetime
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin, parse_qs
 
 import boto3
 from flask import Flask, render_template, request, redirect, url_for, Response, json, abort, flash
@@ -294,7 +294,13 @@ def settings():
     password_form = web_forms.ChangePasswordForm()
     email_form = web_forms.ChangeEmail()
     stats_form = util_basic.set_up_stats_form(current_user.user_id, web_forms.UserStatsForm())
-    tab_num = 0
+
+    # see if there is a tab number in the URL string
+    par = parse_qs(urlparse(request.url).query)
+    if 'tab_num' in par:
+        tab_num = int(par['tab_num'][0])
+    else:
+        tab_num = 0
 
     weight_list = range(75, 325, 25)
     height_list = range(60, 85, 6)
@@ -349,7 +355,7 @@ def settings():
                       [new_birthday, float(stats_form.height.raw_data[0]), float(stats_form.weight.raw_data[0]),
                        stats_form.data['show_age'], (stats_form.data['show_height']), (stats_form.data['show_weight'])],
                       ['user_id'], [current_user.user_id])
-            return redirect(url_for('profile'))
+            return redirect(url_for('view_profile'))
         print(stats_form.errors)
     return render_template('user_settings.html', pass_form=password_form, email_form=email_form, stats_form=stats_form,
                            range_list=weight_list, height_list=height_list, tab_num=tab_num)
