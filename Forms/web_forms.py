@@ -14,9 +14,9 @@ from Utils.config import db
 class UserStatsForm(FlaskForm):
     birthday = DateField('birthday', validators=[validators.InputRequired()])
     weight = DecimalRangeField('weight', validators=[validators.NumberRange(min=75, max=300),
-                                                     validators.InputRequired()])
+                                                     validators.InputRequired()], default=150)
     height = DecimalRangeField('height', validators=[validators.NumberRange(min=30, max=100),
-                                                     validators.InputRequired()])
+                                                     validators.InputRequired()], default=72)
     show_age = BooleanField('show_age', false_values=('F', '', 'false', 'False'))
     show_weight = BooleanField('show_weight', false_values=('F', '', 'false', 'False'))
     show_height = BooleanField('show_height', false_values=('F', '', 'false', 'False'))

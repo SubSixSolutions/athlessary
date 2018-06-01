@@ -4,7 +4,7 @@ var oldWidth;
 function display_past_three_workouts(){
   $.get('/get_past_three_workouts', function(data, status){
     console.log(data);
-    // SELECT distance, total_seconds, w.workout_id, w.time, w.by_distance, w.name
+
     var workouts = document.createElement('div');
     workouts.className = 'row';
     for (i = 0; i < data.length; i++){
@@ -12,10 +12,10 @@ function display_past_three_workouts(){
       workout.className = 'row shadow-sm mb-2 mb-lg-2 rounded';
       workout.innerHTML += "<div class=\"col-12\"><h5 class=\"text-center\">" + data[i]['name'] + " - " + (new Date(data[i]['time']).toDateString()) + "</h5></div>";
       workout.innerHTML += "<div class=\"col-12\"><p class=\"text-center\">" + data[i]['avg_min'] + ":" + data[i]['avg_sec'] + "</p></div>"
-      // workouts.appendChild(workout);
+
       document.getElementById('recent_workouts').appendChild(workout);
     }
-    // document.getElementById('recent_workouts').appendChild(workouts);
+
   });
 }
 
