@@ -162,9 +162,9 @@ class Database:
                         user_id INTEGER      UNIQUE PRIMARY KEY NOT NULL,
                         picture VARCHAR(255) NOT NULL DEFAULT ('defaults/profile.jpg'),
                         bio     VARCHAR(250) NOT NULL,
-                        age     DATE,
-                        height  INTEGER      DEFAULT(0),
-                        weight  INTEGER      DEFAULT(0),
+                        birthday     DATE,
+                        height  DOUBLE PRECISION      DEFAULT(0),
+                        weight  DOUBLE PRECISION      DEFAULT(0),
                         show_age BOOLEAN     DEFAULT(FALSE),
                         show_height BOOLEAN  DEFAULT(FALSE),
                         show_weight BOOLEAN DEFAULT(FALSE)
@@ -689,6 +689,26 @@ class Database:
         ).format(SQL.Placeholder())
 
         result = self.safe_execute(q, (date,), fetchone=False)
+        return result
+
+    def get_profile_stats(self, user_id):
+        """
+        get the age, weight, and height of the user as well as the
+        boolean values that determine whether or not the user wishes
+        the values to be public
+        :param user_id: the ID of the user
+        :return:
+        """
+
+        q = SQL.SQL(
+            '''
+            SELECT weight, height, show_age, show_height, show_weight, AGE(birthday)
+            FROM profile
+            WHERE user_id={}
+            '''
+        ).format(SQL.Literal(user_id))
+
+        result = self.safe_execute(q)
         return result
 
     def get_heat_map_calendar_results(self, user_id):
