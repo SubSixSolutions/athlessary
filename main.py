@@ -250,7 +250,9 @@ def profile():
 
 @application.route('/profile/view')
 def view_profile():
-    return render_template('user_overview.html', user=current_user, sign_certificate=sign_certificate)
+    profile_stats = db.get_profile_stats(current_user.user_id)
+    return render_template('user_overview.html', user=current_user, sign_certificate=sign_certificate,
+                           stats=profile_stats)
 
 
 @application.route('/workouts', methods=['GET', 'POST'])
@@ -353,8 +355,8 @@ def settings():
             # update the profile in the db
             db.update('profile', ['birthday', 'height', 'weight', 'show_age', 'show_height', 'show_weight'],
                       [new_birthday, float(stats_form.height.raw_data[0]), float(stats_form.weight.raw_data[0]),
-                       stats_form.data['show_age'], (stats_form.data['show_height']), (stats_form.data['show_weight'])],
-                      ['user_id'], [current_user.user_id])
+                       bool(stats_form.show_age.raw_data), bool(stats_form.show_height.raw_data),
+                       bool(stats_form.show_weight.raw_data)], ['user_id'], [current_user.user_id])
             return redirect(url_for('view_profile'))
         print(stats_form.errors)
     return render_template('user_settings.html', pass_form=password_form, email_form=email_form, stats_form=stats_form,

@@ -109,20 +109,49 @@
                 <p class="text-center">{{user.bio}}</p>
               </div>
             </div>
-            <div class="row mt-2 mx-2">
-              <div class="mx-auto">
-                <small class="text-center"><a href="{{url_for('settings', tab_num=2)}}">configure age</a></small>
+            {% if stats['age'] != None and stats['show_age'] %}
+              <div class="row mx-2">
+                <div class="mx-auto">
+                  <p class="text-center">Age: {{stats['age']}}</p>
+                </div>
               </div>
-            </div>
-            <div class="row mx-2">
-              <div class="mx-auto">
-                <small class="text-center"><a href="#">configure height</a></small>
+            {% endif %}
+            {% if stats['height'] > 0 and stats['show_height'] %}
+              <div class="row mx-2">
+                <div class="mx-auto">
+                  <p class="text-center">Height: {{stats['height']}}in</p>
+                </div>
               </div>
-            </div>
-            <div class="row mx-2">
-              <div class="mx-auto">
-                <small class="text-center"><a href="#">configure weight</a></small>
+            {% endif %}
+            {% if stats['weight'] > 0 and stats['show_weight'] %}
+              <div class="row mx-2">
+                <div class="mx-auto">
+                  <p class="text-center">Weight: {{stats['weight']}}lbs</p>
+                </div>
               </div>
+            {% endif %}
+            <div class="mt-2">
+              {% if stats['age'] == None or not (stats['show_age']) %}
+                <div class="row mx-2">
+                  <div class="mx-auto">
+                    <small class="text-center"><a href="{{url_for('settings', tab_num=2)}}">configure age</a></small>
+                  </div>
+                </div>
+              {% endif %}
+              {% if stats['height'] == 0 or not (stats['show_height']) %}
+                <div class="row mx-2">
+                  <div class="mx-auto">
+                    <small class="text-center"><a href="{{url_for('settings', tab_num=2)}}">configure height</a></small>
+                  </div>
+                </div>
+              {% endif %}
+              {% if stats['weight'] == 0 or not (stats['show_weight']) %}
+                <div class="row mx-2">
+                  <div class="mx-auto">
+                    <small class="text-center"><a href="{{url_for('settings', tab_num=2)}}">configure weight</a></small>
+                  </div>
+                </div>
+              {% endif %}
             </div>
           </div>
           <div class="col-sm-8 mt-5">

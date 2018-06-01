@@ -17,9 +17,9 @@ class UserStatsForm(FlaskForm):
                                                      validators.InputRequired()])
     height = DecimalRangeField('height', validators=[validators.NumberRange(min=30, max=100),
                                                      validators.InputRequired()])
-    show_age = BooleanField('show_age')
+    show_age = BooleanField('show_age', false_values=('F', '', 'false', 'False'))
     show_weight = BooleanField('show_weight', false_values=('F', '', 'false', 'False'))
-    show_height = BooleanField('show_height')
+    show_height = BooleanField('show_height', false_values=('F', '', 'false', 'False'))
     save_changes = SubmitField(u'Save Changes')
 
 

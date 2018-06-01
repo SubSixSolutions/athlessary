@@ -702,7 +702,7 @@ class Database:
 
         q = SQL.SQL(
             '''
-            SELECT weight, height, show_age, show_height, show_weight, AGE(birthday)
+            SELECT weight, height, show_age, show_height, show_weight, EXTRACT(YEAR FROM AGE(birthday))::INTEGER AS age
             FROM profile
             WHERE user_id={}
             '''
