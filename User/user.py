@@ -1,7 +1,6 @@
 import os
 from urllib.parse import quote
 
-import psycopg2
 from geopy.geocoders import Nominatim
 from werkzeug.utils import secure_filename
 
@@ -49,6 +48,7 @@ class User:
 
     def init_coordinates(self):
         geolocator = Nominatim(user_agent="__name__", scheme="http")
+
         address = ' '.join([self.address, self.city, self.state, str(self.zip)])
         log.info(quote(address))
         query = {
@@ -120,8 +120,11 @@ class User:
         return str(self.user_id)
 
     def is_profile_complete(self):
-
-        user_dict = db.get_user(self.user_id)
+        """
+        return whether or not a user has completed their profile
+        :return:
+        """
+        user_dict = db.select('users', ['address', 'city', 'state', 'zip', 'phone', 'team'], ['user_id'], [self.user_id])
         return None not in user_dict.values()
 
     def change_profile_picture(self, form):
