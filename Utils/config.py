@@ -41,3 +41,12 @@ except KeyError:
         log.error('Could not find password recovery credentials')
         sys.exit(1)
 
+try:
+    USPS_API_user_name = os.environ['USPS_API_KEY']
+except KeyError:
+    try:
+        from Utils.secret_config import USPS_API_user_name
+    except ModuleNotFoundError:
+        log.error('Could not find USPS API Key.')
+        sys.exit(1)
+

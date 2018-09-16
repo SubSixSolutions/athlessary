@@ -1,7 +1,7 @@
 import os
 from urllib.parse import quote
 
-import psycopg2
+from geopy.exc import GeocoderServiceError
 from geopy.geocoders import Nominatim
 from werkzeug.utils import secure_filename
 
@@ -48,7 +48,7 @@ class User:
             self.init_coordinates()
 
     def init_coordinates(self):
-        geolocator = Nominatim(user_agent="__name__", scheme="http")
+        geolocator = Nominatim(scheme='http')
         address = ' '.join([self.address, self.city, self.state, str(self.zip)])
         log.info(quote(address))
         query = {
@@ -57,14 +57,21 @@ class User:
             'state': self.state,
             'postalcode': str(self.zip)
         }
-        location = geolocator.geocode(query)
+        try:
+            location = geolocator.geocode(query)
+        except GeocoderServiceError as e:
+            log.error(e)
+            log.error('Address {},{},{},{} could not be found using geopy.'.format(self.address, self.city, self.state,
+                                                                                   self.zip))
+            location = None
         if location:
             self.x = location.latitude
             self.y = location.longitude
             db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
                            where_cols=['user_id'], where_params=[self.user_id])
         else:
-            db.update('users', ['address'], ['Invalid Address'], ['user_id'], [self.user_id])
+            pass
+            # db.update('users', ['address'], ['Invalid Address'], ['user_id'], [self.user_id])
 
     @classmethod
     def user_from_form(cls, form_data, active=True):
