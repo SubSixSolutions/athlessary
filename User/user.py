@@ -2,7 +2,6 @@ import os
 from urllib.parse import quote
 
 from geopy.exc import GeocoderServiceError
-import psycopg2
 from geopy.geocoders import Nominatim
 from werkzeug.utils import secure_filename
 
@@ -49,7 +48,7 @@ class User:
             self.init_coordinates()
 
     def init_coordinates(self):
-        geolocator = Nominatim(user_agent="__name__", scheme="http")
+        geolocator = Nominatim(scheme='http')
         address = ' '.join([self.address, self.city, self.state, str(self.zip)])
         log.info(quote(address))
         query = {
@@ -60,7 +59,8 @@ class User:
         }
         try:
             location = geolocator.geocode(query)
-        except GeocoderServiceError:
+        except GeocoderServiceError as e:
+            log.error(e)
             log.error('Address {},{},{},{} could not be found using geopy.'.format(self.address, self.city, self.state,
                                                                                    self.zip))
             location = None
