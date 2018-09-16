@@ -7,7 +7,9 @@ import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import boto3
+import xml.etree.ElementTree as ET
 import numpy as np
+import requests
 
 from Forms import web_forms
 from Utils.log import log
@@ -204,7 +206,6 @@ def upload_erg_image(img, user_id):
     save the erg screen image from the user
     :param img: byte string from web
     :param user_id: id fo the current user
-    :param pic_location: the location of erg screen picture
     :return:
     """
 
@@ -298,3 +299,69 @@ def send_email(email_address, html, subject):
     server.login(password_recovery_email, password_recovery_email_creds)
     problems = server.sendmail(password_recovery_email, email_address, msg.as_string())
     server.quit()
+
+
+def lookup_user_address(line_1, line_2, city, state, zip_code):
+    """
+
+    :param line_1:
+    :param line_2:
+    :param city:
+    :param state:
+    :param zip_code:
+    :return:
+    """
+
+    from Utils.config import USPS_API_user_name as API_key
+
+    url = 'http://production.shippingapis.com/ShippingAPI.dll'
+
+    xml_string = '''<AddressValidateRequest USERID="{}">
+                    <Address>
+                        <Address1>{}</Address1> 
+                        <Address2>{}</Address2> 
+                        <City>{}</City> 
+                        <State>{}</State> 
+                        <Zip5>{}</Zip5> 
+                        <Zip4></Zip4> 
+                    </Address> 
+                
+                </AddressValidateRequest>'''.format(API_key, line_1, line_2, city, state, zip_code)
+
+    query_params = {'API': 'Verify', 'XML': xml_string}
+
+    response = requests.get(url, params=query_params)
+
+    return response
+
+
+def verify_user_address(line_1, line_2, city, state, zip_code):
+    address = lookup_user_address(line_1, line_2, city, state, zip_code)
+
+    if not address or address.status_code != 200:
+        return {'error': 'The server is not responding! Please try updating your profile again later.'}
+
+    root = ET.fromstring(address.text)
+
+    address_parse = root.findall('Address')
+
+    if len(address_parse) != 1:
+        return {'error': 'The server is not responding! Please try updating your profile again later.'}
+
+    error = address_parse[0].findall('Error')
+
+    if len(error) > 0:
+        for err in error[0].findall('Description'):
+            print(err.text)
+
+        return {'error': 'Your address could not be found! Please check your spelling.'}
+
+    ret_val = {
+        'address': address_parse[0].findtext('Address2'),
+        'zip': address_parse[0].findtext('Zip5'),
+        'state': address_parse[0].findtext('State'),
+        'city': address_parse[0].findtext('City'),
+        'msg': address_parse[0].findtext('ReturnText')
+    }
+
+    return ret_val

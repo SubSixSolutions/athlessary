@@ -18,7 +18,7 @@ from Utils import util_basic, hashes
 from Utils.config import db
 from Utils.driver_generation import generate_cars, modified_k_means
 from Utils.log import log
-from Utils.util_basic import bucket_name
+from Utils.util_basic import bucket_name, verify_user_address
 from Utils.util_basic import create_workout, build_graph_data
 from Utils.data_loading import csv_to_db
 from Utils.config import twilio_sid, twilio_auth_token, twilio_number
@@ -209,18 +209,41 @@ def profile():
     form = web_forms.ProfileForm()
 
     if form.validate_on_submit():
-        user_attrs = ['address', 'city', 'state', 'zip', 'phone', 'team', 'num_seats']
+        user_attrs = ['phone', 'team', 'num_seats']
+        address_attrs = ['address', 'city', 'state', 'zip']
         profile_attrs = ['bio']
-        user_cols = []
+
         profile_cols = []
+
+        profile_update_values = []
+        profile_update_col_names = []
+
         for attribute in user_attrs:
-            user_cols.append(form.data[attribute])
-            setattr(current_user, attribute, form.data[attribute])
+            curr_attr_value = getattr(current_user, attribute)
+            if form.data[attribute] != curr_attr_value:
+                profile_update_values.append(form.data[attribute])
+                setattr(current_user, attribute, form.data[attribute])
+                profile_update_col_names.append(attribute)
+
+        address = verify_user_address('', form.data['address'], form.data['city'], form.data['state'], form.data['zip'])
+
+        if 'error' in address:
+            flash(address['error'], 'alert-error')
+            print(address['error'])
+
+        else:
+            for attribute in address_attrs:
+                curr_attr_value = getattr(current_user, attribute)
+                if form.data[attribute] != curr_attr_value:
+                    profile_update_values.append(address[attribute])
+                    setattr(current_user, attribute, address[attribute])
+                    profile_update_col_names.append(attribute)
 
         for attribute in profile_attrs:
             profile_cols.append((form.data[attribute]))
 
-        db.update('users', user_attrs, user_cols, ['user_id'], [current_user.user_id])
+        if len(profile_update_values) > 0:
+            db.update('users', profile_update_col_names, profile_update_values, ['user_id'], [current_user.user_id])
 
         db.update('profile', profile_attrs, profile_cols, ['user_id'], [current_user.user_id])
 
@@ -555,6 +578,7 @@ def save_erg_image():
         return Response(json.dumps({'data': 'hello_world'}), status=201, mimetype='application/json')
 
     return Response(json.dumps({}), status=400, mimetype='application/json')
+
 
 @application.route('/drivers', methods=['POST'])
 @login_required
