@@ -4,9 +4,9 @@
 
 A team management tool designed by Max McCarthy and Will Klock for the University of Illinois Rowing Program
 
-## A team management solution
+## A Team Management Solution
 
-Currently, the University of Illinios Rowing Program is led by the Illinois Alumni Association, a coaching staff of 5, and 10 student athletes. Because Men's Rowing is not an NCAA sport, the program must handle every aspect from recruiting to training to fundraising. As athletes, we spent many morinings, afternoons, and weekends building docks, refinishing oars, or training new recruits.
+Currently, the University of Illinois Rowing Program is led by the Illinois Alumni Association, a coaching staff of 5, and 10 student athletes. Because Men's Rowing is not an NCAA sport, the students and alumni must handle every aspect from recruiting to training to fundraising. As athletes, we spent many mornings, afternoons, and weekends building docks, refinishing oars, or training new recruits. While a developing program like ours will always require some elbow grease, Athlessary seeks to transform excel documents and handwritten logs into meaningful insights.
 
 ### Coaches
 
@@ -14,17 +14,17 @@ Athlessary tracks the progress of each athlete so the coaching staff can identif
 
 ### Athletes
 
-Athletes leverage Athlessary as an interactive training log. Besides measuring individual progress, athletes can view how they fare against other athletes in the weekly competition area. The user profile paves the way for future enhancment of teamwide communication and logistic coordination.
+Athletes leverage Athlessary as an interactive training log. Besides measuring individual progress, athletes can view how they fare against other athletes in the weekly competition area. The user profile paves the way for future enhancement of team wide communication and logistic coordination.
 
 ### Students
 
-This project is entirely open source and completly free. Compiled from tutorials, class work, Stack Overflow, and hours of reading documentation, Athlessary is a functional example of a simple website powered by AWS.
+This project is entirely open source and completely free. Compiled from tutorials, class work, Stack Overflow, and hours of reading documentation, Athlessary is a functional example of a simple website powered by AWS.
 
 # Status
 
 ## Complete
 
-The basic functionality of this tool is complete. Users can create an account, log and edit workeouts, and view aggregated reports for themselves and the team. Features such as password reset links and and customizable profile images add usability and ease to the project.
+The basic functionality of this tool is complete. Users can create an account, log and edit workouts, and view aggregated reports for themselves and the team. Features such as password reset links and customizable profile images add usability and ease to the project.
 
 ## In Progress
 
@@ -32,7 +32,7 @@ Under current development are features to coordinate transportation to the off c
 
 ## Future Development
 
-The intial groudwork includes plans for future development of a team wide messaging system, either through text or email, and the ability to add different classes of users.
+The initial groundwork includes plans for future development of a team wide messaging system, either through text or email, and the ability to add different classes of users.
 
 # Built With
 
