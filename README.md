@@ -6,7 +6,7 @@ A team management tool designed by Max McCarthy and Will Klock for the Universit
 
 ## A Team Management Solution
 
-Currently, the University of Illinois Rowing Program is led by the Illinois Alumni Association, a coaching staff of 5, and 10 student athletes. Because Men's Rowing is not an NCAA sport, the students and alumni must handle every aspect from recruiting to training to fundraising. As athletes, we spent many mornings, afternoons, and weekends building docks, refinishing oars, or training new recruits. While a developing program like ours will always require some elbow grease, Athlessary seeks to transform excel documents and handwritten logs into meaningful insights.
+Currently, the University of Illinois Rowing Program is led by the Illinois Alumni Association, a coaching staff of 5, and 10 student athletes. Because Men's Rowing is not an NCAA sport, the students and alumni must handle every aspect from recruiting to training to fundraising. As athletes, we spent many mornings, afternoons, and weekends building docks, refinishing oars, or training new recruits. While a developing rowing program like ours will always require some elbow grease, Athlessary provides a platform for managing and understanding our evolving team.
 
 ### Coaches
 
