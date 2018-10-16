@@ -4,19 +4,35 @@
 
 A team management tool designed by Max McCarthy and Will Klock for the University of Illinois Rowing Program
 
-Things you can do right now:
-- Login
-- Edit Your Profile
-- Change Your Profile Picture
-- Log an Ergometer Workout
-- Edit/Delete Workouts
-- Graph Your Workouts
-- View Your Team Leaderboard
-- Reset your password via email link
+## A team management solution
 
-Things you will be able to do:
-- Organize Transportation to Practice
-- View Your Team Roster
+Currently, the University of Illinios Rowing Program is led by the Illinois Alumni Association, a coaching staff of 5, and 10 student athletes. Because Men's Rowing is not an NCAA sport, the program must handle every aspect from recruiting to training to fundraising. As athletes, we spent many morinings, afternoons, and weekends building docks, refinishing oars, or training new recruits.
+
+### Coaches
+
+Athlessary tracks the progress of each athlete so the coaching staff can identify key areas for improvement. Coaches can utilize the athlete heat map to note attendance and reward athletes for supplemental work. This data helps determine potential athletes for the top boats.
+
+### Athletes
+
+Athletes leverage Athlessary as an interactive training log. Besides measuring individual progress, athletes can view how they fare against other athletes in the weekly competition area. The user profile paves the way for future enhancment of teamwide communication and logistic coordination.
+
+### Students
+
+This project is entirely open source and completly free. Compiled from tutorials, class work, Stack Overflow, and hours of reading documentation, Athlessary is a functional example of a simple website powered by AWS.
+
+# Status
+
+## Complete
+
+The basic functionality of this tool is complete. Users can create an account, log and edit workeouts, and view aggregated reports for themselves and the team. Features such as password reset links and and customizable profile images add usability and ease to the project.
+
+## In Progress
+
+Under current development are features to coordinate transportation to the off campus practice facility and the ability to use machine learning to discern a workout from a photo of an ergometer.
+
+## Future Development
+
+The intial groudwork includes plans for future development of a team wide messaging system, either through text or email, and the ability to add different classes of users.
 
 # Built With
 
