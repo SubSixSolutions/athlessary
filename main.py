@@ -239,6 +239,9 @@ def profile():
                     setattr(current_user, attribute, address[attribute])
                     profile_update_col_names.append(attribute)
 
+            # update x and y coordinates
+            current_user.init_coordinates()
+
         for attribute in profile_attrs:
             profile_cols.append((form.data[attribute]))
 

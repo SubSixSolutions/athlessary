@@ -359,7 +359,8 @@ def verify_user_address(line_1, line_2, city, state, zip_code):
     ret_val = {
         'address': address_parse[0].findtext('Address2'),
         'zip': address_parse[0].findtext('Zip5'),
-        'state': address_parse[0].findtext('State'),
+        # 'state': address_parse[0].findtext('State'),
+        'state': state,  # trust state given from frontend TODO: look into changing this
         'city': address_parse[0].findtext('City'),
         'msg': address_parse[0].findtext('ReturnText')
     }

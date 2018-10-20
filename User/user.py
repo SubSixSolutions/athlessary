@@ -68,10 +68,9 @@ class User:
             self.x = location.latitude
             self.y = location.longitude
             db.update('users', update_cols=['x', 'y'], update_params=[self.x, self.y],
-                           where_cols=['user_id'], where_params=[self.user_id])
+                      where_cols=['user_id'], where_params=[self.user_id])
         else:
-            pass
-            # db.update('users', ['address'], ['Invalid Address'], ['user_id'], [self.user_id])
+            log.error("Address {} {}, {} {} could not be located".format(self.address, self.city, self.state, self.zip))
 
     @classmethod
     def user_from_form(cls, form_data, active=True):
@@ -100,7 +99,7 @@ class User:
         col_values = list(csv_data.values())
 
         username_select = db.select(table_name='users', select_cols=['user_id'], where_cols=['username'],
-                                where_params=[csv_data['username']])
+                                    where_params=[csv_data['username']])
         if username_select is not None:
             user_id = username_select['user_id']
             db.update('users', col_names, col_values, where_cols=['user_id'], where_params=[user_id], operators=['='])
