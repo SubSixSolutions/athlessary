@@ -17,10 +17,9 @@ class User:
 
         result = db.get_user(user_id)
 
+        # if user is not found, a session for an anonymous user will be created
         if not result:
             raise ValueError('Could Not Find User')
-
-        # TODO what if the user id does not exist??
 
         self.first = result['first']
         self.last = result['last']
@@ -77,20 +76,17 @@ class User:
 
         form_data['password'] = hashes.hash_password(form_data['password'])
 
-        # wanted_attrs = ['first', 'last', 'username', 'password', 'address', 'has_car', 'num_seats']
         wanted_attrs = ['first', 'last', 'username', 'password', 'email']
         attr_dict = {x: str(form_data[x]) for x in wanted_attrs}
 
         col_names = attr_dict.keys()
         col_vals = attr_dict.values()
-        # col_names.append('x')
-        # col_names.append('y')
         user_id = db.insert('users', col_names, col_vals, 'user_id')
 
         bio_string = 'Hi, my name is %s!' % form_data['first']
         db.insert('profile', ['bio', 'user_id'], [bio_string, user_id], 'user_id')
 
-        return cls(user_id, None)
+        return cls(user_id, active)
 
     @classmethod
     def user_from_csv_row(cls, csv_data, active=True):
@@ -126,15 +122,22 @@ class User:
         return str(self.user_id)
 
     def is_profile_complete(self):
+        """
+        make sure user has completed fields Athlessary needs to function
+        :return: boolean; True if all important fields are not null, False otherwise
+        """
 
-        user_dict = db.get_user(self.user_id)
-        return None not in user_dict.values()
+        if self.address is None:
+            return False
+        if self.team is None:
+            return False
+        return True
 
+    @DeprecationWarning
     def change_profile_picture(self, form):
         """
         takes form data and the current user
         :param form: data from the flask photo form
-        :param current_user: pointer to the current user
         :return:
         """
         # get the name of the photo
