@@ -19,7 +19,7 @@ Jinja2>=2.10.1
 jmespath==0.9.3
 MarkupSafe==1.0
 numpy==1.14.2
-opencv-python==3.4.0.12
+opencv-python==3.4.7.28
 passlib==1.7.1
 Pillow==6.2.0
 probableparsing==0.0.1
