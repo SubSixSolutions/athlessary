@@ -40,6 +40,6 @@ six==1.11.0
 twilio==6.12.1
 urllib3>=1.23
 usaddress==0.5.10
-Werkzeug==0.15.3
+Werkzeug==0.15.5
 WTForms==2.1
 yagmail==0.10.212
